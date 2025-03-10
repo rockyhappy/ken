@@ -1,6 +1,6 @@
 [versions]
 agp = "8.9.0"
-kotlin = "2.0.21"
+kotlin = "1.9.10"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -8,7 +8,7 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
 composeBom = "2024.09.00"
-
+composeCompiler="1.5.3"
 #plugins
 accompanistPagerIndicators = "0.28.0"
 androidApplication = "8.2.2"
@@ -26,7 +26,7 @@ playServicesAuth = "21.2.0"
 protobuf = "0.9.4"
 navigationSafeargs = "2.7.7"
 room ="2.6.1"
-ksp = "1.9.0-1.0.13"
+ksp = "1.9.10-1.0.13"
 
 #libraries
 core = "1.13.1"
@@ -41,9 +41,7 @@ composeNavigation = "2.7.7"
 hiltComposeNavigation = "1.2.0"
 protobufJavaLite = "4.27.2"
 kotlinCoroutines = "1.7.3"
-
 androidxJunit = "1.2.1"
-
 timber = "5.0.1"
 spotless = "6.19.0"
 googleTruth = "1.1.4"
@@ -58,7 +56,7 @@ material = "1.12.0"
 activity = "1.9.0"
 constraintlayout = "2.1.4"
 navigationFragment = "2.7.7"
-
+compose = "1.5.3"
 retrofit = "2.9.0"
 okhttp = "4.9.0"
 lifecycleRuntimeComposeAndroid = "2.8.4"
@@ -166,7 +164,7 @@ androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", nam
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "compose" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinJvm" }
