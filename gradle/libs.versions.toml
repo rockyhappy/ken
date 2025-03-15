@@ -48,6 +48,7 @@ googleTruth = "1.1.4"
 sdpAndroid = "1.0.6"
 googlePlayServicesAuth= "21.2.0"
 coil="2.5.0"
+coreSplashscreen = "1.0.1"
 
 #others
 kotlinCompilerExtensionVersion = "1.5.4"
@@ -159,7 +160,7 @@ gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref 
 scalar = { group = "com.squareup.retrofit2", name = "converter-scalars", version.ref = "retrofit" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "lifecycleRuntimeComposeAndroid" }
-
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

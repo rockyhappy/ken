@@ -30,25 +30,22 @@ android {
         }
     }
 
-    // Add product flavors
     flavorDimensions += "version"
     productFlavors {
         create("dev") {
             dimension = "version"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
-            // The app name will be set in strings.xml per flavor
+
         }
         create("staging") {
             dimension = "version"
             applicationIdSuffix = ".staging"
             versionNameSuffix = "-staging"
-            // The app name will be set in strings.xml per flavor
+
         }
         create("prod") {
             dimension = "version"
-            // Using the base applicationId without suffix for production
-            // The app name will be set in strings.xml per flavor
         }
     }
 
@@ -61,6 +58,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.compose.get()
@@ -141,4 +139,5 @@ dependencies {
     implementation(libs.coil.svg)
     implementation(libs.accompanist.pager.indicators)
     implementation(libs.accompanist.pager)
+    implementation(libs.androidx.core.splashscreen)
 }
