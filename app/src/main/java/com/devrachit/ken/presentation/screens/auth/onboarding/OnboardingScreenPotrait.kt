@@ -5,9 +5,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.sp
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.ui.res.colorResource
@@ -21,7 +18,7 @@ fun OnboardingScreenPortrait() {
             .fillMaxSize()
         ,
         containerColor = colorResource(R.color.bg_neutral)
-    ){paddingValues->
+    ){ paddingValues->
         Text("Screen 1", modifier=Modifier.padding(paddingValues))
     }
 }

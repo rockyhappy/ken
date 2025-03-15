@@ -38,20 +38,15 @@ class AuthActivity : AppCompatActivity() {
 
     private fun setupWindow() {
         enableEdgeToEdge()
-        
-
         WindowCompat.setDecorFitsSystemWindows(window, false)
-
         val bgColor = getColor(R.color.bg_neutral)
-        
-
         val windowInsetsController = WindowInsetsControllerCompat(window, window.decorView)
         windowInsetsController.isAppearanceLightStatusBars = false
         windowInsetsController.isAppearanceLightNavigationBars = false
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            window.statusBarColor = android.graphics.Color.TRANSPARENT
-            window.navigationBarColor = android.graphics.Color.TRANSPARENT
+            window.statusBarColor = bgColor
+            window.navigationBarColor = bgColor
         } else {
             window.statusBarColor = bgColor
             window.navigationBarColor = bgColor
@@ -63,19 +58,19 @@ class AuthActivity : AppCompatActivity() {
     }
 
     private fun setupSplashExitAnimation(splashScreenView: View) {
-            ObjectAnimator.ofFloat(
-                splashScreenView,
-                View.TRANSLATION_X,
-                0f,
-                -splashScreenView.height.toFloat()
-            ).apply {
-                duration = 600
-                doOnEnd {
-                    (splashScreenView.parent as? ViewGroup)?.removeView(splashScreenView)
-                }
-            }.also {
-                it.start()
+        ObjectAnimator.ofFloat(
+            splashScreenView,
+            View.TRANSLATION_X,
+            0f,
+            -splashScreenView.height.toFloat()
+        ).apply {
+            duration = 600
+            doOnEnd {
+                (splashScreenView.parent as? ViewGroup)?.removeView(splashScreenView)
             }
+        }.also {
+            it.start()
+        }
 
     }
 
