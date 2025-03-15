@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.ui.res.colorResource
 import com.devrachit.ken.R
@@ -21,8 +22,6 @@ fun OnboardingScreenPortrait() {
         ,
         containerColor = colorResource(R.color.bg_neutral)
     ){paddingValues->
-        Text("Screen 1")
-        Log.d("OnboardingScreenPortrait", "Onboarding screen portrait loaded ${paddingValues}")
-
+        Text("Screen 1", modifier=Modifier.padding(paddingValues))
     }
 }
