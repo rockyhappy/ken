@@ -14,19 +14,24 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 
-
-class OnboardingFragment : Fragment()
-{
+@AndroidEntryPoint
+class OnboardingFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val viewModel: OnboardingViewmodel by viewModels()
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                OnboardingScreenPortrait()
+                val userValues=viewModel.userValues.collectAsStateWithLifecycle()
+                OnboardingScreenPortrait(
+                    userValues = userValues.value,
+                    updateUserName = viewModel::updateUserName
+                )
             }
         }
     }
