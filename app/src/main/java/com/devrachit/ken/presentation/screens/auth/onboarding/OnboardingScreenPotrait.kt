@@ -2,9 +2,12 @@ package com.devrachit.ken.presentation.screens.auth.onboarding
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,12 +18,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.Alignment
@@ -36,6 +43,7 @@ import androidx.compose.ui.text.input.ImeAction
 import com.devrachit.ken.R
 import com.devrachit.ken.ui.theme.TextStyleInter10Lh12Fw500
 import com.devrachit.ken.ui.theme.TextStyleInter14Lh16Fw400
+import com.devrachit.ken.ui.theme.TextStyleInter16Lh24Fw600
 import com.devrachit.ken.ui.theme.TextStyleInter18Lh24Fw700
 import com.devrachit.ken.ui.theme.TextStyleInter24Lh36Fw700
 import com.devrachit.ken.utility.composeUtility.CompletePreviews
@@ -77,11 +85,15 @@ fun OnboardingScreenPortrait(
                     contentDescription = "Logo",
                     modifier = Modifier
                         .padding(top = 30.sdp, bottom = 20.sdp)
-                        .size(100.sdp)
+                        .sizeIn(
+                            minWidth = 0.sdp,
+                            maxWidth = 100.sdp,
+                            minHeight = 0.sdp,
+                            maxHeight = 100.sdp
+                        )
                         .align(Alignment.CenterHorizontally)
                         .scale(1.4f)
                         .clip(RoundedCornerShape(12.sdp))
-
                 )
                 Text(
                     text = "Welcome Leetcoder",
@@ -91,23 +103,29 @@ fun OnboardingScreenPortrait(
                     )
 
             }
+            val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(1f)
+                    .scrollable(state = scrollState, orientation = Orientation.Vertical)
                     .clip(RoundedCornerShape(topStart = 36.sdp, topEnd = 36.sdp))
-                    .background(colorResource(R.color.white))
-            )
+                    .background(colorResource(R.color.white)),
+                verticalArrangement = Arrangement.spacedBy(0.sdp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+
+                )
             {
+                Spacer(modifier = Modifier.fillMaxHeight(0.06f))
                 Text(
                     text = "Lets Begin",
                     style = TextStyleInter24Lh36Fw700(),
-                    color = colorResource(R.color.white),
-                    )
+                    color = colorResource(R.color.content_neutral_primary_black),
+                )
                 val focusManager = LocalFocusManager.current
-
+                Spacer(modifier = Modifier.fillMaxHeight(0.03f))
                 OutlinedTextField(
-                    value = userValues.userName?:"",
+                    value = userValues.userName ?: "",
                     onValueChange = { updateUserName(it) },
                     shape = RoundedCornerShape(10.sdp),
                     modifier = Modifier
@@ -131,14 +149,16 @@ fun OnboardingScreenPortrait(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedContainerColor = colorResource(id = R.color.bg_neutral_light_default),
                         unfocusedContainerColor = colorResource(id = R.color.bg_neutral_light_default),
-                        focusedBorderColor = if (userValues.isUserNameValid != false) colorResource(id = R.color.content_neutral_primary_black) else colorResource(id = R.color.stroke_danger_normal)
-                            
-                        ,
+                        focusedBorderColor = if (userValues.isUserNameValid != false) colorResource(
+                            id = R.color.content_neutral_primary_black
+                        ) else colorResource(id = R.color.stroke_danger_normal),
                         unfocusedBorderColor = Color.Transparent,
                         cursorColor = if (userValues.isUserNameValid != false) colorResource(id = R.color.content_neutral_primary_black) else colorResource(
                             id = R.color.stroke_danger_normal
                         ),
-                        focusedLabelColor = if (userValues.isUserNameValid != false) colorResource(id = R.color.content_neutral_primary_black) else colorResource(
+                        focusedLabelColor = if (userValues.isUserNameValid != false) colorResource(
+                            id = R.color.content_neutral_primary_black
+                        ) else colorResource(
                             id = R.color.stroke_danger_normal
                         ),
                         unfocusedLabelColor = colorResource(id = R.color.content_neutral_primary_black),
@@ -156,6 +176,33 @@ fun OnboardingScreenPortrait(
                     ),
 
                     )
+                Text(
+                    text = " Enter your LEETCODE username to login",
+                    style = TextStyleInter14Lh16Fw400(),
+                    modifier = Modifier
+                        .padding(start = 24.sdp, end = 24.sdp, top = 10.sdp)
+                        .padding(bottom = 20.sdp)
+                        .widthIn(400.sdp)
+                )
+                Spacer(modifier = Modifier.fillMaxHeight(0.06f))
+                Button(
+                    onClick = {},
+                    modifier = Modifier
+                        .padding(start = 24.sdp, end = 24.sdp, top = 10.sdp)
+                        .height(50.sdp)
+                        .widthIn(400.sdp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(id = R.color.content_neutral_primary_black),
+                        disabledContainerColor = colorResource(id = R.color.surface_card_normal_default),
+                    ),
+                    shape = RoundedCornerShape(24.sdp)
+                ) {
+                    Text(
+                        text = "Continue",
+                        color = colorResource(id = R.color.extra_blue_0),
+                        style = TextStyleInter16Lh24Fw600()
+                    )
+                }
             }
 
         }
@@ -167,5 +214,5 @@ fun OnboardingScreenPortrait(
 @OrientationPreviews
 @Composable
 fun OnboardingScreenPotraitPreview() {
-    OnboardingScreenPortrait(User(),updateUserName = {})
+    OnboardingScreenPortrait(User(), updateUserName = {})
 }
