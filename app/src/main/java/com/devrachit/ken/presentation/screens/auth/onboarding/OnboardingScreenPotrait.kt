@@ -1,5 +1,6 @@
 package com.devrachit.ken.presentation.screens.auth.onboarding
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -7,6 +8,7 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,17 +22,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusDirection
@@ -38,8 +46,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-
 import com.devrachit.ken.R
 import com.devrachit.ken.ui.theme.TextStyleInter10Lh12Fw500
 import com.devrachit.ken.ui.theme.TextStyleInter14Lh16Fw400
@@ -107,23 +115,25 @@ fun OnboardingScreenPortrait(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(1f)
-                    .scrollable(state = scrollState, orientation = Orientation.Vertical)
+                    .weight(1f)  
                     .clip(RoundedCornerShape(topStart = 36.sdp, topEnd = 36.sdp))
-                    .background(colorResource(R.color.white)),
+                    .background(colorResource(R.color.white))
+                    .verticalScroll(state = scrollState)
+                ,
                 verticalArrangement = Arrangement.spacedBy(0.sdp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-
-                )
+            )
             {
-                Spacer(modifier = Modifier.fillMaxHeight(0.06f))
+                Spacer(modifier = Modifier.height(24.sdp))  
                 Text(
                     text = "Lets Begin",
                     style = TextStyleInter24Lh36Fw700(),
                     color = colorResource(R.color.content_neutral_primary_black),
+//                    modifier = Modifier
+//                        .padding(top=200.sdp)
                 )
                 val focusManager = LocalFocusManager.current
-                Spacer(modifier = Modifier.fillMaxHeight(0.03f))
+                Spacer(modifier = Modifier.height(12.sdp))  
                 OutlinedTextField(
                     value = userValues.userName ?: "",
                     onValueChange = { updateUserName(it) },
@@ -184,7 +194,7 @@ fun OnboardingScreenPortrait(
                         .padding(bottom = 20.sdp)
                         .widthIn(400.sdp)
                 )
-                Spacer(modifier = Modifier.fillMaxHeight(0.06f))
+                Spacer(modifier = Modifier.height(24.sdp))  
                 Button(
                     onClick = {},
                     modifier = Modifier
@@ -203,6 +213,69 @@ fun OnboardingScreenPortrait(
                         style = TextStyleInter16Lh24Fw600()
                     )
                 }
+                Row(
+                    modifier = Modifier
+                        .padding(top = 36.sdp, bottom = 16.sdp)
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                )
+                {
+                    Box(
+                        modifier = Modifier
+                            .width(60.sdp)
+                            .height(1.sdp)
+                            .alpha(0.5f)
+                            .background(
+                                colorResource(id = R.color.content_neutral_secondary),
+                                shape = RoundedCornerShape(0.sdp)
+                            )
+
+                    )
+                    Text(
+                        text = " OR ",
+                        style = TextStyleInter14Lh16Fw400(),
+                        modifier = Modifier.alpha(0.6f),
+                        color = colorResource(id = R.color.content_neutral_secondary)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(60.sdp)
+                            .height(1.sdp)
+                            .alpha(0.5f)
+                            .background(
+                                colorResource(id = R.color.content_neutral_secondary),
+                                shape = RoundedCornerShape(0.sdp)
+                            )
+
+                    )
+                }
+                OutlinedButton(
+                    onClick = {
+
+                    },
+                    modifier = Modifier
+                        .padding(start = 24.sdp, end = 24.sdp, top = 16.sdp)
+                        .height(50.sdp)
+                        .widthIn(400.sdp),
+                    shape = RoundedCornerShape(24.sdp),
+                    border = BorderStroke(1.sdp, colorResource(id = R.color.content_neutral_secondary))
+
+                ) {
+                    Text(
+                        text = "Guest User",
+                        color = colorResource(id = R.color.content_neutral_primary_black),
+                        style = TextStyleInter16Lh24Fw600()
+                    )
+                }
+
+                Text(
+                    text = stringResource(R.string.make_an_account_text),
+                    style = TextStyleInter14Lh16Fw400(),
+                    modifier = Modifier.padding(top = 16.sdp),
+                    color= colorResource(id = R.color.content_neutral_primary_black)
+                )
             }
 
         }
