@@ -61,7 +61,8 @@ import com.devrachit.ken.utility.composeUtility.sdp
 @Composable
 fun OnboardingScreenPortrait(
     userValues: User,
-    updateUserName: (String) -> Unit
+    updateUserName: (String) -> Unit,
+    onContinueButtonClick: () -> Unit,
 ) {
     Scaffold(
         modifier = Modifier
@@ -196,7 +197,7 @@ fun OnboardingScreenPortrait(
                 )
                 Spacer(modifier = Modifier.height(24.sdp))  
                 Button(
-                    onClick = {},
+                    onClick = onContinueButtonClick,
                     modifier = Modifier
                         .padding(start = 24.sdp, end = 24.sdp, top = 10.sdp)
                         .height(50.sdp)
@@ -287,5 +288,5 @@ fun OnboardingScreenPortrait(
 @OrientationPreviews
 @Composable
 fun OnboardingScreenPotraitPreview() {
-    OnboardingScreenPortrait(User(), updateUserName = {})
+    OnboardingScreenPortrait(User(), updateUserName = {}, onContinueButtonClick = {})
 }

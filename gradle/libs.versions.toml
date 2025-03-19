@@ -20,7 +20,7 @@ kotlinAndroid = "1.9.20"
 ktlint = "11.6.0"
 kotlinJvm = "1.8.10"
 androidLibrary = "8.2.2"
-kotlinSerialization = "1.9.0"
+kotlinSerialization = "1.9.10"
 hilt = "2.51.1"
 playServicesAuth = "21.2.0"
 protobuf = "0.9.4"
@@ -49,7 +49,7 @@ sdpAndroid = "1.0.6"
 googlePlayServicesAuth= "21.2.0"
 coil="2.5.0"
 coreSplashscreen = "1.0.1"
-
+serlizable_json="1.5.1"
 #others
 kotlinCompilerExtensionVersion = "1.5.4"
 appcompat = "1.7.0"
@@ -161,7 +161,7 @@ scalar = { group = "com.squareup.retrofit2", name = "converter-scalars", version
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "lifecycleRuntimeComposeAndroid" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
-
+kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json" , version.ref = "serlizable_json"}
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

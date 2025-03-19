@@ -30,7 +30,8 @@ class OnboardingFragment : Fragment() {
                 val userValues=viewModel.userValues.collectAsStateWithLifecycle()
                 OnboardingScreenPortrait(
                     userValues = userValues.value,
-                    updateUserName = viewModel::updateUserName
+                    updateUserName = viewModel::updateUserName,
+                    onContinueButtonClick = viewModel::checkUserExists
                 )
             }
         }
