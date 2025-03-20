@@ -5,6 +5,8 @@ import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.devrachit.ken.data.remote.services.LeetcodeApiService
 import com.devrachit.ken.data.repository.remote.LeetcodeRepositoryImpl
+import com.devrachit.ken.di.qualifiers.WithChucker
+import com.devrachit.ken.di.qualifiers.WithoutChucker
 import com.devrachit.ken.domain.repository.LeetcodeRepository
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
 import dagger.Module
@@ -23,7 +25,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(@ApplicationContext context: Context): OkHttpClient {
+    @WithChucker
+    fun provideOkHttpClientWithChucker(@ApplicationContext context: Context): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(ChuckerInterceptor.Builder(context).build())
             .build()
@@ -31,10 +34,18 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLeetCodeApi(client: OkHttpClient): LeetcodeApiService {
+    @WithoutChucker
+    fun provideOkHttpClientWithoutChucker(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLeetCodeApi(@WithChucker okhttpClient: OkHttpClient): LeetcodeApiService {
         return Retrofit.Builder()
             .baseUrl("https://leetcode.com/")
-            .client(client)
+            .client(okhttpClient)
             .addConverterFactory(ScalarsConverterFactory.create())
             .build()
             .create(LeetcodeApiService::class.java)
