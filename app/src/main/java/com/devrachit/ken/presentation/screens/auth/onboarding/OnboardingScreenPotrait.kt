@@ -1,8 +1,11 @@
 package com.devrachit.ken.presentation.screens.auth.onboarding
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +17,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imeNestedScroll
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +40,7 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.Alignment
@@ -43,11 +49,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.core.content.ContextCompat
 import com.devrachit.ken.R
 import com.devrachit.ken.ui.theme.TextStyleInter10Lh12Fw500
 import com.devrachit.ken.ui.theme.TextStyleInter14Lh16Fw400
@@ -63,10 +71,12 @@ fun OnboardingScreenPortrait(
     userValues: User,
     updateUserName: (String) -> Unit,
     onContinueButtonClick: () -> Unit,
+    onVerified:()->Unit
 ) {
     Scaffold(
         modifier = Modifier
             .systemBarsPadding()
+            .imePadding()
             .fillMaxSize(),
         containerColor = colorResource(R.color.bg_neutral)
     ) { paddingValues ->
@@ -116,16 +126,15 @@ fun OnboardingScreenPortrait(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)  
+                    .weight(1f)
                     .clip(RoundedCornerShape(topStart = 36.sdp, topEnd = 36.sdp))
                     .background(colorResource(R.color.white))
-                    .verticalScroll(state = scrollState)
-                ,
+                    .verticalScroll(state = scrollState),
                 verticalArrangement = Arrangement.spacedBy(0.sdp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             )
             {
-                Spacer(modifier = Modifier.height(24.sdp))  
+                Spacer(modifier = Modifier.height(24.sdp))
                 Text(
                     text = "Lets Begin",
                     style = TextStyleInter24Lh36Fw700(),
@@ -134,7 +143,9 @@ fun OnboardingScreenPortrait(
 //                        .padding(top=200.sdp)
                 )
                 val focusManager = LocalFocusManager.current
-                Spacer(modifier = Modifier.height(12.sdp))  
+                val context = LocalContext.current
+
+                Spacer(modifier = Modifier.height(12.sdp))
                 OutlinedTextField(
                     value = userValues.userName ?: "",
                     onValueChange = { updateUserName(it) },
@@ -188,14 +199,18 @@ fun OnboardingScreenPortrait(
 
                     )
                 Text(
-                    text = " Enter your LEETCODE username to login",
+                    text = if(userValues.isUserNameValid ) " Enter your LEETCODE username to login" else "Invalid username, please try again",
                     style = TextStyleInter14Lh16Fw400(),
                     modifier = Modifier
                         .padding(start = 24.sdp, end = 24.sdp, top = 10.sdp)
                         .padding(bottom = 20.sdp)
-                        .widthIn(400.sdp)
+                        .widthIn(400.sdp),
+                    color = if (!userValues.isUserNameValid) colorResource(R.color.stroke_danger_normal)
+                    else colorResource(id = R.color.content_neutral_primary_black)
                 )
-                Spacer(modifier = Modifier.height(24.sdp))  
+
+                Spacer(modifier = Modifier.height(24.sdp))
+                if(!userValues.isLoadingUsername)
                 Button(
                     onClick = onContinueButtonClick,
                     modifier = Modifier
@@ -206,14 +221,24 @@ fun OnboardingScreenPortrait(
                         containerColor = colorResource(id = R.color.content_neutral_primary_black),
                         disabledContainerColor = colorResource(id = R.color.surface_card_normal_default),
                     ),
-                    shape = RoundedCornerShape(24.sdp)
+                    shape = RoundedCornerShape(24.sdp),
+                    enabled = !userValues.isLoadingUsername,
                 ) {
+//                    if(!userValues.isLoadingUsername)
                     Text(
                         text = "Continue",
+                        
                         color = colorResource(id = R.color.extra_blue_0),
                         style = TextStyleInter16Lh24Fw600()
                     )
+
                 }
+                else
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(36.sdp),
+                        color = colorResource(id = R.color.content_neutral_primary_black)
+                    )
+                // TODO: This is the code section where you get the button for the Guest user
                 Row(
                     modifier = Modifier
                         .padding(top = 36.sdp, bottom = 16.sdp)
@@ -261,7 +286,10 @@ fun OnboardingScreenPortrait(
                         .height(50.sdp)
                         .widthIn(400.sdp),
                     shape = RoundedCornerShape(24.sdp),
-                    border = BorderStroke(1.sdp, colorResource(id = R.color.content_neutral_secondary))
+                    border = BorderStroke(
+                        1.sdp,
+                        colorResource(id = R.color.content_neutral_secondary)
+                    )
 
                 ) {
                     Text(
@@ -274,8 +302,13 @@ fun OnboardingScreenPortrait(
                 Text(
                     text = stringResource(R.string.make_an_account_text),
                     style = TextStyleInter14Lh16Fw400(),
-                    modifier = Modifier.padding(top = 16.sdp),
-                    color= colorResource(id = R.color.content_neutral_primary_black)
+                    modifier = Modifier
+                        .padding(top = 16.sdp, bottom = 16.sdp)
+                        .clickable {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://leetcode.com/accounts/signup/"))
+                            ContextCompat.startActivity(context, intent, null)
+                        },
+                    color = colorResource(id = R.color.content_neutral_primary_black)
                 )
             }
 
@@ -284,9 +317,11 @@ fun OnboardingScreenPortrait(
 }
 
 
+
+
 @CompletePreviews
-@OrientationPreviews
+//@OrientationPreviews
 @Composable
 fun OnboardingScreenPotraitPreview() {
-    OnboardingScreenPortrait(User(), updateUserName = {}, onContinueButtonClick = {})
+    OnboardingScreenPortrait(User(), updateUserName = {}, onContinueButtonClick = {} , onVerified = {})
 }

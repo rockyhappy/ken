@@ -1,14 +1,19 @@
 package com.devrachit.ken.presentation.screens.auth
 
 import android.animation.ObjectAnimator
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.enableEdgeToEdge
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.doOnEnd
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -16,12 +21,18 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.devrachit.ken.presentation.screens.dashboard.MainActivity
 import com.devrachit.ken.R
 import com.devrachit.ken.databinding.ActivityAuthBinding
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ActivityContext
+import javax.inject.Inject
+import kotlin.text.toFloat
 
 @AndroidEntryPoint
-class AuthActivity : AppCompatActivity() {
+class AuthActivity @Inject constructor(
+//    @ActivityContext private val context: Context
+) : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityAuthBinding
@@ -84,4 +95,20 @@ class AuthActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
     }
+    override fun finish() {
+        val rootView = binding.root
+        ObjectAnimator.ofFloat(
+            rootView,
+            View.TRANSLATION_X,
+            0f,
+            rootView.width.toFloat()
+        ).apply {
+            duration = 600
+            doOnEnd {
+                super.finish()
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            }
+        }.start()
+    }
+
 }

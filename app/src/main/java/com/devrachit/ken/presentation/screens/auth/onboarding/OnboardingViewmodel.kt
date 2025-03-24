@@ -27,14 +27,8 @@ import com.devrachit.ken.domain.models.UserInfoResponse
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
 import com.devrachit.ken.utility.NetworkUtility.Resource
-
-
-data class User(
-    val userName: String? = "rockyhappy",
-    val isUserNameValid: Boolean? = true,
-    val isChecking: Boolean = false,
-    val errorMessage: String? = null
-)
+import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 
 
 @HiltViewModel
@@ -46,60 +40,134 @@ class OnboardingViewmodel @Inject constructor(
     private var _userValues = MutableStateFlow(User())
     val userValues: StateFlow<User> = _userValues.asStateFlow()
 
-    private val client = OkHttpClient.Builder()
-        .addInterceptor(ChuckerInterceptor.Builder(context).build())
-        .build()
-    private val json = Json { ignoreUnknownKeys = true }
 
     fun updateUserName(userName: String) {
         _userValues.value = _userValues.value.copy(userName = userName)
     }
 
     // Check user exists function
+//    fun checkUserExists() {
+//        if (_userValues.value.userName != null && _userValues.value.userName!!.isNotEmpty()) {
+//            val username = _userValues.value.userName ?: return
+//            viewModelScope.launch(Dispatchers.IO) {
+//                getUserInfoUseCase(username)
+//                    .collectLatest { result ->
+//                        when (result) {
+//                            is Resource.Loading -> {
+//                                // Keep showing the loading state
+//                                _userValues.value = _userValues.value.copy(isLoadingUsername = true)
+//                            }
+//
+//                            is Resource.Success -> {
+//                                println("logcat")
+//                                val data = result.data as LeetCodeUserInfo
+//                                if(data.username != null)
+//                                _userValues.value = _userValues.value.copy(
+//                                    isLoadingUsername = false,
+//                                    isUserNameValid = true,
+//                                    errorMessage = null,
+//                                    isUserNameVerified = true
+//                                )
+//                                else
+//                                    _userValues.value = _userValues.value.copy(
+//                                        isLoadingUsername = false,
+//                                        isUserNameValid = false,
+//                                        errorMessage = "No user data found")
+//                                Log.d("OnboardingViewModel", "User $username exists: ${result.data}")
+//                            }
+//
+//                            is Resource.Error -> {
+//                                // Handle error case
+//                                val errorMessage = if (result.message?.contains(
+//                                        "not found",
+//                                        ignoreCase = true
+//                                    ) == true
+//                                ) {
+//                                    "User not found on Leetcode"
+//                                } else {
+//                                    "Error checking username: ${result.message}"
+//                                }
+//
+//                                _userValues.value = _userValues.value.copy(
+//                                    isLoadingUsername = false,
+//                                    isUserNameValid = result.message?.contains(
+//                                        "not found",
+//                                        ignoreCase = true
+//                                    ) != true,
+//                                    errorMessage = errorMessage
+//                                )
+//                                Timber.tag("OnboardingViewModel")
+//                                    .e("Error checking username: ${result.message}")
+//                            }
+//
+//                        }
+//                    }
+//            }
+//        }
+//    }
     fun checkUserExists() {
-        val username = _userValues.value.userName ?: return
-        _userValues.value = _userValues.value.copy(isChecking = true, errorMessage = null)
-        
-        viewModelScope.launch {
-            getUserInfoUseCase(username)
-                .collect { result ->
-                    when (result) {
-                        is Resource.Loading -> {
-                            // Keep showing the loading state
-                            _userValues.value = _userValues.value.copy(isChecking = true)
-                        }
-                        
-                        is Resource.Success -> {
-                            // User found, update the state
-                            _userValues.value = _userValues.value.copy(
-                                isChecking = false,
-                                isUserNameValid = true,
-                                errorMessage = null
-                            )
-                            Log.d("OnboardingViewModel", "User $username exists: ${result.data}")
-                        }
-                        
-                        is Resource.Error -> {
-                            // Handle error case
-                            val errorMessage = if (result.message?.contains("not found", ignoreCase = true) == true) {
-                                "User not found on LeetCode"
-                            } else {
-                                "Error checking username: ${result.message}"
-                            }
-                            
-                            _userValues.value = _userValues.value.copy(
-                                isChecking = false,
-                                isUserNameValid = result.message?.contains("not found", ignoreCase = true) != true,
-                                errorMessage = errorMessage
-                            )
-                            Log.e("OnboardingViewModel", "Error checking username: ${result.message}")
-                        }
+        val username = _userValues.value.userName
 
-                    }
-                }
+        // Early return for empty username
+        if (username.isNullOrEmpty()) {
+            _userValues.value = _userValues.value.copy(
+                isUserNameValid = false,
+                errorMessage = "Username cannot be empty"
+            )
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchUserInfo(username)
         }
     }
 
+    private suspend fun fetchUserInfo(username: String) {
+        getUserInfoUseCase(username)
+            .collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> handleLoadingState()
+                    is Resource.Success -> handleSuccessState(result.data as LeetCodeUserInfo)
+                    is Resource.Error -> handleErrorState(result.message)
+                }
+            }
+    }
 
+    private fun handleLoadingState() {
+        _userValues.value = _userValues.value.copy(isLoadingUsername = true)
+    }
 
+    private fun handleSuccessState(userData: LeetCodeUserInfo) {
+        if (userData.username != null) {
+            _userValues.value = _userValues.value.copy(
+                isLoadingUsername = false,
+                isUserNameValid = true,
+                errorMessage = null,
+                isUserNameVerified = true
+            )
+            Timber.d("User ${userData.username} exists")
+        } else {
+            _userValues.value = _userValues.value.copy(
+                isLoadingUsername = false,
+                isUserNameValid = false,
+                errorMessage = "No user data found"
+            )
+        }
+    }
+
+    private fun handleErrorState(errorMessage: String?) {
+        val isUserNotFound = errorMessage?.contains("not found", ignoreCase = true) == true
+        val displayMessage = if (isUserNotFound) {
+            "User not found on Leetcode"
+        } else {
+            "Error checking username: $errorMessage"
+        }
+
+        _userValues.value = _userValues.value.copy(
+            isLoadingUsername = false,
+            isUserNameValid = !isUserNotFound,
+            errorMessage = displayMessage
+        )
+        Timber.e("Error checking username: $errorMessage")
+    }
 }
