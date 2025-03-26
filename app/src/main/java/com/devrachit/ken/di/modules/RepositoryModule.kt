@@ -1,0 +1,47 @@
+package com.devrachit.ken.di.modules
+
+import android.content.Context
+import com.devrachit.ken.data.local.dao.LeetCodeUserDao
+import com.devrachit.ken.data.local.databases.KenDatabase
+import com.devrachit.ken.data.remote.services.LeetcodeApiService
+import com.devrachit.ken.data.repository.local.LeetcodeLocalRepositoryImpl
+import com.devrachit.ken.data.repository.remote.LeetcodeRemoteRepositoryImpl
+import com.devrachit.ken.domain.repository.local.LeetcodeLocalRepository
+import com.devrachit.ken.domain.repository.remote.LeetcodeRemoteRepository
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object RepositoryModule {
+
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): KenDatabase {
+        return KenDatabase.getDatabase(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLeetCodeUserDao(database: KenDatabase) = database.leetCodeUserDao()
+    
+    @Provides
+    @Singleton
+    fun provideLeetcodeLocalRepository(
+        userDao: LeetCodeUserDao
+    ): LeetcodeLocalRepository {
+        return LeetcodeLocalRepositoryImpl(userDao)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideLeetcodeRemoteRepository(
+        apiService: LeetcodeApiService
+    ): LeetcodeRemoteRepository {
+        return LeetcodeRemoteRepositoryImpl(apiService)
+    }
+}

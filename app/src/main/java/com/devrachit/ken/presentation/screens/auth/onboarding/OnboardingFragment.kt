@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.findFirstRoot
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -47,6 +48,7 @@ class OnboardingFragment : Fragment() {
     private fun navigateToNewActivity() {
         val intent = Intent(requireContext(), MainActivity::class.java)
         startActivity(intent)
+        requireActivity().finish()
         requireActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 }

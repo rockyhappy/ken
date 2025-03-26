@@ -3,18 +3,14 @@ package com.devrachit.ken.domain.models
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class LeetCodeUserInfo(
-    val username: String?=null,
-    val lastName: String? = null,
-    val firstName: String? = null,
+    val username: String? = null,
     val githubUrl: String? = null,
     val twitterUrl: String? = null,
     val linkedinUrl: String? = null,
     val contestBadge: ContestBadge? = null,
-    val profile: UserProfile? = null,
-    val contributions: UserContributions? = null
+    val profile: UserProfile? = null
 )
 
 @Serializable
@@ -29,12 +25,12 @@ data class ContestBadge(
 data class UserProfile(
     val ranking: Int? = null,
     val userAvatar: String? = null,
-    val countryName: String? = null,
-    val company: String? = null,
-    val school: String? = null,
     val realName: String? = null,
     val aboutMe: String? = null,
+    val school: String? = null,
     val websites: List<String>? = null,
+    val countryName: String? = null,
+    val company: String? = null,
     val jobTitle: String? = null,
     val skillTags: List<String>? = null,
     val postViewCount: Int? = null,
@@ -48,11 +44,6 @@ data class UserProfile(
     val certificationLevel: String? = null
 )
 
-@Serializable
-data class UserContributions(
-    val points: Int? = null,
-    val questionCount: Int? = null
-)
 
 @Serializable
 data class UserInfoResponse(

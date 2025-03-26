@@ -1,14 +1,16 @@
 package com.devrachit.ken.di.modules
 
-
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.devrachit.ken.data.local.databases.KenDatabase
+import com.devrachit.ken.data.local.dao.LeetCodeUserDao
 import com.devrachit.ken.data.remote.services.LeetcodeApiService
-import com.devrachit.ken.data.repository.remote.LeetcodeRepositoryImpl
+import com.devrachit.ken.data.repository.local.LeetcodeLocalRepositoryImpl
+import com.devrachit.ken.data.repository.remote.LeetcodeRemoteRepositoryImpl
+import com.devrachit.ken.domain.repository.local.LeetcodeLocalRepository
+import com.devrachit.ken.domain.repository.remote.LeetcodeRemoteRepository
 import com.devrachit.ken.di.qualifiers.WithChucker
 import com.devrachit.ken.di.qualifiers.WithoutChucker
-import com.devrachit.ken.domain.repository.LeetcodeRepository
-import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,7 +23,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+object NetworkModule {
 
     @Provides
     @Singleton
@@ -51,15 +53,5 @@ object AppModule {
             .create(LeetcodeApiService::class.java)
     }
 
-    @Provides
-    @Singleton
-    fun provideLeetCodeRepository(apiService: LeetcodeApiService): LeetcodeRepository {
-        return LeetcodeRepositoryImpl(apiService)
-    }
 
-    @Provides
-    @Singleton
-    fun provideGetUserInfoUseCase(repository: LeetcodeRepository): GetUserInfoUseCase {
-        return GetUserInfoUseCase(repository)
-    }
 }

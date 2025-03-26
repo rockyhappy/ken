@@ -30,9 +30,7 @@ import javax.inject.Inject
 import kotlin.text.toFloat
 
 @AndroidEntryPoint
-class AuthActivity @Inject constructor(
-//    @ActivityContext private val context: Context
-) : AppCompatActivity() {
+class AuthActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityAuthBinding

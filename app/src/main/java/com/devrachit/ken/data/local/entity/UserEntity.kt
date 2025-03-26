@@ -3,17 +3,19 @@ package com.devrachit.ken.data.local.entity
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
+import com.devrachit.ken.domain.models.ContestBadge
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
-import com.devrachit.ken.domain.models.UserContributions
 import com.devrachit.ken.domain.models.UserProfile
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Entity(tableName = "leetcode_users")
 @TypeConverters(LeetCodeConverters::class)
 data class LeetCodeUserEntity(
     @PrimaryKey val username: String,
-    val firstName: String?,
-    val lastName: String?,
-    val firstName: String?,
     val githubUrl: String?,
     val twitterUrl: String?,
     val linkedinUrl: String?,
@@ -23,45 +25,28 @@ data class LeetCodeUserEntity(
     
     @Embedded(prefix = "profile_")
     val profile: UserProfileEntity?,
-    
-    @Embedded(prefix = "contributions_")
-    val contributions: UserContributionsEntity?,
-    
-    val lastFetchTime: Long // Added for cache management
+    val lastFetchTime: Long
 ) {
     fun toDomainModel(): LeetCodeUserInfo {
         return LeetCodeUserInfo(
             username = username,
-            firstName = firstName,
-            lastName = lastName,
-            firstName = firstName,
             githubUrl = githubUrl,
             twitterUrl = twitterUrl,
             linkedinUrl = linkedinUrl,
             contestBadge = contestBadge?.toDomainModel(),
-            profile = profile?.toDomainModel(),
-            contributions = contributions?.toDomainModel()
+            profile = profile?.toDomainModel()
         )
     }
     
     companion object {
         fun fromDomainModel(domainModel: LeetCodeUserInfo, cacheTimestamp: Long = System.currentTimeMillis()): LeetCodeUserEntity {
             return LeetCodeUserEntity(
-                username = domainModel.username,
-                firstName = domainModel.firstName,
-                lastName = domainModel.lastName,
-                fullName = domainModel.fullName,
-                avatarUrl = domainModel.avatarUrl,
-                ranking = domainModel.ranking,
-                countryName = domainModel.countryName,
-                company = domainModel.company,
-                school = domainModel.school,
+                username = domainModel.username ?: "",
                 githubUrl = domainModel.githubUrl,
                 twitterUrl = domainModel.twitterUrl,
                 linkedinUrl = domainModel.linkedinUrl,
                 contestBadge = domainModel.contestBadge?.let { ContestBadgeEntity.fromDomainModel(it) },
                 profile = domainModel.profile?.let { UserProfileEntity.fromDomainModel(it) },
-                contributions = domainModel.contributions?.let { UserContributionsEntity.fromDomainModel(it) },
                 lastFetchTime = cacheTimestamp
             )
         }
@@ -101,10 +86,10 @@ data class UserProfileEntity(
     val realName: String?,
     val aboutMe: String?,
     val school: String?,
+    val websites: List<String>?,
     val countryName: String?,
     val company: String?,
     val jobTitle: String?,
-    val websites: List<String>?,
     val skillTags: List<String>?,
     val postViewCount: Int?,
     val postViewCountDiff: Int?,
@@ -123,10 +108,10 @@ data class UserProfileEntity(
             realName = realName,
             aboutMe = aboutMe,
             school = school,
+            websites = websites,
             countryName = countryName,
             company = company,
             jobTitle = jobTitle,
-            websites = websites,
             skillTags = skillTags,
             postViewCount = postViewCount,
             postViewCountDiff = postViewCountDiff,
@@ -148,10 +133,10 @@ data class UserProfileEntity(
                 realName = domainModel.realName,
                 aboutMe = domainModel.aboutMe,
                 school = domainModel.school,
+                websites = domainModel.websites,
                 countryName = domainModel.countryName,
                 company = domainModel.company,
                 jobTitle = domainModel.jobTitle,
-                websites = domainModel.websites,
                 skillTags = domainModel.skillTags,
                 postViewCount = domainModel.postViewCount,
                 postViewCountDiff = domainModel.postViewCountDiff,
@@ -167,26 +152,26 @@ data class UserProfileEntity(
     }
 }
 
-data class UserContributionsEntity(
-    val points: Int?,
-    val questionCount: Int?
-) {
-    fun toDomainModel(): UserContributions {
-        return UserContributions(
-            points = points,
-            questionCount = questionCount
-        )
-    }
-    
-    companion object {
-        fun fromDomainModel(domainModel: UserContributions): UserContributionsEntity {
-            return UserContributionsEntity(
-                points = domainModel.points,
-                questionCount = domainModel.questionCount
-            )
-        }
-    }
-}
+//data class UserContributionsEntity(
+//    val points: Int?,
+//    val questionCount: Int?
+//) {
+//    fun toDomainModel(): UserContributions {
+//        return UserContributions(
+//            points = points,
+//            questionCount = questionCount
+//        )
+//    }
+//
+//    companion object {
+//        fun fromDomainModel(domainModel: UserContributions): UserContributionsEntity {
+//            return UserContributionsEntity(
+//                points = domainModel.points,
+//                questionCount = domainModel.questionCount
+//            )
+//        }
+//    }
+//}
 
 /**
  * Type converters for Room to handle Lists and complex objects

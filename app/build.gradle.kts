@@ -1,10 +1,10 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-//    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
+//    alias(libs.plugins.room)
 }
 
 android {
@@ -64,6 +64,10 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.compose.get()
     }
+//    room {
+////        schemaDirectory("${projectDir.absolutePath.replace("\\", "/")}/schemas")
+//        schemaDirectory("${projectDir.absolutePath.replace("\\", "/").replace(" ", "\\ ")}/schemas")
+//    }
 }
 
 dependencies {
@@ -142,6 +146,15 @@ dependencies {
     implementation(libs.accompanist.pager)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.kotlin.serialization.json)
+
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+    implementation(libs.datastore)
+    implementation(libs.datastore.preferences)
+
+
+    // TODO: Remove these chucker dependencies  
     debugImplementation("com.github.chuckerteam.chucker:library:4.0.0") // For Debug
     releaseImplementation("com.github.chuckerteam.chucker:library-no-op:4.0.0") // No-op in release
 }

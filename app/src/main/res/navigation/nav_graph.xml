@@ -10,4 +10,12 @@
         android:id="@+id/onboardingFragment"
         android:name="com.devrachit.ken.presentation.screens.auth.onboarding.OnboardingFragment"
         android:label="OnboardingFragment" />
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.devrachit.ken.presentation.screens.auth.login.LoginFragment"
+        android:label="LoginFragment" >
+        <action
+            android:id="@+id/action_loginFragment_to_onboardingFragment"
+            app:destination="@id/onboardingFragment" />
+    </fragment>
 </navigation>

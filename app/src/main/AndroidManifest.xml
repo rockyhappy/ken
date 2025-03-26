@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.Ken"
-        android:name=".MyApp"
+        android:name=".KenApplication"
         tools:targetApi="31" >
         <activity
             android:name=".presentation.screens.auth.AuthActivity"
