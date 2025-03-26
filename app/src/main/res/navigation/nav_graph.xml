@@ -16,6 +16,11 @@
         android:label="LoginFragment" >
         <action
             android:id="@+id/action_loginFragment_to_onboardingFragment"
-            app:destination="@id/onboardingFragment" />
+            app:destination="@id/onboardingFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true"
+            />
     </fragment>
 </navigation>
