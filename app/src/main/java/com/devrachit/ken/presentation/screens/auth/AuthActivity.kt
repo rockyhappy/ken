@@ -93,20 +93,11 @@ class AuthActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
     }
+
+
     override fun finish() {
-        val rootView = binding.root
-        ObjectAnimator.ofFloat(
-            rootView,
-            View.TRANSLATION_X,
-            0f,
-            rootView.width.toFloat()
-        ).apply {
-            duration = 600
-            doOnEnd {
-                super.finish()
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-            }
-        }.start()
+        super.finish()
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
 }

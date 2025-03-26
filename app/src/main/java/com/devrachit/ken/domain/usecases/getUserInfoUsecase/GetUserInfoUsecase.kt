@@ -60,4 +60,7 @@ class GetUserInfoUseCase @Inject constructor(
         emit(networkResult)
     }
 
+    suspend fun getUserInfo(username: String): Resource<LeetCodeUserInfo> {
+        return localRepository.getUserInfo(username)
+    }
 }

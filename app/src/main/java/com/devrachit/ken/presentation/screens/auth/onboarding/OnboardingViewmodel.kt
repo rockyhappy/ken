@@ -23,6 +23,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 import android.util.Log
+import com.devrachit.ken.data.local.datastore.DataStoreRepository
 import org.json.JSONObject
 import com.devrachit.ken.domain.models.UserInfoResponse
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
@@ -36,7 +37,8 @@ import timber.log.Timber
 class OnboardingViewmodel @Inject constructor(
     @ApplicationContext
     private val context: Context,
-    private val getUserInfoUseCase: GetUserInfoUseCase
+    private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
     private var _userValues = MutableStateFlow(User())
     val userValues: StateFlow<User> = _userValues.asStateFlow()
@@ -85,6 +87,9 @@ class OnboardingViewmodel @Inject constructor(
                 errorMessage = null,
                 isUserNameVerified = true
             )
+            viewModelScope.launch(Dispatchers.IO) {
+                dataStoreRepository.savePrimaryUsername(userData.username)
+            }
             Timber.d("User ${userData.username} exists")
         } else {
             _userValues.value = _userValues.value.copy(

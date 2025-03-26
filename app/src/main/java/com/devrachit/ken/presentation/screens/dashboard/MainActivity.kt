@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.devrachit.ken.presentation.screens.auth.login.LoginScreenPortrait
 import com.devrachit.ken.ui.theme.KenTheme
 
 class MainActivity : ComponentActivity() {
@@ -30,7 +31,7 @@ class MainActivity : ComponentActivity() {
                             .background(Color.Companion.White)
                             .padding(innerPadding)
                     ) {
-
+                        LoginScreenPortrait()
                     }
                 }
             }
