@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".presentation.screens.dashboard.MainActivity"
+            android:name=".presentation.screens.dashboard.ActivityContent.MainActivity"
             android:exported="false"
             android:theme="@style/Theme.Ken" >
         </activity>

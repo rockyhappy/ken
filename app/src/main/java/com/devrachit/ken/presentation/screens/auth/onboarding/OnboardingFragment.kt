@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.findNavController
-import com.devrachit.ken.presentation.screens.dashboard.MainActivity
+import com.devrachit.ken.presentation.screens.dashboard.ActivityContent.MainActivity
 import com.devrachit.ken.R
 import dagger.hilt.android.AndroidEntryPoint
 

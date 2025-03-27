@@ -21,7 +21,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.devrachit.ken.presentation.screens.dashboard.MainActivity
+import com.devrachit.ken.presentation.screens.dashboard.ActivityContent.MainActivity
 import com.devrachit.ken.R
 import com.devrachit.ken.databinding.ActivityAuthBinding
 import dagger.hilt.android.AndroidEntryPoint
