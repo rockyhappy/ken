@@ -1,9 +1,13 @@
-package com.devrachit.ken.presentation.screens.auth.onboarding
+package com.devrachit.ken.presentation.screens.dashboard.ActivityContent
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.devrachit.ken.data.local.datastore.DataStoreRepository
+import com.devrachit.ken.domain.models.LeetCodeUserInfo
+import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
+import com.devrachit.ken.utility.NetworkUtility.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -12,55 +16,37 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import javax.inject.Inject
-import android.util.Log
-import com.devrachit.ken.data.local.datastore.DataStoreRepository
-import org.json.JSONObject
-import com.devrachit.ken.domain.models.UserInfoResponse
-import com.devrachit.ken.domain.models.LeetCodeUserInfo
-import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
-import com.devrachit.ken.utility.NetworkUtility.Resource
-import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
+import javax.inject.Inject
+
+
+data class States(
+    val userName : String?= null,
+    val isLoadingUserInfo: Boolean = false,
+    val leetCodeUserInfo: LeetCodeUserInfo,
+    val error: String? = null,
+    val isSuccess: Boolean = false
+)
 
 
 @HiltViewModel
-class OnboardingViewmodel @Inject constructor(
+class MainViewModel @Inject constructor(
     @ApplicationContext
     private val context: Context,
     private val getUserInfoUseCase: GetUserInfoUseCase,
     private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
-    private var _userValues = MutableStateFlow(User())
-    val userValues: StateFlow<User> = _userValues.asStateFlow()
 
 
-    fun updateUserName(userName: String) {
-        _userValues.value = _userValues.value.copy(userName = userName)
-    }
+    private val _userValues = MutableStateFlow(States(leetCodeUserInfo = LeetCodeUserInfo()))
+    val userValues = _userValues.asStateFlow()
 
-    fun checkUserExists() {
-        val username = _userValues.value.userName
-
-        if (username.isNullOrEmpty()) {
-            _userValues.value = _userValues.value.copy(
-                isUserNameValid = false,
-                errorMessage = "Username cannot be empty"
-            )
-            return
-        }
-
+    fun loadUserDetails() {
         viewModelScope.launch(Dispatchers.IO) {
-            fetchUserInfo(username)
+            val username = dataStoreRepository.readPrimaryUsername()
+            if(!username.isNullOrEmpty()) {
+                fetchUserInfo(username)
+            }
         }
     }
 
@@ -74,29 +60,25 @@ class OnboardingViewmodel @Inject constructor(
                 }
             }
     }
-
     private fun handleLoadingState() {
-        _userValues.value = _userValues.value.copy(isLoadingUsername = true)
+        _userValues.value = _userValues.value.copy(isLoadingUserInfo = true)
     }
 
     private fun handleSuccessState(userData: LeetCodeUserInfo) {
         if (userData.username != null) {
             _userValues.value = _userValues.value.copy(
-                isLoadingUsername = false,
-                isUserNameValid = true,
-                errorMessage = null,
-                isUserNameVerified = true
+                isLoadingUserInfo = false,
+                leetCodeUserInfo = userData
             )
             viewModelScope.launch(Dispatchers.IO) {
                 dataStoreRepository.savePrimaryUsername(userData.username)
             }
             Timber.d("User ${userData.username} exists")
-            Log.d("OnboardingViewModel", "Successfully verified user ${userData}")
+            Log.d("MainViewModel", "Successfully loaded user data for ${_userValues.value.leetCodeUserInfo.toString()}")
         } else {
             _userValues.value = _userValues.value.copy(
-                isLoadingUsername = false,
-                isUserNameValid = false,
-                errorMessage = "No user data found"
+                isLoadingUserInfo = false,
+                error = "No user data found"
             )
         }
     }
@@ -110,9 +92,8 @@ class OnboardingViewmodel @Inject constructor(
         }
 
         _userValues.value = _userValues.value.copy(
-            isLoadingUsername = false,
-            isUserNameValid = !isUserNotFound,
-            errorMessage = displayMessage
+            isLoadingUserInfo = false,
+            error = displayMessage
         )
         Timber.e("Error checking username: $errorMessage")
     }

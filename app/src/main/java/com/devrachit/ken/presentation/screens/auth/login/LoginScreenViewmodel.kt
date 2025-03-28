@@ -1,6 +1,7 @@
 package com.devrachit.ken.presentation.screens.auth.login
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devrachit.ken.data.local.datastore.DataStoreRepository
@@ -8,10 +9,12 @@ import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 import javax.inject.Inject
 
 
@@ -39,6 +42,7 @@ class LoginViewmodel @Inject constructor(
                 if (savedUsername != null) {
                     // If we have a username, try to get the user info from cache
                     val userInfoResource = getUserInfoUseCase.getUserInfo(savedUsername)
+                    Log.d("LoginScreenViewModel", "User info resource: $userInfoResource")
                     
                     if (userInfoResource is Resource.Success) {
                         // User exists in cache, navigate to main activity

@@ -15,7 +15,6 @@ import javax.inject.Singleton
 object UseCaseModule {
 
     @Provides
-    @Singleton
     fun provideGetUserInfoUseCase(
         localRepository: LeetcodeLocalRepository,
         remoteRepository: LeetcodeRemoteRepository,

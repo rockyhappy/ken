@@ -1155,4 +1155,5 @@
     <color name="black_alpha_100">@color/grayblue_transparent_100</color>
     <color name="blue_notification">#0069FA</color>
     <color name="primary_color">#F4CE13</color>
+    <color name="card_elevated">#282828</color>
 </resources>
