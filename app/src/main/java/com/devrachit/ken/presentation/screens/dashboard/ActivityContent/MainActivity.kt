@@ -26,6 +26,11 @@ class MainActivity : ComponentActivity() {
             DashboardContent(uiState= uiStates)
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadUserDetails()
+    }
     private fun setupWindow() {
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)

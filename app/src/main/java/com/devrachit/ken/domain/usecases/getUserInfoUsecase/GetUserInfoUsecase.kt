@@ -4,6 +4,7 @@ import com.devrachit.ken.domain.models.LeetCodeUserInfo
 import com.devrachit.ken.domain.policy.CachePolicy
 import com.devrachit.ken.domain.repository.local.LeetcodeLocalRepository
 import com.devrachit.ken.domain.repository.remote.LeetcodeRemoteRepository
+import com.devrachit.ken.utility.NetworkUtility.NetworkManager
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -11,53 +12,63 @@ import javax.inject.Inject
 class GetUserInfoUseCase @Inject constructor(
     private val localRepository: LeetcodeLocalRepository,
     private val remoteRepository: LeetcodeRemoteRepository,
-    private val cachePolicy: CachePolicy
+    private val cachePolicy: CachePolicy,
+    private val networkManager: NetworkManager
 ) {
     operator fun invoke(username: String, forceRefresh: Boolean = false): Flow<Resource<LeetCodeUserInfo>> = flow {
         // Start by emitting loading state
         emit(Resource.Loading())
         
-        // First try to get data from cache if we're not forcing a refresh
-        if (!forceRefresh) {
+        // Check network availability
+        val isNetworkAvailable = networkManager.isConnected()
+        
+        // Try to get data from cache if we're not forcing a refresh OR if network is unavailable
+        if (!forceRefresh || !isNetworkAvailable) {
             val lastFetchTime = localRepository.getLastFetchTime(username)
             
-            if (cachePolicy.isCacheValid(lastFetchTime)) {
-                // Emit cached data if available and valid
+            // Use cache if it's valid OR if network is unavailable (regardless of cache validity)
+            if (cachePolicy.isCacheValid(lastFetchTime) || !isNetworkAvailable) {
+                // Emit cached data if available
                 localRepository.getUserInfoFlow(username).collect { cacheResult ->
                     if (cacheResult is Resource.Success) {
                         emit(cacheResult)
-                        // Can return here if we only want cached data
-//                         return@flow
+                        // If no network is available, return cached data and don't attempt network call
+                        if (!isNetworkAvailable) {
+                            return@collect
+                        }
                     }
                 }
             }
         }
         
-        // Either cache is invalid/missing or we need fresh data, so fetch from network
-        val networkResult = remoteRepository.fetchUserInfo(username)
-        
-        // Save successful response to cache
-        if (networkResult is Resource.Success && networkResult.data?.username != null) {
-            localRepository.saveUserInfo(networkResult.data)
-        }
-        
-        // If network fetch failed but we have cache data, return that instead
-        if (networkResult is Resource.Error) {
-            var cacheData: Resource<LeetCodeUserInfo>? = null
-            localRepository.getUserInfoFlow(username).firstOrNull()?.let { cacheResult ->
-                if (cacheResult is Resource.Success) {
-                    cacheData = cacheResult
+        // Only proceed with network call if network is available
+        if (isNetworkAvailable) {
+            // Fetch from network
+            val networkResult = remoteRepository.fetchUserInfo(username)
+            
+            // Save successful response to cache
+            if (networkResult is Resource.Success && networkResult.data?.username != null) {
+                localRepository.saveUserInfo(networkResult.data)
+            }
+            
+            // If network fetch failed but we have cache data, return that instead
+            if (networkResult is Resource.Error) {
+                var cacheData: Resource<LeetCodeUserInfo>? = null
+                localRepository.getUserInfoFlow(username).firstOrNull()?.let { cacheResult ->
+                    if (cacheResult is Resource.Success) {
+                        cacheData = cacheResult
+                    }
+                }
+                
+                if (cacheData != null) {
+                    emit(cacheData!!)
+                    return@flow
                 }
             }
             
-            if (cacheData != null) {
-                emit(cacheData!!)
-                return@flow
-            }
+            // Otherwise emit the network result (success or error)
+            emit(networkResult)
         }
-        
-        // Otherwise emit the network result (success or error)
-        emit(networkResult)
     }
 
     suspend fun getUserInfo(username: String): Resource<LeetCodeUserInfo> {

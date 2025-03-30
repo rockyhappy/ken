@@ -146,7 +146,7 @@ dependencies {
     implementation(libs.accompanist.pager)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.kotlin.serialization.json)
-
+    implementation(libs.shimmer)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
