@@ -6,17 +6,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
-
 @Composable
 fun DashboardHeader(
     username: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    drawerProgress: Float = 0f
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
-        MenuButton(onClick = onClick)
+        MenuButton(onClick = onClick, drawerProgress = drawerProgress)
         UsernameDisplay(username = username)
     }
 }

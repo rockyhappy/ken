@@ -11,6 +11,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.devrachit.ken.R
+import com.devrachit.ken.utility.constants.Constants.Companion.NAVKEYUSERNAME
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,10 +21,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupWindow()
+        val username = intent.getStringExtra(NAVKEYUSERNAME) ?: "Guest_User"
         viewModel.loadUserDetails()
         setContent {
             val uiStates = viewModel.userValues.collectAsStateWithLifecycle().value
-            DashboardContent(uiState= uiStates)
+            DashboardContent(username=username,uiState= uiStates)
         }
     }
 

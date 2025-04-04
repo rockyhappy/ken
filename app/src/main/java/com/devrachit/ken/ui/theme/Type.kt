@@ -288,3 +288,163 @@ fun TextStyleInter24Lh36Fw700(): TextStyle {
         fontWeight = FontWeight(700)
     )
 }
+
+@Composable
+fun TextStyleInter20Lh24Fw400(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 20.ssp,
+        lineHeight = 24.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_regular_400)),
+        fontWeight = FontWeight(400)
+    )
+}
+
+@Composable
+fun TextStyleInter20Lh24Fw500(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 20.ssp,
+        lineHeight = 24.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_medium_500)),
+        fontWeight = FontWeight(500)
+    )
+}
+
+@Composable
+fun TextStyleInter20Lh24Fw600(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 20.ssp,
+        lineHeight = 24.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_semi_bold_600)),
+        fontWeight = FontWeight(600)
+    )
+}
+
+@Composable
+fun TextStyleInter20Lh24Fw700(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 20.ssp,
+        lineHeight = 24.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_bold_700)),
+        fontWeight = FontWeight(700)
+    )
+}
+
+@Composable
+fun TextStyleInter20Lh32Fw400(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 20.ssp,
+        lineHeight = 32.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_regular_400)),
+        fontWeight = FontWeight(400)
+    )
+}
+
+@Composable
+fun TextStyleInter20Lh32Fw500(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 20.ssp,
+        lineHeight = 32.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_medium_500)),
+        fontWeight = FontWeight(500)
+    )
+}
+
+@Composable
+fun TextStyleInter20Lh32Fw600(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 20.ssp,
+        lineHeight = 32.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_semi_bold_600)),
+        fontWeight = FontWeight(600)
+    )
+}
+
+@Composable
+fun TextStyleInter20Lh32Fw700(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 20.ssp,
+        lineHeight = 32.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_bold_700)),
+        fontWeight = FontWeight(700)
+    )
+}
+
+@Composable
+fun TextStyleInter22Lh30Fw400(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 22.ssp,
+        lineHeight = 30.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_regular_400)),
+        fontWeight = FontWeight(400)
+    )
+}
+
+@Composable
+fun TextStyleInter22Lh30Fw500(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 22.ssp,
+        lineHeight = 30.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_medium_500)),
+        fontWeight = FontWeight(500)
+    )
+}
+
+@Composable
+fun TextStyleInter22Lh30Fw600(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 22.ssp,
+        lineHeight = 30.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_semi_bold_600)),
+        fontWeight = FontWeight(600)
+    )
+}
+
+@Composable
+fun TextStyleInter22Lh30Fw700(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 22.ssp,
+        lineHeight = 30.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_bold_700)),
+        fontWeight = FontWeight(700)
+    )
+}
+
+@Composable
+fun TextStyleInter22Lh36Fw400(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 22.ssp,
+        lineHeight = 36.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_regular_400)),
+        fontWeight = FontWeight(400)
+    )
+}
+
+@Composable
+fun TextStyleInter22Lh36Fw500(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 22.ssp,
+        lineHeight = 36.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_medium_500)),
+        fontWeight = FontWeight(500)
+    )
+}
+
+@Composable
+fun TextStyleInter22Lh36Fw600(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 22.ssp,
+        lineHeight = 36.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_semi_bold_600)),
+        fontWeight = FontWeight(600)
+    )
+}
+
+@Composable
+fun TextStyleInter22Lh36Fw700(): TextStyle {
+    return DefaultTextStyle.copy(
+        fontSize = 22.ssp,
+        lineHeight = 36.ssp,
+        fontFamily = FontFamily(Font(R.font.inter_bold_700)),
+        fontWeight = FontWeight(700)
+    )
+}

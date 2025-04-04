@@ -19,6 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import com.devrachit.ken.R
+import com.devrachit.ken.utility.constants.Constants.Companion.NAVKEYUSERNAME
 import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
@@ -59,6 +60,7 @@ class LoginFragment : Fragment() {
         when (navState) {
             is LoginNavigationState.NavigateToMainActivity -> {
                 val intent = Intent(requireContext(), MainActivity::class.java)
+                intent.putExtra(NAVKEYUSERNAME, navState.username)
                 startActivity(intent)
                 requireActivity().finish()
                 requireActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)

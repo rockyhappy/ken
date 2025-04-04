@@ -7,6 +7,6 @@ data class States(
 sealed class LoginNavigationState {
     object Idle : LoginNavigationState()
     object NavigateToOnboarding : LoginNavigationState()
-    object NavigateToMainActivity : LoginNavigationState()
+    data class NavigateToMainActivity(val username : String) : LoginNavigationState()
     data class Error(val message: String) : LoginNavigationState()
 }

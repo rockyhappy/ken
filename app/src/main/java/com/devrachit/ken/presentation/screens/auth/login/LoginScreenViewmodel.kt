@@ -36,23 +36,18 @@ class LoginViewmodel @Inject constructor(
     private fun checkUserCache() {
         viewModelScope.launch {
             try {
-                // First check if we have a primary username saved in DataStore
                 val savedUsername = userPreferencesRepository.readPrimaryUsername()
                 
                 if (savedUsername != null) {
-                    // If we have a username, try to get the user info from cache
                     val userInfoResource = getUserInfoUseCase.getUserInfo(savedUsername)
                     Log.d("LoginScreenViewModel", "User info resource: $userInfoResource")
                     
                     if (userInfoResource is Resource.Success) {
-                        // User exists in cache, navigate to main activity
-                        _navigationState.value = LoginNavigationState.NavigateToMainActivity
+                        _navigationState.value = LoginNavigationState.NavigateToMainActivity(savedUsername)
                     } else {
-                        // Username exists but not in cache, we'll try to fetch it from API later
-                        _navigationState.value = LoginNavigationState.NavigateToMainActivity
+                        _navigationState.value = LoginNavigationState.NavigateToMainActivity(savedUsername)
                     }
                 } else {
-                    // No saved username, navigate to onboarding
                     _navigationState.value = LoginNavigationState.NavigateToOnboarding
                 }
             } catch (e: Exception) {
@@ -61,7 +56,7 @@ class LoginViewmodel @Inject constructor(
         }
     }
     
-    // Function to save username after successful login or registration
+
     fun saveUsername(username: String) {
         viewModelScope.launch {
             userPreferencesRepository.savePrimaryUsername(username)
@@ -69,15 +64,15 @@ class LoginViewmodel @Inject constructor(
         }
     }
     
-    // Function to clear username on logout
+
     fun logout() {
         viewModelScope.launch {
             userPreferencesRepository.clearPrimaryUsername()
         }
     }
     
-    // Call this function to reset navigation state after navigation is handled
     fun resetNavigationState() {
         _navigationState.value = LoginNavigationState.Idle
     }
+
 }

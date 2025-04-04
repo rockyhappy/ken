@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,6 +32,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -67,6 +70,7 @@ import com.devrachit.ken.presentation.screens.dashboard.Widgets.UsernameDisplay
 import com.devrachit.ken.ui.theme.TextStyleInter14Lh18Fw400
 import com.devrachit.ken.ui.theme.TextStyleInter14Lh24Fw400
 import com.devrachit.ken.ui.theme.TextStyleInter18Lh24Fw700
+import com.devrachit.ken.ui.theme.TextStyleInter20Lh24Fw700
 import com.devrachit.ken.ui.theme.TextStyleInter24Lh36Fw600
 import com.devrachit.ken.ui.theme.TextStyleInter24Lh36Fw700
 import com.devrachit.ken.utility.composeUtility.CompletePreviews
@@ -74,15 +78,14 @@ import com.devrachit.ken.utility.composeUtility.ProfilePictureShimmer
 import com.devrachit.ken.utility.composeUtility.ProfilePictureShimmerPreview
 import com.devrachit.ken.utility.composeUtility.sdp
 import com.valentinilk.shimmer.shimmer
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun DashboardContent(
+    username: String,
     uiState: States,
 ) {
     KenTheme {
-        val coroutineScope = rememberCoroutineScope()
-        val drawerWidth = 700.sdp
-
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
@@ -93,110 +96,229 @@ fun DashboardContent(
                     .padding(paddingValues = innerPadding)
                     .background(colorResource(id = R.color.card_elevated))
             ) {
-                var drawerState by remember { mutableStateOf(DrawerValue.Closed) }
-                var translationX = remember {
-                    androidx.compose.animation.core.Animatable(0f)
-                }
-                translationX.updateBounds(0f, drawerWidth.value)
-                val draggableState = rememberDraggableState(
-                    onDelta = { dragAmount ->
-                        coroutineScope.launch {
-                            translationX.snapTo(
-                                (translationX.value + dragAmount).coerceIn(
-                                    0f,
-                                    drawerWidth.value
-                                )
-                            )
-                        }
-                    }
-                )
-
-                fun toggleDrawerState() {
-                    coroutineScope.launch {
-                        if (drawerState == DrawerValue.Open) {
-                            translationX.animateTo(
-                                0f,
-                                animationSpec = spring(
-                                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                                    stiffness = Spring.StiffnessLow
-                                )
-                            )
-                            drawerState = DrawerValue.Closed
-                        } else {
-                            translationX.animateTo(
-                                drawerWidth.value,
-                                animationSpec = tween(durationMillis = 400)
-                            )
-                            drawerState = DrawerValue.Open
-                        }
-                    }
-                }
-
-                fun snapDrawerToState(targetState: DrawerValue, velocity: Float = 0f) {
-                    coroutineScope.launch {
-                        val targetValue =
-                            if (targetState == DrawerValue.Open) drawerWidth.value else 0f
-
-                        translationX.animateTo(
-                            targetValue = targetValue,
-                            initialVelocity = velocity,
-                            animationSpec = spring(
-                                dampingRatio = Spring.DampingRatioNoBouncy,
-                                stiffness = Spring.StiffnessMediumLow
-                            )
-                        )
-
-                        drawerState = targetState
-                    }
-                }
-
-                HomeScreenDrawer(uiState = uiState, onClick = { toggleDrawerState() })
-
-                ScreenContents(
-                    uiStates = uiState,
-                    onClick = { toggleDrawerState() },
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            shadowElevation = translationX.value * 0.1f
-
-                            val progress = (translationX.value / drawerWidth.value).coerceIn(0f, 1f)
-
-                            this.translationX = this@graphicsLayer.translationX + translationX.value
-
-                            val scale = lerp(1f, 0.9f, progress)
-                            scaleX = scale
-                            scaleY = scale
-
-                            val cornerRadius = lerp(0f, 24f, progress)
-                            shape = RoundedCornerShape(cornerRadius.dp)
-
-                            clip = progress > 0
-                        }
-                        .draggable(
-                            state = draggableState,
-                            orientation = Orientation.Horizontal,
-                            onDragStopped = { velocity ->
-                                val targetThreshold = drawerWidth.value * 0.5f
-                                val targetState = if (translationX.value > targetThreshold ||
-                                    (translationX.value > drawerWidth.value * 0.1f && velocity > 800)
-                                ) {
-                                    DrawerValue.Open
-                                } else {
-                                    DrawerValue.Closed
-                                }
-
-                                snapDrawerToState(targetState, velocity)
-                            }
-                        )
-                )
+                DrawerLayoutContent(username = username, uiState = uiState)
             }
         }
     }
 }
 
 @Composable
+fun DrawerLayoutContent(username: String, uiState: States) {
+    val coroutineScope = rememberCoroutineScope()
+    val drawerWidth = 700.sdp
+
+
+    var drawerState by remember { mutableStateOf(DrawerValue.Closed) }
+    var translationX = remember {
+        androidx.compose.animation.core.Animatable(0f)
+    }
+    translationX.updateBounds(0f, drawerWidth.value)
+
+    val drawerProgress = (translationX.value / drawerWidth.value).coerceIn(0f, 1f)
+
+    val draggableState = createDraggableState(coroutineScope, translationX, drawerWidth)
+
+    HomeScreenDrawer(
+        username = username,
+        uiState = uiState,
+        onClick = { toggleDrawer(coroutineScope, translationX, drawerState) { drawerState = it } })
+
+    MainContent(
+        username = username,
+        uiState = uiState,
+        drawerProgress = drawerProgress,
+        translationX = translationX,
+        drawerWidth = drawerWidth,
+        draggableState = draggableState,
+        onMenuClick = {
+            toggleDrawer(coroutineScope, translationX, drawerState) {
+                drawerState = it
+            }
+        }
+    )
+}
+
+@Composable
+private fun MainContent(
+    username: String,
+    uiState: States,
+    drawerProgress: Float,
+    translationX: androidx.compose.animation.core.Animatable<Float, androidx.compose.animation.core.AnimationVector1D>,
+    drawerWidth: androidx.compose.ui.unit.Dp,
+    draggableState: androidx.compose.foundation.gestures.DraggableState,
+    onMenuClick: () -> Unit
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    ScreenContents(
+        username = username,
+        uiStates = uiState,
+        onClick = onMenuClick,
+        drawerProgress = drawerProgress,
+        modifier = Modifier
+            .fillMaxSize()
+            .graphicsLayer {
+                applyDrawerTransformation(this, translationX.value, drawerWidth.value)
+            }
+            .draggable(
+                state = draggableState,
+                orientation = Orientation.Horizontal,
+                onDragStopped = { velocity ->
+                    handleDragStopped(
+                        coroutineScope = coroutineScope,
+                        translationX = translationX,
+                        drawerWidth = drawerWidth,
+                        velocity = velocity
+                    )
+                }
+            )
+    )
+}
+
+private fun applyDrawerTransformation(
+    graphicsLayer: androidx.compose.ui.graphics.GraphicsLayerScope,
+    translationValue: Float,
+    drawerWidthValue: Float
+) {
+    with(graphicsLayer) {
+        shadowElevation = translationValue * 0.1f
+
+        val progress = (translationValue / drawerWidthValue).coerceIn(0f, 1f)
+
+        translationX = translationValue
+
+        val scale = lerp(1f, 0.9f, progress)
+        scaleX = scale
+        scaleY = scale
+
+        val cornerRadius = lerp(0f, 24f, progress)
+        shape = RoundedCornerShape(cornerRadius.dp)
+
+        clip = progress > 0
+    }
+}
+
+@Composable
+private fun createDraggableState(
+    coroutineScope: CoroutineScope,
+    translationX: androidx.compose.animation.core.Animatable<Float, androidx.compose.animation.core.AnimationVector1D>,
+    drawerWidth: androidx.compose.ui.unit.Dp
+): androidx.compose.foundation.gestures.DraggableState {
+    return rememberDraggableState(onDelta = { dragAmount ->
+        coroutineScope.launch {
+            translationX.snapTo(
+                (translationX.value + dragAmount).coerceIn(0f, drawerWidth.value)
+            )
+        }
+    })
+}
+
+private fun toggleDrawer(
+    coroutineScope: CoroutineScope,
+    translationX: androidx.compose.animation.core.Animatable<Float, androidx.compose.animation.core.AnimationVector1D>,
+    currentDrawerState: DrawerValue,
+    updateDrawerState: (DrawerValue) -> Unit
+) {
+    coroutineScope.launch {
+        if (currentDrawerState == DrawerValue.Open) {
+            translationX.animateTo(
+                0f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            )
+            updateDrawerState(DrawerValue.Closed)
+        } else {
+            translationX.animateTo(
+                translationX.upperBound ?: 0f,
+                animationSpec = tween(durationMillis = 400)
+            )
+            updateDrawerState(DrawerValue.Open)
+        }
+    }
+}
+
+private fun handleDragStopped(
+    coroutineScope: CoroutineScope,
+    translationX: androidx.compose.animation.core.Animatable<Float, androidx.compose.animation.core.AnimationVector1D>,
+    drawerWidth: androidx.compose.ui.unit.Dp,
+    velocity: Float
+) {
+    val targetThreshold = drawerWidth.value * 0.5f
+    val targetState = if (translationX.value > targetThreshold ||
+        (translationX.value > drawerWidth.value * 0.1f && velocity > 800)
+    ) {
+        DrawerValue.Open
+    } else {
+        DrawerValue.Closed
+    }
+
+    snapDrawerToState(
+        coroutineScope = coroutineScope,
+        translationX = translationX,
+        targetState = targetState,
+        drawerWidth = drawerWidth,
+        velocity = velocity
+    )
+}
+
+private fun snapDrawerToState(
+    coroutineScope: CoroutineScope,
+    translationX: androidx.compose.animation.core.Animatable<Float, androidx.compose.animation.core.AnimationVector1D>,
+    targetState: DrawerValue,
+    drawerWidth: androidx.compose.ui.unit.Dp,
+    velocity: Float = 0f
+) {
+    coroutineScope.launch {
+        val targetValue = if (targetState == DrawerValue.Open) drawerWidth.value else 0f
+
+        translationX.animateTo(
+            targetValue = targetValue,
+            initialVelocity = velocity,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioNoBouncy,
+                stiffness = Spring.StiffnessMediumLow
+            )
+        )
+    }
+}
+
+@Composable
+fun ScreenContents(
+    username: String,
+    uiStates: States,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    drawerProgress: Float = 0f
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .shadow(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(0.dp)
+            )
+            .background(Color.White)
+    ) {
+        Column(
+            modifier = Modifier
+                .background(colorResource(R.color.bg_neutral))
+                .fillMaxSize()
+        ) {
+            DashboardHeader(
+                username = username,
+//                username = uiStates.leetCodeUserInfo.username.toString(),
+                onClick = onClick,
+                drawerProgress = drawerProgress
+            )
+        }
+    }
+}
+
+@Composable
 fun HomeScreenDrawer(
+    username: String,
     uiState: States,
     onClick: () -> Unit
 ) {
@@ -242,7 +364,7 @@ fun HomeScreenDrawer(
                     .clip(RoundedCornerShape(10.sdp))
             )
             Text(
-                text = uiState.leetCodeUserInfo.username.toString(),
+                text = username,
                 style = TextStyleInter24Lh36Fw700(),
                 modifier = Modifier.padding(top = 8.sdp, start = 10.sdp),
                 maxLines = 1,
@@ -258,33 +380,19 @@ fun HomeScreenDrawer(
         } else {
             ProfilePictureShimmer()
         }
-    }
-}
-
-@Composable
-fun ScreenContents(uiStates: States, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(0.dp)
-            )
-            .background(Color.White)
-    ) {
-        Column(
+        Text(
+            text = "Home",
+            style = TextStyleInter20Lh24Fw700(),
+            textAlign = TextAlign.Center,
             modifier = Modifier
+                .padding(top = 40.sdp)
+                .offset(x= (-18).sdp)
+                .clip(RoundedCornerShape(topEnd = 30.sdp, bottomEnd = 30.sdp))
                 .background(colorResource(R.color.bg_neutral))
-                .fillMaxSize()
-        ) {
-            DashboardHeader(
-                username = uiStates.leetCodeUserInfo.username.toString(),
-                onClick = onClick
-            )
-        }
+                .fillMaxWidth()
+                .padding(top = 20.sdp, bottom = 20.sdp)
+        )
+
+
     }
 }
-
-
-
-

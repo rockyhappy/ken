@@ -29,9 +29,9 @@ class KenApplication : Application() {
         }
         
         // Clean expired cache on application start
-        CoroutineScope(Dispatchers.IO).launch {
-            val expiryTimeMillis = System.currentTimeMillis() - TimeUnit.HOURS.toMillis(2)
-            localRepository.cleanExpiredCache(expiryTimeMillis)
-        }
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val expiryTimeMillis = System.currentTimeMillis() - TimeUnit.HOURS.toMillis(2)
+//            localRepository.cleanExpiredCache(expiryTimeMillis)
+//        }
     }
 }

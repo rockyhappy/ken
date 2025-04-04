@@ -19,6 +19,7 @@
         <activity
             android:name=".presentation.screens.auth.AuthActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.Ken" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,7 +30,9 @@
         <activity
             android:name=".presentation.screens.dashboard.ActivityContent.MainActivity"
             android:exported="false"
-            android:theme="@style/Theme.Ken" >
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Ken"
+            tools:ignore="DiscouragedApi">
         </activity>
     </application>
 
