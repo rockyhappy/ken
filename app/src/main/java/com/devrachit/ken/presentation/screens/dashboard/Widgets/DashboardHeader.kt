@@ -5,11 +5,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.Job
 
 @Composable
 fun DashboardHeader(
     username: String,
-    onClick: () -> Unit,
+    onClick: () -> Job,
     drawerProgress: Float = 0f
 ) {
     Row(
@@ -17,6 +18,6 @@ fun DashboardHeader(
         modifier = Modifier.fillMaxWidth()
     ) {
         MenuButton(onClick = onClick, drawerProgress = drawerProgress)
-        UsernameDisplay(username = username)
+        UsernameDisplay(username = username, drawerProgress = drawerProgress)
     }
 }

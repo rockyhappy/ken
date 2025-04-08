@@ -20,12 +20,13 @@ import androidx.compose.ui.unit.dp
 import com.devrachit.ken.R
 import com.devrachit.ken.utility.composeUtility.sdp
 import androidx.compose.ui.util.lerp
+import kotlinx.coroutines.Job
 
 @Composable
-fun MenuButton(onClick: () -> Unit, drawerProgress: Float = 0f) {
+fun MenuButton(onClick: () -> Job, drawerProgress: Float = 0f) {
 
-    val yOffset = lerp(0f, -100f, drawerProgress) // Move up by 100dp when drawer fully open
-    val alpha = lerp(1f, 0f, drawerProgress)      // Fade out as drawer opens
+    val yOffset = lerp(0f, -100f, drawerProgress)
+    val alpha = lerp(1f, 0f, drawerProgress)
     
     Icon(
         imageVector = Icons.Default.Menu,
@@ -41,7 +42,7 @@ fun MenuButton(onClick: () -> Unit, drawerProgress: Float = 0f) {
             )
             .size(32.sdp)
             .padding(4.sdp)
-            .clickable(onClick = onClick, enabled = alpha > 0.1f) // Disable clicks when mostly faded out
+            .clickable(onClick = { onClick() }, enabled = alpha > 0.1f)
             .background(colorResource(R.color.bg_neutral))
     )
 }

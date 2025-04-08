@@ -18,6 +18,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.findNavController
 import com.devrachit.ken.presentation.screens.dashboard.ActivityContent.MainActivity
 import com.devrachit.ken.R
+import com.devrachit.ken.utility.composeUtility.SnackBar
+import com.devrachit.ken.utility.constants.Constants.Companion.NAVKEYUSERNAME
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -34,19 +36,20 @@ class OnboardingFragment : Fragment() {
                 val userValues=viewModel.userValues.collectAsStateWithLifecycle()
                 if(userValues.value.isUserNameVerified)
                 {
-                    navigateToNewActivity()
+                    navigateToNewActivity(username = userValues.value.userName.toString())
                 }
                 OnboardingScreenPortrait(
                     userValues = userValues.value,
                     updateUserName = viewModel::updateUserName,
                     onContinueButtonClick = viewModel::checkUserExists,
-                    onVerified =  { navigateToNewActivity() }
+                    onVerified =  { }
                 )
             }
         }
     }
-    private fun navigateToNewActivity() {
+    private fun navigateToNewActivity(username: String) {
         val intent = Intent(requireContext(), MainActivity::class.java)
+        intent.putExtra(NAVKEYUSERNAME, username)
         startActivity(intent)
         requireActivity().finish()
         requireActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
