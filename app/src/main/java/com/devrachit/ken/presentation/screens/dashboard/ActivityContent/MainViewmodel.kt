@@ -73,8 +73,6 @@ class MainViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO) {
                 dataStoreRepository.savePrimaryUsername(userData.username)
             }
-            Timber.d("User ${userData.username} exists")
-            Log.d("MainViewModel", "Successfully loaded user data for ${_userValues.value.leetCodeUserInfo.toString()}")
         } else {
             _userValues.value = _userValues.value.copy(
                 isLoadingUserInfo = false,

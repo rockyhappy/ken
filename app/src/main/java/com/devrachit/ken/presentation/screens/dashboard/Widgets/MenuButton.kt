@@ -42,7 +42,7 @@ fun MenuButton(onClick: () -> Job, drawerProgress: Float = 0f) {
             )
             .size(32.sdp)
             .padding(4.sdp)
-            .clickable(onClick = { onClick() }, enabled = alpha > 0.1f)
+            .clickable(onClick = { onClick.invoke() })
             .background(colorResource(R.color.bg_neutral))
     )
 }

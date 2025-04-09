@@ -72,7 +72,7 @@ fun HomeScreenDrawer(
                 tint = Color.White,
                 modifier = Modifier
                     .size(24.sdp)
-                    .clickable(onClick = { onClick.invoke() })
+                    .clickable(onClick = { onClick() })
             )
         }
         if (!uiState.isLoadingUserInfo) {
