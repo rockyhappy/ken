@@ -1,9 +1,14 @@
 package com.devrachit.ken.presentation.navigation
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,7 +18,7 @@ import com.devrachit.ken.presentation.screens.dashboard.home.HomeScreen
 import com.devrachit.ken.presentation.screens.dashboard.questions.QuestionsScreen
 import com.devrachit.ken.presentation.screens.dashboard.sheets.SheetsScreen
 
-
+// Animation duration to match slide_in_right.xml (600ms)
 private const val ANIMATION_DURATION = 400
 
 @Composable
@@ -22,196 +27,103 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
         navController = navController,
         startDestination = Screen.Home.route
     ) {
-        composable(
-            route = Screen.Home.route,
-            enterTransition = { 
-                val targetIndex = getRouteIndex(targetState.destination.route) ?: 0
-                val initialIndex = getRouteIndex(initialState.destination.route) ?: 0
-                if (targetIndex > initialIndex) {
-                    slideIntoContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                } else {
-                    slideIntoContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                }
-            },
-            exitTransition = { 
-                val targetIndex = getRouteIndex(targetState.destination.route) ?: 0
-                val initialIndex = getRouteIndex(initialState.destination.route) ?: 0
-                if (targetIndex > initialIndex) {
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                } else {
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                }
-            },
-            popEnterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(ANIMATION_DURATION)
-                )
-            },
-            popExitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(ANIMATION_DURATION)
-                )
-            }
-        ) {
+        // Use extension function for each screen to avoid repetition
+        animatedComposable(Screen.Home.route) {
             HomeScreen()
         }
         
-        composable(
-            route = Screen.Questions.route,
-            enterTransition = { 
-                val targetIndex = getRouteIndex(targetState.destination.route) ?: 0
-                val initialIndex = getRouteIndex(initialState.destination.route) ?: 0
-                if (targetIndex > initialIndex) {
-                    slideIntoContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                } else {
-                    slideIntoContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                }
-            },
-            exitTransition = { 
-                val targetIndex = getRouteIndex(targetState.destination.route) ?: 0
-                val initialIndex = getRouteIndex(initialState.destination.route) ?: 0
-                if (targetIndex > initialIndex) {
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                } else {
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                }
-            },
-            popEnterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(ANIMATION_DURATION)
-                )
-            },
-            popExitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(ANIMATION_DURATION)
-                )
-            }
-        ) {
+        animatedComposable(Screen.Questions.route) {
             QuestionsScreen()
         }
         
-        composable(
-            route = Screen.Compare.route,
-            enterTransition = { 
-                val targetIndex = getRouteIndex(targetState.destination.route) ?: 0
-                val initialIndex = getRouteIndex(initialState.destination.route) ?: 0
-                if (targetIndex > initialIndex) {
-                    slideIntoContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                } else {
-                    slideIntoContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                }
-            },
-            exitTransition = { 
-                val targetIndex = getRouteIndex(targetState.destination.route) ?: 0
-                val initialIndex = getRouteIndex(initialState.destination.route) ?: 0
-                if (targetIndex > initialIndex) {
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                } else {
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                }
-            },
-            popEnterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(ANIMATION_DURATION)
-                )
-            },
-            popExitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(ANIMATION_DURATION)
-                )
-            }
-        ) {
+        animatedComposable(Screen.Compare.route) {
             CompareScreen()
         }
         
-        composable(
-            route = Screen.Sheets.route,
-            enterTransition = { 
-                val targetIndex = getRouteIndex(targetState.destination.route) ?: 0
-                val initialIndex = getRouteIndex(initialState.destination.route) ?: 0
-                if (targetIndex > initialIndex) {
-                    slideIntoContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                } else {
-                    slideIntoContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                }
-            },
-            exitTransition = { 
-                val targetIndex = getRouteIndex(targetState.destination.route) ?: 0
-                val initialIndex = getRouteIndex(initialState.destination.route) ?: 0
-                if (targetIndex > initialIndex) {
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                } else {
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(ANIMATION_DURATION)
-                    )
-                }
-            },
-            popEnterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(ANIMATION_DURATION)
-                )
-            },
-            popExitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(ANIMATION_DURATION)
-                )
-            }
-        ) {
+        animatedComposable(Screen.Sheets.route) {
             SheetsScreen()
         }
     }
+}
+
+/**
+ * Extension function for NavGraphBuilder that adds a composable with standard
+ * pager-like slide animations based on navigation direction
+ */
+private fun NavGraphBuilder.animatedComposable(
+    route: String,
+    arguments: List<NamedNavArgument> = emptyList(),
+    content: @Composable (NavBackStackEntry) -> Unit
+) {
+    composable(
+        route = route,
+        arguments = arguments,
+        enterTransition = { slideEnterTransition(this) },
+        exitTransition = { slideExitTransition(this) },
+        popEnterTransition = { slidePopEnterTransition() },
+        popExitTransition = { slidePopExitTransition() }
+    ) { backStackEntry ->
+        // Call the content function with the NavBackStackEntry
+        content(backStackEntry)
+    }
+}
+
+/**
+ * Creates a slide-in enter transition based on the navigation direction
+ */
+private fun slideEnterTransition(
+    scope: AnimatedContentTransitionScope<NavBackStackEntry>
+): EnterTransition {
+    val targetIndex = getRouteIndex(scope.targetState.destination.route) ?: 0
+    val initialIndex = getRouteIndex(scope.initialState.destination.route) ?: 0
+    
+    val direction = if (targetIndex > initialIndex)
+        AnimatedContentTransitionScope.SlideDirection.Left
+    else
+        AnimatedContentTransitionScope.SlideDirection.Right
+    
+    return scope.slideIntoContainer(
+        towards = direction,
+        animationSpec = tween(ANIMATION_DURATION)
+    )
+}
+
+/**
+ * Creates a slide-out exit transition based on the navigation direction
+ */
+private fun slideExitTransition(
+    scope: AnimatedContentTransitionScope<NavBackStackEntry>
+): ExitTransition {
+    val targetIndex = getRouteIndex(scope.targetState.destination.route) ?: 0
+    val initialIndex = getRouteIndex(scope.initialState.destination.route) ?: 0
+    
+    val direction = if (targetIndex > initialIndex)
+        AnimatedContentTransitionScope.SlideDirection.Left
+    else
+        AnimatedContentTransitionScope.SlideDirection.Right
+    
+    return scope.slideOutOfContainer(
+        towards = direction,
+        animationSpec = tween(ANIMATION_DURATION)
+    )
+}
+
+/**
+ * Creates a slide-in transition for popping the back stack (going back)
+ */
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.slidePopEnterTransition(): EnterTransition {
+    return slideIntoContainer(
+        towards = AnimatedContentTransitionScope.SlideDirection.Right,
+        animationSpec = tween(ANIMATION_DURATION)
+    )
+}
+
+/**
+ * Creates a slide-out transition for popping the back stack (going back)
+ */
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.slidePopExitTransition(): ExitTransition {
+    return slideOutOfContainer(
+        towards = AnimatedContentTransitionScope.SlideDirection.Right,
+        animationSpec = tween(ANIMATION_DURATION)
+    )
 }
