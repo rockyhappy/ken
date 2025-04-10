@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 
 
 fun Modifier.shadowEffect2(): Modifier = this.drawBehind {
-    val shadowColor = Color.Black.copy(alpha = 0.2f)
+    val shadowColor = Color.Black.copy(alpha = 0.1f)
     val horizontalShadowSize = 30.dp.toPx()
     val verticalShadowSize = 30.dp.toPx()
 

@@ -1,11 +1,11 @@
 package com.devrachit.ken.presentation.navigation
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
@@ -15,11 +15,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.devrachit.ken.presentation.screens.dashboard.compare.CompareScreen
 import com.devrachit.ken.presentation.screens.dashboard.home.HomeScreen
+import com.devrachit.ken.presentation.screens.dashboard.home.HomeViewmodel
 import com.devrachit.ken.presentation.screens.dashboard.questions.QuestionsScreen
 import com.devrachit.ken.presentation.screens.dashboard.sheets.SheetsScreen
 
-// Animation duration to match slide_in_right.xml (600ms)
-private const val ANIMATION_DURATION = 400
+
+private const val ANIMATION_DURATION = 300
 
 @Composable
 fun NavGraph(navController: NavHostController = rememberNavController()) {
@@ -29,6 +30,7 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
     ) {
         // Use extension function for each screen to avoid repetition
         animatedComposable(Screen.Home.route) {
+            val viewmodel = hiltViewModel<HomeViewmodel>()
             HomeScreen()
         }
         
@@ -45,7 +47,6 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
         }
     }
 }
-
 /**
  * Extension function for NavGraphBuilder that adds a composable with standard
  * pager-like slide animations based on navigation direction

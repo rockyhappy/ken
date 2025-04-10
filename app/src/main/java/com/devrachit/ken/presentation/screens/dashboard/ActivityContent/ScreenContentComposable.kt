@@ -44,6 +44,7 @@ import com.devrachit.ken.presentation.screens.dashboard.Widgets.DashboardHeader
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.NavItem
 import com.devrachit.ken.utility.composeUtility.sdp
 import com.devrachit.ken.utility.composeUtility.shadowEffect
+import com.devrachit.ken.utility.composeUtility.shadowEffect2
 import com.google.accompanist.pager.ExperimentalPagerApi
 import kotlinx.coroutines.Job
 
@@ -106,7 +107,7 @@ fun ScreenContents(
                     modifier = Modifier
                         .padding(vertical = 28.sdp)
                         .offset(y = yOffset.dp)
-                        .shadowEffect()
+                        .shadowEffect2()
                         .alpha(alpha)
                         .scale(scale.value)
                         .widthIn(max = (LocalConfiguration.current.screenWidthDp - 24).sdp, min = 300.sdp)

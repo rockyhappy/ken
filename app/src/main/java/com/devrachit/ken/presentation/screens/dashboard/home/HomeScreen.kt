@@ -13,7 +13,7 @@ fun HomeScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = colorResource(R.color.white))
+            .background(color = colorResource(R.color.bg_neutral))
     )
     {
 
