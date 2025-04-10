@@ -39,6 +39,7 @@ import androidx.navigation.compose.rememberNavController
 import com.devrachit.ken.R
 import com.devrachit.ken.presentation.navigation.NavGraph
 import com.devrachit.ken.presentation.navigation.Screen
+import com.devrachit.ken.presentation.navigation.rememberNavigationItems
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.DashboardHeader
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.NavItem
 import com.devrachit.ken.utility.composeUtility.sdp
@@ -75,41 +76,9 @@ fun ScreenContents(
         ),
         label = "bottom_row_scale_animation"
     )
-
-    // Define navigation items with routes
-    val navItems = remember {
-        // Data class for navigation items
-        data class NavItemData(
-            val label: String,
-            val outlinedIcon: Int,
-            val filledIcon: Int,
-            val route: String
-        )
-
-        // Map of tab index to NavItemData
-        mapOf(
-            0 to NavItemData("Home", 
-                R.drawable.ic_home_outlined, 
-                R.drawable.ic_home_filled,
-                Screen.Home.route),
-            1 to NavItemData("Questions", 
-                R.drawable.ic_questions_outlined, 
-                R.drawable.ic_questions_filled,
-                Screen.Questions.route),
-            2 to NavItemData("Compare", 
-                R.drawable.ic_compare_outlined, 
-                R.drawable.ic_compare_filled,
-                Screen.Compare.route),
-            3 to NavItemData("Sheets", 
-                R.drawable.ic_sheets_outlined, 
-                R.drawable.ic_sheets_filled,
-                Screen.Sheets.route)
-        )
-    }
-
-    // Determine the current selected route
+    val navItems = rememberNavigationItems()
     val currentRoute = navBackStackEntry?.destination?.route ?: Screen.Home.route
-    
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -163,8 +132,7 @@ fun ScreenContents(
                             outlinedIconRes = itemData.outlinedIcon,
                             filledIconRes = itemData.filledIcon,
                             isSelected = currentRoute == itemData.route,
-                            onClick = { 
-                                // Navigate when tab is clicked
+                            onClick = {
                                 navigateToTab(navController, itemData.route)
                             }
                         )
@@ -175,18 +143,14 @@ fun ScreenContents(
     }
 }
 
-// Helper function for navigating to avoid unnecessary navigation operations
 private fun navigateToTab(navController: NavController, route: String) {
-    // Only navigate if we're not already on that route
-    if (navController.currentBackStackEntry?.destination?.route != route) {
+    val currentRoute = navController.currentBackStackEntry?.destination?.route
+    if (currentRoute != route) {
         navController.navigate(route) {
-            // Pop up to the start destination of the graph to avoid building up a large stack
             popUpTo(navController.graph.startDestinationId) {
                 saveState = true
             }
-            // Avoid multiple copies of the same destination when reselecting the same item
             launchSingleTop = true
-            // Restore state when reselecting a previously selected item
             restoreState = true
         }
     }
