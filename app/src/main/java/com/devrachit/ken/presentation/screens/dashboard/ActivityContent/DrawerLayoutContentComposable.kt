@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.navigation.compose.rememberNavController
 import com.devrachit.ken.utility.composeUtility.sdp
 import kotlinx.coroutines.launch
 
@@ -61,12 +62,14 @@ fun DrawerLayoutContent(username: String, uiState: States) {
             drawerState = targetState
         }
     }
-
+    val navController = rememberNavController()
     // Drawer content
     HomeScreenDrawer(
         username = username,
         uiState = uiState,
-        onClick = toggleDrawer
+        onClick = toggleDrawer,
+        drawerProgress = drawerProgress,
+        navController = navController
     )
 
     // Main content
@@ -77,6 +80,7 @@ fun DrawerLayoutContent(username: String, uiState: States) {
         translationX = translationX,
         drawerWidth = drawerWidth,
         draggableState = draggableState,
-        onMenuClick = toggleDrawer
+        onMenuClick = toggleDrawer,
+        navController = navController
     )
 }

@@ -24,6 +24,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import androidx.navigation.NavHostController
 import com.devrachit.ken.ui.theme.KenTheme
 import kotlinx.coroutines.launch
 import com.devrachit.ken.R
@@ -60,7 +61,8 @@ fun MainContent(
     translationX: Animatable<Float, AnimationVector1D>,
     drawerWidth: Dp,
     draggableState: DraggableState,
-    onMenuClick: () -> Job
+    onMenuClick: () -> Job,
+    navController: NavHostController,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -69,6 +71,7 @@ fun MainContent(
         uiStates = uiState,
         onClick = onMenuClick,
         drawerProgress = drawerProgress,
+        navController = navController,
         modifier = Modifier
             .fillMaxSize()
             .graphicsLayer {

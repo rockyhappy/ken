@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -127,4 +128,17 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.slidePopExitTransi
         towards = AnimatedContentTransitionScope.SlideDirection.Right,
         animationSpec = tween(ANIMATION_DURATION)
     )
+}
+
+fun navigateToTab(navController: NavController, route: String) {
+    val currentRoute = navController.currentBackStackEntry?.destination?.route
+    if (currentRoute != route) {
+        navController.navigate(route) {
+            popUpTo(navController.graph.startDestinationId) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
 }

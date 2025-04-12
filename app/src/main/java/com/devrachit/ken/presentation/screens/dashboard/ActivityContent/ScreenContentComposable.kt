@@ -34,11 +34,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.devrachit.ken.R
 import com.devrachit.ken.presentation.navigation.NavGraph
 import com.devrachit.ken.presentation.navigation.Screen
+import com.devrachit.ken.presentation.navigation.navigateToTab
 import com.devrachit.ken.presentation.navigation.rememberNavigationItems
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.DashboardHeader
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.NavItem
@@ -56,10 +58,11 @@ fun ScreenContents(
     uiStates: States,
     modifier: Modifier = Modifier,
     onClick: () -> Job,
-    drawerProgress: Float = 0f
+    drawerProgress: Float = 0f,
+    navController : NavHostController
 ) {
     // Create NavController that's shared with NavGraph
-    val navController = rememberNavController()
+//    val navController = rememberNavController()
     
     // Get current back stack entry
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -144,15 +147,3 @@ fun ScreenContents(
     }
 }
 
-private fun navigateToTab(navController: NavController, route: String) {
-    val currentRoute = navController.currentBackStackEntry?.destination?.route
-    if (currentRoute != route) {
-        navController.navigate(route) {
-            popUpTo(navController.graph.startDestinationId) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
-    }
-}
