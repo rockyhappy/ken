@@ -139,9 +139,7 @@ fun HomeScreenDrawer(
                 isSelected = currentRoute == itemData.route,
                 onClick = {
                     coroutineScope.launch {
-                        onClick()
-                        // Small delay to ensure animations don't conflict
-                        delay(100)
+                        onClick.invoke()
                         navigateToTab(navController, itemData.route)
                     }
                 },

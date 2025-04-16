@@ -64,7 +64,6 @@ fun DrawerNavItem(
         animationSpec = tween(300),
 
     )
-    // Animate color when selected
     val textColor by animateColorAsState(
         targetValue = if (isSelected)
             colorResource(id = R.color.white)
