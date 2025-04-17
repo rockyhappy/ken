@@ -6,6 +6,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -32,7 +33,10 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
         // Use extension function for each screen to avoid repetition
         animatedComposable(Screen.Home.route) {
             val viewmodel = hiltViewModel<HomeViewmodel>()
-            HomeScreen()
+            HomeScreen(
+                uiState = viewmodel.uiState.collectAsStateWithLifecycle().value,
+                onFirstLoad = { viewmodel.loadUserDetails() },
+            )
         }
         
         animatedComposable(Screen.Questions.route) {

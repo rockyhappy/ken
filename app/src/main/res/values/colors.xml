@@ -1156,4 +1156,11 @@
     <color name="blue_notification">#0069FA</color>
     <color name="primary_color">#F4CE13</color>
     <color name="card_elevated">#282828</color>
+    <color name="easy_base_blue">#264545</color>
+    <color name="easy_filled_blue">#1CBABA</color>
+    <color name="medium_base_yellow">#534520</color>
+    <color name="medium_filled_yellow">#FFB700</color>
+    <color name="hard_base_red">#512B2B</color>
+    <color name="hard_filled_red">#F63737</color>
+
 </resources>

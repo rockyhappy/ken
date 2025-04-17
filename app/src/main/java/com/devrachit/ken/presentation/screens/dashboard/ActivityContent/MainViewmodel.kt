@@ -55,7 +55,7 @@ class MainViewModel @Inject constructor(
             val username = dataStoreRepository.readPrimaryUsername()
             if (!username.isNullOrEmpty()) {
                 fetchUserInfo(username)
-                fetchUserQuestionStatus(username)
+//                fetchUserQuestionStatus(username)
             }
             _isLoading.value = false
         }
@@ -71,7 +71,7 @@ class MainViewModel @Inject constructor(
             val username = dataStoreRepository.readPrimaryUsername()
             if (!username.isNullOrEmpty()) {
                 fetchUserInfoIfNeeded(username)
-                fetchUserQuestionStatus(username)
+//                fetchUserQuestionStatus(username)
             }
             _isLoading.value = false
         }
