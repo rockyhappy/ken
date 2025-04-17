@@ -8,10 +8,11 @@ import androidx.room.TypeConverters
 import com.devrachit.ken.data.local.dao.LeetCodeUserDao
 import com.devrachit.ken.data.local.entity.LeetCodeConverters
 import com.devrachit.ken.data.local.entity.LeetCodeUserEntity
+import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
 
 @Database(
-    entities = [LeetCodeUserEntity::class],
-    version = 1,
+    entities = [LeetCodeUserEntity::class, UserQuestionStatusEntity::class],
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(LeetCodeConverters::class)

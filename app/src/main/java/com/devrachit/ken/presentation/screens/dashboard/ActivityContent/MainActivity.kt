@@ -18,11 +18,15 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     val viewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupWindow()
         val username = intent.getStringExtra(NAVKEYUSERNAME) ?: "Guest_User"
+        
+        // Load user details in onCreate
         viewModel.loadUserDetails()
+        
         setContent {
             val uiStates = viewModel.userValues.collectAsStateWithLifecycle().value
             DashboardContent(username=username,uiState= uiStates)
@@ -30,9 +34,11 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onResume() {
-        super.onResume()
-        viewModel.loadUserDetails()
+        println("OnResume called")
+        super.onResume() // Call reloadUserDetails which contains the loading check
+        viewModel.reloadUserDetails()
     }
+    
     private fun setupWindow() {
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)

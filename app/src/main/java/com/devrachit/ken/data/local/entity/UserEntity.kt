@@ -7,7 +7,12 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.devrachit.ken.domain.models.ContestBadge
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
+import com.devrachit.ken.domain.models.MatchedUser
+import com.devrachit.ken.domain.models.QuestionCount
+import com.devrachit.ken.domain.models.SubmitStats
+import com.devrachit.ken.domain.models.SubmissionStat
 import com.devrachit.ken.domain.models.UserProfile
+import com.devrachit.ken.domain.models.UserQuestionStatusData
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -152,30 +157,7 @@ data class UserProfileEntity(
     }
 }
 
-//data class UserContributionsEntity(
-//    val points: Int?,
-//    val questionCount: Int?
-//) {
-//    fun toDomainModel(): UserContributions {
-//        return UserContributions(
-//            points = points,
-//            questionCount = questionCount
-//        )
-//    }
-//
-//    companion object {
-//        fun fromDomainModel(domainModel: UserContributions): UserContributionsEntity {
-//            return UserContributionsEntity(
-//                points = domainModel.points,
-//                questionCount = domainModel.questionCount
-//            )
-//        }
-//    }
-//}
 
-/**
- * Type converters for Room to handle Lists and complex objects
- */
 class LeetCodeConverters {
     private val json = Json { ignoreUnknownKeys = true }
     
@@ -187,5 +169,45 @@ class LeetCodeConverters {
     @TypeConverter
     fun toStringList(value: String?): List<String>? {
         return value?.let { json.decodeFromString<List<String>>(it) }
+    }
+    
+    @TypeConverter
+    fun fromQuestionCountList(value: List<QuestionCountEntity>?): String? {
+        return value?.let { json.encodeToString(it) }
+    }
+    
+    @TypeConverter
+    fun toQuestionCountList(value: String?): List<QuestionCountEntity>? {
+        return value?.let { json.decodeFromString<List<QuestionCountEntity>>(it) }
+    }
+    
+    @TypeConverter
+    fun fromSubmissionStatList(value: List<SubmissionStatEntity>?): String? {
+        return value?.let { json.encodeToString(it) }
+    }
+    
+    @TypeConverter
+    fun toSubmissionStatList(value: String?): List<SubmissionStatEntity>? {
+        return value?.let { json.decodeFromString<List<SubmissionStatEntity>>(it) }
+    }
+    
+    @TypeConverter
+    fun fromMatchedUserEntity(value: MatchedUserEntity?): String? {
+        return value?.let { json.encodeToString(it) }
+    }
+    
+    @TypeConverter
+    fun toMatchedUserEntity(value: String?): MatchedUserEntity? {
+        return value?.let { json.decodeFromString<MatchedUserEntity>(it) }
+    }
+    
+    @TypeConverter
+    fun fromSubmitStatsEntity(value: SubmitStatsEntity?): String? {
+        return value?.let { json.encodeToString(it) }
+    }
+    
+    @TypeConverter
+    fun toSubmitStatsEntity(value: String?): SubmitStatsEntity? {
+        return value?.let { json.decodeFromString<SubmitStatsEntity>(it) }
     }
 }

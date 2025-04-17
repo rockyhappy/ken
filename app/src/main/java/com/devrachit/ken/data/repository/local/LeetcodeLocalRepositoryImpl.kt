@@ -2,7 +2,9 @@ package com.devrachit.ken.data.repository.local
 
 import com.devrachit.ken.data.local.dao.LeetCodeUserDao
 import com.devrachit.ken.data.local.entity.LeetCodeUserEntity
+import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
+import com.devrachit.ken.domain.models.UserQuestionStatusData
 import com.devrachit.ken.domain.repository.local.LeetcodeLocalRepository
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import kotlinx.coroutines.flow.Flow
@@ -58,5 +60,23 @@ class LeetcodeLocalRepositoryImpl @Inject constructor(
         expiredEntries.forEach { 
             userDao.deleteUser(it.username)
         }
+    }
+
+    override suspend fun getLastUserQuestionStatusFetchTime(username: String): Long? {
+        return userDao.getUserQuestionStatus(username)?.lastFetchTime
+    }
+
+    override suspend fun getUserQuestionStatus(username: String) : Resource<UserQuestionStatusData> {
+        val data = userDao.getUserQuestionStatus(username)?.toDomainModel()
+        return if (data != null) {
+            Resource.Success(data)
+        }
+        else {
+            Resource.Error("User Question Status not found in cache")
+        }
+    }
+
+    override suspend fun saveUserQuestionStatus(userQuestionStatus: UserQuestionStatusEntity) {
+        userDao.insertUserQuestionStatus(userQuestionStatus)
     }
 }

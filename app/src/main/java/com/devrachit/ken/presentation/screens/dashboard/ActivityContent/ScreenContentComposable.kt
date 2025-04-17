@@ -110,7 +110,7 @@ fun ScreenContents(
                     modifier = Modifier
                         .padding(vertical = 28.sdp)
                         .offset(y = yOffset.dp)
-                        .shadowEffect2()
+                        .shadowEffect()
                         .alpha(alpha)
                         .scale(scale.value)
                         .widthIn(max = (LocalConfiguration.current.screenWidthDp - 24).sdp, min = 300.sdp)

@@ -45,10 +45,43 @@ class GraphqlQuery {
      }
  """.trimIndent()
 
+
         fun getUserExistsJsonRequest(username: String): JSONObject {
             return JSONObject().apply {
                 put("query", userExistsQuery)
                 put("operationName", "userInfo")
+                put("variables", JSONObject().put("username", username))
+            }
+        }
+
+
+        val userQuestionCountQuery = """
+    query userSessionProgress(${"$"}username: String!) {
+      allQuestionsCount {
+        difficulty
+        count
+      }
+      matchedUser(username: ${"$"}username) {
+        submitStats {
+          acSubmissionNum {
+            difficulty
+            count
+            submissions
+          }
+          totalSubmissionNum {
+            difficulty
+            count
+            submissions
+          }
+        }
+      }
+    }
+    """.trimIndent()
+
+        fun getUserQuestionCountJsonRequest(username: String): JSONObject {
+            return JSONObject().apply {
+                put("query", userQuestionCountQuery)
+                put("operationName", "userSessionProgress")
                 put("variables", JSONObject().put("username", username))
             }
         }

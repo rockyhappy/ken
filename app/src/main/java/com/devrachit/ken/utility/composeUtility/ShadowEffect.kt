@@ -17,8 +17,8 @@ fun Modifier.shadowEffect(): Modifier = this.drawBehind {
     drawRoundRect(
         brush = Brush.radialGradient(
             colors = listOf(shadowColor, Color.Transparent),
-            center = Offset(size.width * 0.25f, size.height / 2),
-            radius = (size.width.coerceAtLeast(size.height)) * 0.8f
+            center = Offset(size.width * 0.1f, size.height / 2),
+            radius = (size.width.coerceAtLeast(size.height)) * 0.7f
         ),
         size = Size(size.width + 2 * horizontalShadowSize, size.height +2* verticalShadowSize),
         topLeft = Offset(-horizontalShadowSize, -verticalShadowSize),
@@ -29,8 +29,8 @@ fun Modifier.shadowEffect(): Modifier = this.drawBehind {
     drawRoundRect(
         brush = Brush.radialGradient(
             colors = listOf(shadowColor, Color.Transparent),
-            center = Offset(size.width * 0.75f, size.height / 2),
-            radius = (size.width.coerceAtLeast(size.height)) * 0.8f
+            center = Offset(size.width * 0.9f, size.height / 2),
+            radius = (size.width.coerceAtLeast(size.height)) * 0.7f
         ),
         size = Size(size.width + 2 * horizontalShadowSize, size.height + 2*verticalShadowSize),
         topLeft = Offset(-horizontalShadowSize, -verticalShadowSize),

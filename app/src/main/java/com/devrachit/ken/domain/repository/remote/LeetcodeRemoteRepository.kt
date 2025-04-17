@@ -4,6 +4,7 @@ import com.devrachit.ken.data.remote.queries.GraphqlQuery
 import com.devrachit.ken.data.remote.services.LeetcodeApiService
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
 import com.devrachit.ken.domain.models.UserInfoResponse
+import com.devrachit.ken.domain.models.UserQuestionStatusData
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -14,4 +15,5 @@ import javax.inject.Inject
 
 interface LeetcodeRemoteRepository {
     suspend fun fetchUserInfo(username: String): Resource<LeetCodeUserInfo>
+    suspend fun fetchUserRankingInfo(username: String): Resource<UserQuestionStatusData>
 }

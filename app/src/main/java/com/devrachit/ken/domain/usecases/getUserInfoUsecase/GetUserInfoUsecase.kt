@@ -15,17 +15,20 @@ class GetUserInfoUseCase @Inject constructor(
     private val cachePolicy: CachePolicy,
     private val networkManager: NetworkManager
 ) {
-    operator fun invoke(username: String, forceRefresh: Boolean = false): Flow<Resource<LeetCodeUserInfo>> = flow {
+    operator fun invoke(
+        username: String,
+        forceRefresh: Boolean = false
+    ): Flow<Resource<LeetCodeUserInfo>> = flow {
         // Start by emitting loading state
         emit(Resource.Loading())
-        
+
         // Check network availability
         val isNetworkAvailable = networkManager.isConnected()
-        
+
         // Try to get data from cache if we're not forcing a refresh OR if network is unavailable
         if (!forceRefresh || !isNetworkAvailable) {
             val lastFetchTime = localRepository.getLastFetchTime(username)
-            
+
             // Use cache if it's valid OR if network is unavailable (regardless of cache validity)
             if (cachePolicy.isCacheValid(lastFetchTime) || !isNetworkAvailable) {
                 // Emit cached data if available
@@ -40,17 +43,17 @@ class GetUserInfoUseCase @Inject constructor(
                 }
             }
         }
-        
+
         // Only proceed with network call if network is available
         if (isNetworkAvailable) {
             // Fetch from network
             val networkResult = remoteRepository.fetchUserInfo(username)
-            
+
             // Save successful response to cache
             if (networkResult is Resource.Success && networkResult.data?.username != null) {
                 localRepository.saveUserInfo(networkResult.data)
             }
-            
+
             // If network fetch failed but we have cache data, return that instead
             if (networkResult is Resource.Error) {
                 var cacheData: Resource<LeetCodeUserInfo>? = null
@@ -59,13 +62,13 @@ class GetUserInfoUseCase @Inject constructor(
                         cacheData = cacheResult
                     }
                 }
-                
+
                 if (cacheData != null) {
                     emit(cacheData!!)
                     return@flow
                 }
             }
-            
+
             // Otherwise emit the network result (success or error)
             emit(networkResult)
         }
