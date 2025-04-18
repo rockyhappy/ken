@@ -45,7 +45,7 @@ fun QuestionProgressCard(
                 ),
                 shape = RoundedCornerShape(36.sdp),
             )
-            .padding(top = 20.sdp, start = 20.sdp, end = 20.sdp),
+            .padding(top = 20.sdp, start = 20.sdp, end = 5.sdp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

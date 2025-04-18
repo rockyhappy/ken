@@ -53,7 +53,7 @@ fun KinkWidget(
                 withStyle(
                     style = SpanStyle(
                         color = Color.White,
-                        fontSize = 10.sp
+                        fontSize = 9.sp
                     )
                 ) {
                     append(" $totalCount")
