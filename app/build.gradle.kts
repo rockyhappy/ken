@@ -153,6 +153,14 @@ dependencies {
     implementation(libs.datastore)
     implementation(libs.datastore.preferences)
 
+    // Glance for AppWidgets
+    implementation(libs.androidx.glance)
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.material3)
+
+    // For WorkManager and Hilt integration
+//    implementation(libs.androidx.work.runtime.ktx)
+//    implementation(libs.androidx.hilt.work)
 
     // TODO: Remove these chucker dependencies  
     debugImplementation("com.github.chuckerteam.chucker:library:4.0.0") // For Debug

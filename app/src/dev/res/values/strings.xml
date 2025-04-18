@@ -2,5 +2,5 @@
 <resources>
     <string name="app_name">Ken Dev</string>
     <string name="make_an_account_text">Don\'t have an account? <b>Sign Up</b></string>
-
+    <string name="question_progress_widget_description">Shows your LeetCode question progress</string>
 </resources>

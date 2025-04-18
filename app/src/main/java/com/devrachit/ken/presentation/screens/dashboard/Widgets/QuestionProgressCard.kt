@@ -45,7 +45,7 @@ fun QuestionProgressCard(
                 ),
                 shape = RoundedCornerShape(36.sdp),
             )
-            .padding(top = 20.sdp, start = 20.sdp, end = 20.sdp),
+            .padding(top = 20.sdp, start = 20.sdp, end = 10.sdp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -60,7 +60,7 @@ fun QuestionProgressCard(
             mediumSolvedCount = questionProgress.mediumSolvedCount,
             hardTotalCount = questionProgress.hardTotalCount,
             hardSolvedCount = questionProgress.hardSolvedCount,
-            modifier = Modifier.size(180.sdp)
+            modifier = Modifier.size(160.sdp)
         )
         
         // Difficulty statistics on the right
