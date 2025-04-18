@@ -25,20 +25,23 @@ class GetUserQuestionStatusUseCase @Inject constructor(
         emit(Resource.Loading())
 
         val isNetworkAvailable = networkManager.isConnected()
+        
+        // If it's not a force refresh or network is unavailable, try to use cache
         if (!forceRefresh || !isNetworkAvailable) {
             val lastFetchTime = localRepository.getLastUserQuestionStatusFetchTime(username)
-
-            if (cachePolicy.isCacheValid(lastFetchTime) || isNetworkAvailable) {
+            
+            // Use cache if it's valid or if network is unavailable (even with force refresh)
+            if (cachePolicy.isCacheValid(lastFetchTime) || !isNetworkAvailable) {
                 val data = localRepository.getUserQuestionStatus(username)
                 if (data is Resource.Success) {
                     emit(data)
+                    // Only return if network is unavailable and we've emitted cached data
                     if (!isNetworkAvailable) {
                         return@flow
                     }
                 }
             }
         }
-
         if (isNetworkAvailable) {
             val networkResult = remoteRepository.fetchUserRankingInfo(username)
             if (networkResult is Resource.Success && networkResult.data != null) {
