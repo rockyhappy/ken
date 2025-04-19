@@ -29,7 +29,7 @@ class WidgetUpdateReceiver : BroadcastReceiver() {
             
             // Get AlarmManager and schedule updates every hour
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val intervalMillis = 60 * 60 * 1000L // 1 hour
+            val intervalMillis = 15 * 60 * 1000L // 1 hour
             
             // Start the alarm
             alarmManager.setRepeating(

@@ -18,50 +18,57 @@
         android:scaleType="fitCenter" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="center"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/username"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:maxLines="1"
             android:text="username"
             android:textAlignment="center"
             android:textColor="@color/white"
-            android:textSize="16sp"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:maxLines="1"
-            />
+            android:ellipsize="end"/>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/easy_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Easy"
+                android:textAlignment="center"
+                android:textColor="@color/easy_filled_blue"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/_8sdp"
                 android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/easy_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Easy"
-                    android:textAlignment="center"
-                    android:textColor="@color/easy_filled_blue"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/easy_solved"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1234"
+                    android:text="0"
                     android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="14sp"
@@ -69,38 +76,39 @@
 
                 <TextView
                     android:id="@+id/easy_total"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:alpha="0.7"
                     android:text="/1234"
                     android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="10sp"
-                    android:alpha="0.7"
                     android:textStyle="italic" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
+
+            <TextView
+                android:id="@+id/medium_label"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Med."
+                android:textAlignment="center"
+                android:textColor="@color/medium_filled_yellow"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/_8sdp"
                 android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/medium_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Med."
-                    android:textAlignment="center"
-                    android:textColor="@color/medium_filled_yellow"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/medium_solved"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1234"
+                    android:text="0"
                     android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="14sp"
@@ -108,38 +116,39 @@
 
                 <TextView
                     android:id="@+id/medium_total"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:alpha="0.7"
                     android:text="/1234"
                     android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="10sp"
-                    android:alpha="0.7"
                     android:textStyle="italic" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
+
+            <TextView
+                android:id="@+id/hard_label"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Hard"
+                android:textAlignment="center"
+                android:textColor="@color/hard_filled_red"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/_8sdp"
                 android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/hard_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Hard"
-                    android:textAlignment="center"
-                    android:textColor="@color/hard_filled_red"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/hard_solved"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1234"
+                    android:text="0"
                     android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="14sp"
@@ -147,13 +156,13 @@
 
                 <TextView
                     android:id="@+id/hard_total"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:alpha="0.7"
                     android:text="/1234"
                     android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="10sp"
-                    android:alpha="0.7"
                     android:textStyle="italic" />
             </LinearLayout>
         </LinearLayout>

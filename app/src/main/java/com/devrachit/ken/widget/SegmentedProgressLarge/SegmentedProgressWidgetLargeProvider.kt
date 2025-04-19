@@ -1,4 +1,6 @@
-package com.devrachit.ken.widget
+package com.devrachit.ken.widget.SegmentedProgressLarge
+
+
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
@@ -21,6 +23,7 @@ import com.devrachit.ken.domain.models.toQuestionProgressUiState
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
 import com.devrachit.ken.presentation.screens.dashboard.home.QuestionProgressUiState
 import com.devrachit.ken.utility.NetworkUtility.Resource
+import com.devrachit.ken.widget.WidgetUpdateReceiver
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,7 +44,7 @@ interface WidgetEntryPoint {
 }
 
 
-class SimpleTextWidgetProvider : AppWidgetProvider() {
+class SegmentedProgressWidgetLargeProvider : AppWidgetProvider() {
 
     private val TAG = "SimpleTextWidgetProvider"
     private val widgetScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -65,7 +68,7 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
                 userName = dataStoreRepository.readPrimaryUsername() ?: "LeetCoder"
                 Log.d(TAG, "Username: $userName")
                 for (appWidgetId in appWidgetIds) {
-                    val loadingViews = RemoteViews(context.packageName, R.layout.simple_text_widget)
+                    val loadingViews = RemoteViews(context.packageName, R.layout.segmented_progress_large)
                     loadingViews.setTextViewText(R.id.username, userName)
                     appWidgetManager.updateAppWidget(appWidgetId, loadingViews)
                 }
@@ -129,11 +132,11 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
         questionProgress: QuestionProgressUiState
     ) {
         try {
-            val views = RemoteViews(context.packageName, R.layout.simple_text_widget)
+            val views = RemoteViews(context.packageName, R.layout.segmented_progress_large)
 
             // Create progress indicator bitmap
-            val width = 300
-            val height = 300
+            val width = 500
+            val height = 500
             val bitmap = createBitmap(width = width, height = height)
             val canvas = Canvas(bitmap)
 
@@ -186,7 +189,7 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
             views.setTextViewText(R.id.hard_total, "/${questionProgress.hardTotalCount}")
 
             // Add a refresh action
-            val refreshIntent = Intent(context, SimpleTextWidgetProvider::class.java).apply {
+            val refreshIntent = Intent(context, SegmentedProgressWidgetLargeProvider::class.java).apply {
                 action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(appWidgetId))
             }
@@ -221,7 +224,7 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
         hardTotalCount: Int,
         hardSolvedCount: Int
     ) {
-        val stroke_Width = 20f
+        val stroke_Width = 35f
 
         // Get color resources
         val easyBaseColor = ContextCompat.getColor(context, R.color.easy_base_blue)
@@ -311,7 +314,7 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
         val mainTextPaint = Paint().apply {
             color = Color.WHITE
             textAlign = Paint.Align.CENTER
-            textSize = 70f
+            textSize = 100f
             isFakeBoldText = true
             isAntiAlias = true
         }
@@ -319,7 +322,7 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
         val smallTextPaint = Paint().apply {
             color = Color.WHITE
             textAlign = Paint.Align.CENTER
-            textSize = 40f
+            textSize = 60f
             isAntiAlias = true
         }
 
@@ -332,7 +335,7 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
         // Draw the total with a slash before it in smaller text
         val totalText = "/$total"
         val totalX = width / 2f
-        val totalY = height / 2f + 60f  // Adjusted for proper spacing
+        val totalY = height / 2f + 80f  // Adjusted for proper spacing
         canvas.drawText(totalText, totalX, totalY, smallTextPaint)
     }
 
