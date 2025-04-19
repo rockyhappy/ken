@@ -98,7 +98,10 @@ fun HomeScreenDrawer(
                     .clickable(onClick = { onClick() })
             )
         }
-        if (!uiState.isLoadingUserInfo) {
+        if (!uiState.isLoadingUserInfo ||
+            (uiState.leetCodeUserInfo.profile?.realName != null &&
+                    uiState.leetCodeUserInfo.profile?.userAvatar != null))
+        {
             AsyncImage(
                 model = uiState.leetCodeUserInfo.profile?.userAvatar,
                 contentDescription = "Example image for demonstration purposes",

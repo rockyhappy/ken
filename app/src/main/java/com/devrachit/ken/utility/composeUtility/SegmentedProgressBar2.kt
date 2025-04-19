@@ -28,7 +28,7 @@ fun SegmentedProgressIndicator2(
     attempting: Int,
     total: Int,
     modifier: Modifier = Modifier,
-    strokeWidth: Float = if (LocalConfiguration.current.screenWidthDp > 600) 12f else 18f,
+    strokeWidth: Float = if (LocalConfiguration.current.screenWidthDp > 600) 18f else 24f,
     easyTotalCount: Int = 0,
     easySolvedCount: Int = 0,
     mediumTotalCount: Int = 0,
