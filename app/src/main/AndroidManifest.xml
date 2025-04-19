@@ -44,6 +44,13 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/simple_text_widget_info" />
         </receiver>
+        <receiver
+            android:name=".widget.WidgetUpdateReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.devrachit.ken.ACTION_UPDATE_WIDGET" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
