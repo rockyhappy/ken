@@ -185,6 +185,21 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
             views.setTextViewText(R.id.hard_solved, questionProgress.hardSolvedCount.toString())
             views.setTextViewText(R.id.hard_total, "/${questionProgress.hardTotalCount}")
 
+            val openAppIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or 
+                        Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED or
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            
+            if (openAppIntent != null) {
+                val pendingIntent = PendingIntent.getActivity(
+                    context,
+                    0,
+                    openAppIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+                views.setOnClickPendingIntent(R.id.segmented_widget_small, pendingIntent)
+            }
             // Add a refresh action
             val refreshIntent = Intent(context, SimpleTextWidgetProvider::class.java).apply {
                 action = AppWidgetManager.ACTION_APPWIDGET_UPDATE

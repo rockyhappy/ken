@@ -5,6 +5,7 @@
     android:layout_gravity="start"
     android:background="@drawable/widget_background"
     android:orientation="horizontal"
+    android:id="@+id/segmented_widget_small"
     android:padding="8dp">
 
     <ImageView
