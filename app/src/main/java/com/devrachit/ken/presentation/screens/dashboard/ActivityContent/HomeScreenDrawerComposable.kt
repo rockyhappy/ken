@@ -50,6 +50,7 @@ import com.devrachit.ken.utility.composeUtility.shadowEffect2
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.res.painterResource
 import kotlinx.coroutines.delay
 
 @Composable
@@ -87,7 +88,7 @@ fun HomeScreenDrawer(
                 .padding(2.sdp)
                 .clip(RoundedCornerShape(5.sdp))
                 .background(Color.Transparent)
-
+                .clickable(onClick = { onClick() })
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
@@ -95,7 +96,7 @@ fun HomeScreenDrawer(
                 tint = Color.White,
                 modifier = Modifier
                     .size(24.sdp)
-                    .clickable(onClick = { onClick() })
+
             )
         }
         if (!uiState.isLoadingUserInfo ||
@@ -104,6 +105,7 @@ fun HomeScreenDrawer(
         {
             AsyncImage(
                 model = uiState.leetCodeUserInfo.profile?.userAvatar,
+                placeholder = painterResource(R.drawable.profile_placeholder),
                 contentDescription = "Example image for demonstration purposes",
                 modifier = Modifier
                     .padding(top = 30.sdp, start = 10.sdp)
@@ -141,9 +143,11 @@ fun HomeScreenDrawer(
                 filledIconRes = itemData.filledIcon,
                 isSelected = currentRoute == itemData.route,
                 onClick = {
-                    coroutineScope.launch {
-                        onClick.invoke()
+                    if (currentRoute != itemData.route) {
                         navigateToTab(navController, itemData.route)
+                        onClick()
+                    } else {
+                        onClick()
                     }
                 },
                 drawerProgress = drawerProgress

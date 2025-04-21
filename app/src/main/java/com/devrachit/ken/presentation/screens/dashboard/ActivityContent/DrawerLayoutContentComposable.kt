@@ -1,5 +1,6 @@
 package com.devrachit.ken.presentation.screens.dashboard.ActivityContent
 
+import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -10,6 +11,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.devrachit.ken.utility.composeUtility.sdp
 import kotlinx.coroutines.launch
@@ -17,12 +20,17 @@ import kotlinx.coroutines.launch
 @Composable
 fun DrawerLayoutContent(username: String, uiState: States) {
     val coroutineScope = rememberCoroutineScope()
-    val drawerWidth = 700.sdp
+    val configuration = LocalConfiguration.current
+    val screenWidthDp = configuration.screenWidthDp
+    
+    val drawerWidth = when {
+        screenWidthDp >= 600 -> (screenWidthDp * 0.6f).dp.coerceAtMost(400.dp)
+        screenWidthDp >= 360 -> (screenWidthDp * 1.50f).dp.coerceAtMost(600.dp)
+        else -> screenWidthDp.dp.coerceAtMost(350.dp)
+    }
 
-    // Create a drawer state
     var drawerState by remember { mutableStateOf(DrawerValue.Closed) }
     
-    // Create an animatable for the drawer translation
     val translationX = remember {
         Animatable(0f)
     }
@@ -40,7 +48,9 @@ fun DrawerLayoutContent(username: String, uiState: States) {
 
     // Toggle drawer handler
     val toggleDrawer = {
+        Log.d("DrawerLayoutContent", "toggleDrawer: $drawerState")
         val targetState = if (drawerState == DrawerValue.Closed) DrawerValue.Open else DrawerValue.Closed
+        drawerState = targetState
         coroutineScope.launch {
             if (targetState == DrawerValue.Open) {
                 translationX.animateTo(
@@ -59,7 +69,7 @@ fun DrawerLayoutContent(username: String, uiState: States) {
                     )
                 )
             }
-            drawerState = targetState
+
         }
     }
     val navController = rememberNavController()
@@ -67,7 +77,7 @@ fun DrawerLayoutContent(username: String, uiState: States) {
     HomeScreenDrawer(
         username = username,
         uiState = uiState,
-        onClick = toggleDrawer,
+        onClick = {toggleDrawer.invoke()},
         drawerProgress = drawerProgress,
         navController = navController
     )
@@ -80,7 +90,7 @@ fun DrawerLayoutContent(username: String, uiState: States) {
         translationX = translationX,
         drawerWidth = drawerWidth,
         draggableState = draggableState,
-        onMenuClick = toggleDrawer,
+        onMenuClick = {toggleDrawer.invoke()},
         navController = navController
     )
 }
