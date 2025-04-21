@@ -14,7 +14,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.devrachit.ken.presentation.navigation.navigateToTab
+import com.devrachit.ken.presentation.screens.dashboard.ActivityContent.HomeScreenDrawer
+import com.devrachit.ken.presentation.screens.dashboard.ActivityContent.MainContent
 import com.devrachit.ken.utility.composeUtility.sdp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -23,6 +27,7 @@ fun DrawerLayoutContent(username: String, uiState: States) {
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp
     
+    // Drawer width calculation
     val drawerWidth = when {
         screenWidthDp >= 600 -> (screenWidthDp * 0.6f).dp.coerceAtMost(400.dp)
         screenWidthDp >= 360 -> (screenWidthDp * 1.50f).dp.coerceAtMost(600.dp)
@@ -46,9 +51,22 @@ fun DrawerLayoutContent(username: String, uiState: States) {
         drawerWidth = drawerWidth
     )
 
+    // Modified close drawer function with guaranteed closing behavior
+    val closeDrawer = {
+        coroutineScope.launch {
+            drawerState = DrawerValue.Closed
+            translationX.animateTo(
+                0f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioNoBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            )
+        }
+    }
+
     // Toggle drawer handler
     val toggleDrawer = {
-        Log.d("DrawerLayoutContent", "toggleDrawer: $drawerState")
         val targetState = if (drawerState == DrawerValue.Closed) DrawerValue.Open else DrawerValue.Closed
         drawerState = targetState
         coroutineScope.launch {
@@ -69,17 +87,29 @@ fun DrawerLayoutContent(username: String, uiState: States) {
                     )
                 )
             }
-
         }
     }
+    
     val navController = rememberNavController()
+    
+    // Create a navigation handler that also closes the drawer
+    val navigateAndCloseDrawer: (String) -> Unit = { route ->
+        // First navigate
+        coroutineScope.launch {
+            navigateToTab(navController, route)
+            delay(300)
+            closeDrawer()
+        }
+    }
+    
     // Drawer content
     HomeScreenDrawer(
         username = username,
         uiState = uiState,
-        onClick = {toggleDrawer.invoke()},
+        onClick = { closeDrawer() },
         drawerProgress = drawerProgress,
-        navController = navController
+        navController = navController,
+        navigateAndCloseDrawer = navigateAndCloseDrawer
     )
 
     // Main content
@@ -90,7 +120,7 @@ fun DrawerLayoutContent(username: String, uiState: States) {
         translationX = translationX,
         drawerWidth = drawerWidth,
         draggableState = draggableState,
-        onMenuClick = {toggleDrawer.invoke()},
+        onMenuClick = { toggleDrawer() },
         navController = navController
     )
 }

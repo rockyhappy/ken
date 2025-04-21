@@ -57,9 +57,10 @@ import kotlinx.coroutines.delay
 fun HomeScreenDrawer(
     username: String,
     uiState: States,
-    onClick: () -> Job,
+    onClick: () -> Unit,
     drawerProgress: Float = 0f,
     navController: NavHostController,
+    navigateAndCloseDrawer: (String) -> Unit
 ) {
     val yOffset = lerp(0f, -100f, drawerProgress)
     val alpha = lerp(0f, 1f, drawerProgress)
@@ -88,7 +89,7 @@ fun HomeScreenDrawer(
                 .padding(2.sdp)
                 .clip(RoundedCornerShape(5.sdp))
                 .background(Color.Transparent)
-                .clickable(onClick = { onClick() })
+                .clickable(onClick = onClick)
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
@@ -144,8 +145,7 @@ fun HomeScreenDrawer(
                 isSelected = currentRoute == itemData.route,
                 onClick = {
                     if (currentRoute != itemData.route) {
-                        navigateToTab(navController, itemData.route)
-                        onClick()
+                        navigateAndCloseDrawer(itemData.route)
                     } else {
                         onClick()
                     }
