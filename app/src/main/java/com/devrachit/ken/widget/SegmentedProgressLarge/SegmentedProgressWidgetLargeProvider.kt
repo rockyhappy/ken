@@ -170,27 +170,50 @@ class SegmentedProgressWidgetLargeProvider : AppWidgetProvider() {
             // Set the bitmap to the ImageView
             views.setImageViewBitmap(R.id.widget_drawing, bitmap)
 
-            // Set text values in the widget layout
-            views.setTextViewText(R.id.username, username)
-
-            // Update easy stats
-            views.setTextViewText(R.id.easy_solved, questionProgress.easySolvedCount.toString())
-            views.setTextViewText(R.id.easy_total, "/${questionProgress.easyTotalCount}")
-
-            // Update medium stats
-            views.setTextViewText(
-                R.id.medium_solved,
-                questionProgress.mediumSolvedCount.toString()
+            val textBitmapWidth= 350
+            val textBitmapHeight= 500
+            val bitmapText  = createBitmap(width = textBitmapWidth, height = textBitmapHeight)
+            val canvasText = Canvas(bitmapText)
+            drawProgressText(
+                context = context,
+                canvas = canvasText,
+                width = textBitmapWidth,
+                height = textBitmapHeight,
+                username = username,
+                solved = questionProgress.solved,
+                attempting = questionProgress.attempting,
+                total = questionProgress.total,
+                easyTotalCount = questionProgress.easyTotalCount,
+                easySolvedCount = questionProgress.easySolvedCount,
+                mediumTotalCount = questionProgress.mediumTotalCount,
+                mediumSolvedCount = questionProgress.mediumSolvedCount,
+                hardTotalCount = questionProgress.hardTotalCount,
+                hardSolvedCount = questionProgress.hardSolvedCount
             )
-            views.setTextViewText(R.id.medium_total, "/${questionProgress.mediumTotalCount}")
+            views.setImageViewBitmap(R.id.widget_drawing2, bitmapText)
 
-            views.setTextViewText(R.id.hard_solved, questionProgress.hardSolvedCount.toString())
-            views.setTextViewText(R.id.hard_total, "/${questionProgress.hardTotalCount}")
-
+//            // Set text values in the widget layout
+//            views.setTextViewText(R.id.username, username)
+//
+//            // Update easy stats
+//            views.setTextViewText(R.id.easy_solved, questionProgress.easySolvedCount.toString())
+//            views.setTextViewText(R.id.easy_total, "/${questionProgress.easyTotalCount}")
+//
+//            // Update medium stats
+//            views.setTextViewText(
+//                R.id.medium_solved,
+//                questionProgress.mediumSolvedCount.toString()
+//            )
+//            views.setTextViewText(R.id.medium_total, "/${questionProgress.mediumTotalCount}")
+//
+//            views.setTextViewText(R.id.hard_solved, questionProgress.hardSolvedCount.toString())
+//            views.setTextViewText(R.id.hard_total, "/${questionProgress.hardTotalCount}")
+//
+//
             val openAppIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or 
-                        Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED or
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP
             }
             
             if (openAppIntent != null) {
@@ -201,19 +224,21 @@ class SegmentedProgressWidgetLargeProvider : AppWidgetProvider() {
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
                 views.setOnClickPendingIntent(R.id.segmented_widget_large, pendingIntent)
+                views.setOnClickPendingIntent(R.id.widget_drawing, pendingIntent)
+                views.setOnClickPendingIntent(R.id.widget_drawing2, pendingIntent)
             }
 
-            val refreshIntent = Intent(context, SegmentedProgressWidgetLargeProvider::class.java).apply {
-                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(appWidgetId))
-            }
-            val refreshPendingIntent = PendingIntent.getBroadcast(
-                context,
-                appWidgetId,
-                refreshIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-            views.setOnClickPendingIntent(R.id.widget_drawing, refreshPendingIntent)
+//            val refreshIntent = Intent(context, SegmentedProgressWidgetLargeProvider::class.java).apply {
+//                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+//                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(appWidgetId))
+//            }
+//            val refreshPendingIntent = PendingIntent.getBroadcast(
+//                context,
+//                appWidgetId,
+//                refreshIntent,
+//                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+//            )
+//            views.setOnClickPendingIntent(R.id.widget_drawing, refreshPendingIntent)
 
             // Update the widget
             appWidgetManager.updateAppWidget(appWidgetId, views)
@@ -353,5 +378,44 @@ class SegmentedProgressWidgetLargeProvider : AppWidgetProvider() {
         canvas.drawText(totalText, totalX, totalY, smallTextPaint)
     }
 
+    private fun drawProgressText(
+        context: Context,
+        canvas: Canvas,
+        width: Int,
+        height: Int,
+        solved: Int,
+        attempting: Int,
+        total: Int,
+        username : String,
+        easyTotalCount: Int,
+        easySolvedCount: Int,
+        mediumTotalCount: Int,
+        mediumSolvedCount: Int,
+        hardTotalCount: Int,
+        hardSolvedCount: Int
+    ) {
+        val smallTextPaint = Paint().apply {
+            color = Color.WHITE
+            textAlign = Paint.Align.CENTER
+            textSize = calculateTextSizeToFitWidth(username, 350f, 60f)
+            isFakeBoldText=true
+            isAntiAlias = true
+        }
+        val totalText = "$username"
+        val totalX = width / 2f
+        val totalY = height.toFloat()
+        canvas.drawText(totalText, totalX, totalY, smallTextPaint)
+    }
+}
+private fun calculateTextSizeToFitWidth(text: String, maxWidth: Float, startSize: Float): Float {
+    val paint = Paint()
+    var textSize = startSize
+    paint.textSize = textSize
 
+    while (paint.measureText(text) > maxWidth && textSize > 10f) {
+        textSize -= 1f
+        paint.textSize = textSize
+    }
+
+    return textSize
 }

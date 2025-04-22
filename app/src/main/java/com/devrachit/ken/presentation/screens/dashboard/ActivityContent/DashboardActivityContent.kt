@@ -35,6 +35,7 @@ import kotlinx.coroutines.Job
 fun DashboardContent(
     username: String,
     uiState: States,
+    logout: () -> Unit,
 ) {
     KenTheme {
         Scaffold(
@@ -47,7 +48,7 @@ fun DashboardContent(
                     .padding(paddingValues = innerPadding)
                     .background(colorResource(id = R.color.card_elevated))
             ) {
-                DrawerLayoutContent(username = username, uiState = uiState)
+                DrawerLayoutContent(logout = logout,username = username, uiState = uiState)
             }
         }
     }

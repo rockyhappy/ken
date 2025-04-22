@@ -1,5 +1,6 @@
 package com.devrachit.ken.presentation.screens.dashboard.ActivityContent
 
+import android.os.Process
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -12,19 +13,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,22 +32,18 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.devrachit.ken.R
-import com.devrachit.ken.presentation.components.ExitAppDialog
+import com.devrachit.ken.utility.composeUtility.ExitAppDialog
 import com.devrachit.ken.presentation.navigation.NavGraph
 import com.devrachit.ken.presentation.navigation.Screen
 import com.devrachit.ken.presentation.navigation.navigateToTab
 import com.devrachit.ken.presentation.navigation.rememberNavigationItems
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.DashboardHeader
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.NavItem
-import com.devrachit.ken.ui.theme.TextStyleInter14Lh16Fw600
-import com.devrachit.ken.ui.theme.TextStyleInter16Lh24Fw600
-import com.devrachit.ken.ui.theme.TextStyleInter20Lh24Fw700
 import com.devrachit.ken.utility.composeUtility.sdp
 import com.devrachit.ken.utility.composeUtility.shadowEffect
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -96,7 +85,7 @@ fun ScreenContents(
         ExitAppDialog(
             showDialog = showExitDialog,
             onDismissRequest = { showExitDialog = false },
-            onConfirmExit = { android.os.Process.killProcess(android.os.Process.myPid()) }
+            onConfirmExit = { Process.killProcess(Process.myPid()) }
         )
     }
 
@@ -143,6 +132,7 @@ fun ScreenContents(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     navItems.forEach { (_, itemData) ->
+                        if (itemData.route != Screen.Logout.route)
                         NavItem(
                             label = itemData.label,
                             outlinedIconRes = itemData.outlinedIcon,

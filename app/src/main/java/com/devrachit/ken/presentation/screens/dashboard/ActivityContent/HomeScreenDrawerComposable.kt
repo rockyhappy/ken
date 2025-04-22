@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,37 +19,31 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.devrachit.ken.R
 import com.devrachit.ken.presentation.navigation.Screen
-import com.devrachit.ken.presentation.navigation.navigateToTab
 import com.devrachit.ken.presentation.navigation.rememberNavigationItems
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.DrawerNavItem
-import com.devrachit.ken.presentation.screens.dashboard.Widgets.NavItem
 import com.devrachit.ken.ui.theme.TextStyleInter14Lh18Fw400
-import com.devrachit.ken.ui.theme.TextStyleInter20Lh24Fw700
 import com.devrachit.ken.ui.theme.TextStyleInter24Lh36Fw700
 import com.devrachit.ken.utility.composeUtility.ProfilePictureShimmer
 import com.devrachit.ken.utility.composeUtility.sdp
-import com.devrachit.ken.utility.composeUtility.shadowEffect2
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.painterResource
-import kotlinx.coroutines.delay
+import com.devrachit.ken.utility.composeUtility.ExitAppDialog
+import com.devrachit.ken.utility.composeUtility.LogoutDialog
 
 @Composable
 fun HomeScreenDrawer(
@@ -60,7 +52,8 @@ fun HomeScreenDrawer(
     onClick: () -> Unit,
     drawerProgress: Float = 0f,
     navController: NavHostController,
-    navigateAndCloseDrawer: (String) -> Unit
+    navigateAndCloseDrawer: (String) -> Unit,
+    logout: () -> Unit
 ) {
     val yOffset = lerp(0f, -100f, drawerProgress)
     val alpha = lerp(0f, 1f, drawerProgress)
@@ -102,8 +95,8 @@ fun HomeScreenDrawer(
         }
         if (!uiState.isLoadingUserInfo ||
             (uiState.leetCodeUserInfo.profile?.realName != null &&
-                    uiState.leetCodeUserInfo.profile?.userAvatar != null))
-        {
+                    uiState.leetCodeUserInfo.profile?.userAvatar != null)
+        ) {
             AsyncImage(
                 model = uiState.leetCodeUserInfo.profile?.userAvatar,
                 placeholder = painterResource(R.drawable.profile_placeholder),
@@ -137,6 +130,14 @@ fun HomeScreenDrawer(
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val navItems = rememberNavigationItems()
         val currentRoute = navBackStackEntry?.destination?.route ?: Screen.Home.route
+        val showLogoutDialog = remember { mutableStateOf(false) }
+        if (showLogoutDialog.value)
+            LogoutDialog(
+                showDialog = true,
+                onConfirmExit = { logout.invoke(); showLogoutDialog.value = false },
+
+                onDismissRequest = { showLogoutDialog.value = false })
+
         navItems.forEach { (index, itemData) ->
             DrawerNavItem(
                 label = itemData.label,
@@ -144,7 +145,9 @@ fun HomeScreenDrawer(
                 filledIconRes = itemData.filledIcon,
                 isSelected = currentRoute == itemData.route,
                 onClick = {
-                    if (currentRoute != itemData.route) {
+                    if (itemData.route == Screen.Logout.route) {
+                        showLogoutDialog.value = true
+                    } else if (currentRoute != itemData.route) {
                         navigateAndCloseDrawer(itemData.route)
                     } else {
                         onClick()
@@ -153,5 +156,6 @@ fun HomeScreenDrawer(
                 drawerProgress = drawerProgress
             )
         }
+
     }
 }

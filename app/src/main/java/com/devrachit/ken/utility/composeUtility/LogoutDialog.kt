@@ -1,5 +1,6 @@
 package com.devrachit.ken.utility.composeUtility
 
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,13 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.devrachit.ken.R
 import com.devrachit.ken.ui.theme.TextStyleInter14Lh16Fw600
 import com.devrachit.ken.ui.theme.TextStyleInter16Lh24Fw600
 import com.devrachit.ken.ui.theme.TextStyleInter20Lh24Fw700
+import com.devrachit.ken.utility.composeUtility.sdp
 
 @Composable
-fun ExitAppDialog(
+fun LogoutDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
     onConfirmExit: () -> Unit
@@ -39,7 +42,7 @@ fun ExitAppDialog(
             onDismissRequest = onDismissRequest,
             title = {
                 Text(
-                    text = "Exit App",
+                    text = "Logout",
                     color = colorResource(R.color.white),
                     textAlign = TextAlign.Center,
                     modifier = Modifier
@@ -50,7 +53,7 @@ fun ExitAppDialog(
             },
             text = {
                 Text(
-                    "Do you want to exit the app?",
+                    "Do you want to logout?",
                     color = colorResource(R.color.white),
                     textAlign = TextAlign.Center,
                     modifier = Modifier
@@ -74,7 +77,7 @@ fun ExitAppDialog(
                 ) {
                     androidx.compose.material3.Text(
                         modifier = Modifier.padding(horizontal = 8.sdp),
-                        text = "Exit",
+                        text = "Logout",
                         color = colorResource(R.color.white),
                         style = TextStyleInter16Lh24Fw600()
                     )

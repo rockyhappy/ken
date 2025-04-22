@@ -1,5 +1,6 @@
 package com.devrachit.ken.presentation.screens.dashboard.ActivityContent
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,10 +9,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.devrachit.ken.R
+import com.devrachit.ken.presentation.screens.auth.AuthActivity
+import com.devrachit.ken.utility.composeUtility.LoadingDialog
 import com.devrachit.ken.utility.constants.Constants.Companion.NAVKEYUSERNAME
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,7 +33,9 @@ class MainActivity : ComponentActivity() {
         
         setContent {
             val uiStates = viewModel.userValues.collectAsStateWithLifecycle().value
-            DashboardContent(username = username, uiState = uiStates)
+            if(uiStates.showDialogLoading) LoadingDialog(true, {},{})
+            if(uiStates.navigateToLogin)navigateToNewActivity(this)
+            DashboardContent(logout = viewModel::logout,username = username, uiState = uiStates)
         }
     }
 
@@ -70,4 +76,10 @@ class MainActivity : ComponentActivity() {
 //        startActivity(intent, options.toBundle())
 //    }
 
+    private fun navigateToNewActivity(context: MainActivity) {
+        val intent = Intent(context, AuthActivity::class.java)
+        startActivity(intent)
+        finish()
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+    }
 }

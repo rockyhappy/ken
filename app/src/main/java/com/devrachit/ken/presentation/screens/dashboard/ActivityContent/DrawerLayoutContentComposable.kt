@@ -22,7 +22,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun DrawerLayoutContent(username: String, uiState: States) {
+fun DrawerLayoutContent(username: String, uiState: States, logout: () -> Unit){
     val coroutineScope = rememberCoroutineScope()
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp
@@ -109,7 +109,8 @@ fun DrawerLayoutContent(username: String, uiState: States) {
         onClick = { closeDrawer() },
         drawerProgress = drawerProgress,
         navController = navController,
-        navigateAndCloseDrawer = navigateAndCloseDrawer
+        navigateAndCloseDrawer = navigateAndCloseDrawer,
+        logout = logout
     )
 
     // Main content
