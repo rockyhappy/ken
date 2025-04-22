@@ -20,14 +20,14 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:text="username"
             android:textAlignment="center"
             android:textColor="@color/white"
@@ -38,31 +38,37 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/easy_label"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:text="Easy"
                     android:textAlignment="center"
                     android:textColor="@color/easy_filled_blue"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/easy_solved"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="1234"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="0"
+                    android:layout_gravity="center"
+                    android:gravity="center_horizontal"
                     android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="14sp"
@@ -82,15 +88,17 @@
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/medium_label"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:text="Med."
                     android:textAlignment="center"
                     android:textColor="@color/medium_filled_yellow"
@@ -100,8 +108,11 @@
                 <TextView
                     android:id="@+id/medium_solved"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="1234"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="0"
+                    android:layout_gravity="center"
+                    android:gravity="center_horizontal"
                     android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="14sp"
@@ -121,17 +132,19 @@
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/hard_label"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
                     android:text="Hard"
                     android:textAlignment="center"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:textColor="@color/hard_filled_red"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -139,12 +152,15 @@
                 <TextView
                     android:id="@+id/hard_solved"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="1234"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="0"
+                    android:layout_gravity="center"
+                    android:gravity="center_horizontal"
                     android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"  />
 
 <!--                <TextView-->
 <!--                    android:id="@+id/hard_total"-->
