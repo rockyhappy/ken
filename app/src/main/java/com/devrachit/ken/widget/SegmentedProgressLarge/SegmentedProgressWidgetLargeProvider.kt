@@ -170,46 +170,46 @@ class SegmentedProgressWidgetLargeProvider : AppWidgetProvider() {
             // Set the bitmap to the ImageView
             views.setImageViewBitmap(R.id.widget_drawing, bitmap)
 
-            val textBitmapWidth = 350
-            val textBitmapHeight = 500
-            val bitmapText = createBitmap(width = textBitmapWidth, height = textBitmapHeight)
-            val canvasText = Canvas(bitmapText)
-            drawProgressText(
-                context = context,
-                canvas = canvasText,
-                width = textBitmapWidth,
-                height = textBitmapHeight,
-                username = username,
-                solved = questionProgress.solved,
-                attempting = questionProgress.attempting,
-                total = questionProgress.total,
-                easyTotalCount = questionProgress.easyTotalCount,
-                easySolvedCount = questionProgress.easySolvedCount,
-                mediumTotalCount = questionProgress.mediumTotalCount,
-                mediumSolvedCount = questionProgress.mediumSolvedCount,
-                hardTotalCount = questionProgress.hardTotalCount,
-                hardSolvedCount = questionProgress.hardSolvedCount
-            )
-            views.setImageViewBitmap(R.id.widget_drawing2, bitmapText)
-
-//            // Set text values in the widget layout
-//            views.setTextViewText(R.id.username, username)
-//
-//            // Update easy stats
-//            views.setTextViewText(R.id.easy_solved, questionProgress.easySolvedCount.toString())
-//            views.setTextViewText(R.id.easy_total, "/${questionProgress.easyTotalCount}")
-//
-//            // Update medium stats
-//            views.setTextViewText(
-//                R.id.medium_solved,
-//                questionProgress.mediumSolvedCount.toString()
+//            val textBitmapWidth = 350
+//            val textBitmapHeight = 500
+//            val bitmapText = createBitmap(width = textBitmapWidth, height = textBitmapHeight)
+//            val canvasText = Canvas(bitmapText)
+//            drawProgressText(
+//                context = context,
+//                canvas = canvasText,
+//                width = textBitmapWidth,
+//                height = textBitmapHeight,
+//                username = username,
+//                solved = questionProgress.solved,
+//                attempting = questionProgress.attempting,
+//                total = questionProgress.total,
+//                easyTotalCount = questionProgress.easyTotalCount,
+//                easySolvedCount = questionProgress.easySolvedCount,
+//                mediumTotalCount = questionProgress.mediumTotalCount,
+//                mediumSolvedCount = questionProgress.mediumSolvedCount,
+//                hardTotalCount = questionProgress.hardTotalCount,
+//                hardSolvedCount = questionProgress.hardSolvedCount
 //            )
+//            views.setImageViewBitmap(R.id.widget_drawing2, bitmapText)
+
+            // Set text values in the widget layout
+            views.setTextViewText(R.id.username, username)
+
+            // Update easy stats
+            views.setTextViewText(R.id.easy_solved, questionProgress.easySolvedCount.toString())
+//            views.setTextViewText(R.id.easy_total, "/${questionProgress.easyTotalCount}")
+
+            // Update medium stats
+            views.setTextViewText(
+                R.id.medium_solved,
+                questionProgress.mediumSolvedCount.toString()
+            )
 //            views.setTextViewText(R.id.medium_total, "/${questionProgress.mediumTotalCount}")
-//
-//            views.setTextViewText(R.id.hard_solved, questionProgress.hardSolvedCount.toString())
+
+            views.setTextViewText(R.id.hard_solved, questionProgress.hardSolvedCount.toString())
 //            views.setTextViewText(R.id.hard_total, "/${questionProgress.hardTotalCount}")
-//
-//
+
+
             val openAppIntent =
                 context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or
@@ -226,7 +226,7 @@ class SegmentedProgressWidgetLargeProvider : AppWidgetProvider() {
                 )
                 views.setOnClickPendingIntent(R.id.segmented_widget_large, pendingIntent)
                 views.setOnClickPendingIntent(R.id.widget_drawing, pendingIntent)
-                views.setOnClickPendingIntent(R.id.widget_drawing2, pendingIntent)
+//                views.setOnClickPendingIntent(R.id.widget_drawing2, pendingIntent)
             }
 
 //            val refreshIntent = Intent(context, SegmentedProgressWidgetLargeProvider::class.java).apply {

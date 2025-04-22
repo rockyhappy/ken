@@ -44,7 +44,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginTop="8dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -68,22 +68,22 @@
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/easy_total"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="/1234"
-                    android:textAlignment="center"
-                    android:textColor="@color/white"
-                    android:textSize="10sp"
-                    android:alpha="0.7"
-                    android:textStyle="italic" />
+<!--                <TextView-->
+<!--                    android:id="@+id/easy_total"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="/1234"-->
+<!--                    android:textAlignment="center"-->
+<!--                    android:textColor="@color/white"-->
+<!--                    android:textSize="10sp"-->
+<!--                    android:alpha="0.7"-->
+<!--                    android:textStyle="italic" />-->
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginTop="8dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -107,22 +107,22 @@
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/medium_total"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="/1234"
-                    android:textAlignment="center"
-                    android:textColor="@color/white"
-                    android:textSize="10sp"
-                    android:alpha="0.7"
-                    android:textStyle="italic" />
+<!--                <TextView-->
+<!--                    android:id="@+id/medium_total"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="/1234"-->
+<!--                    android:textAlignment="center"-->
+<!--                    android:textColor="@color/white"-->
+<!--                    android:textSize="10sp"-->
+<!--                    android:alpha="0.7"-->
+<!--                    android:textStyle="italic" />-->
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginTop="8dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -146,16 +146,16 @@
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/hard_total"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="/1234"
-                    android:textAlignment="center"
-                    android:textColor="@color/white"
-                    android:textSize="10sp"
-                    android:alpha="0.7"
-                    android:textStyle="italic" />
+<!--                <TextView-->
+<!--                    android:id="@+id/hard_total"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="/1234"-->
+<!--                    android:textAlignment="center"-->
+<!--                    android:textColor="@color/white"-->
+<!--                    android:textSize="10sp"-->
+<!--                    android:alpha="0.7"-->
+<!--                    android:textStyle="italic" />-->
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

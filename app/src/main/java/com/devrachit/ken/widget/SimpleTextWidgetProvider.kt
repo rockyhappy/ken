@@ -172,18 +172,18 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
 
             // Update easy stats
             views.setTextViewText(R.id.easy_solved, questionProgress.easySolvedCount.toString())
-            views.setTextViewText(R.id.easy_total, "/${questionProgress.easyTotalCount}")
+//            views.setTextViewText(R.id.easy_total, "/${questionProgress.easyTotalCount}")
 
             // Update medium stats
             views.setTextViewText(
                 R.id.medium_solved,
                 questionProgress.mediumSolvedCount.toString()
             )
-            views.setTextViewText(R.id.medium_total, "/${questionProgress.mediumTotalCount}")
+//            views.setTextViewText(R.id.medium_total, "/${questionProgress.mediumTotalCount}")
 
             // Update hard stats
             views.setTextViewText(R.id.hard_solved, questionProgress.hardSolvedCount.toString())
-            views.setTextViewText(R.id.hard_total, "/${questionProgress.hardTotalCount}")
+//            views.setTextViewText(R.id.hard_total, "/${questionProgress.hardTotalCount}")
 
             val openAppIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or
