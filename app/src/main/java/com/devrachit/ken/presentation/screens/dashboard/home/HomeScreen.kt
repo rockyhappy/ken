@@ -36,6 +36,6 @@ fun HomeScreen(
             modifier = Modifier.padding(top = 20.sdp, start = 18.sdp, end = 18.sdp)
         )
         
-        // Other content for the HomeScreen can go here
+
     }
 }
