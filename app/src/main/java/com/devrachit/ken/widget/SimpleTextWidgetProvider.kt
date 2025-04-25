@@ -132,8 +132,8 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.simple_text_widget)
 
             // Create progress indicator bitmap
-            val width = 600
-            val height = 600
+            val width = 300
+            val height = 300
             val bitmap = createBitmap(width = width, height = height)
             val canvas = Canvas(bitmap)
 
@@ -172,19 +172,34 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
 
             // Update easy stats
             views.setTextViewText(R.id.easy_solved, questionProgress.easySolvedCount.toString())
-            views.setTextViewText(R.id.easy_total, "/${questionProgress.easyTotalCount}")
+//            views.setTextViewText(R.id.easy_total, "/${questionProgress.easyTotalCount}")
 
             // Update medium stats
             views.setTextViewText(
                 R.id.medium_solved,
                 questionProgress.mediumSolvedCount.toString()
             )
-            views.setTextViewText(R.id.medium_total, "/${questionProgress.mediumTotalCount}")
+//            views.setTextViewText(R.id.medium_total, "/${questionProgress.mediumTotalCount}")
 
             // Update hard stats
             views.setTextViewText(R.id.hard_solved, questionProgress.hardSolvedCount.toString())
-            views.setTextViewText(R.id.hard_total, "/${questionProgress.hardTotalCount}")
+//            views.setTextViewText(R.id.hard_total, "/${questionProgress.hardTotalCount}")
 
+            val openAppIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP
+            }
+            
+            if (openAppIntent != null) {
+                val pendingIntent = PendingIntent.getActivity(
+                    context,
+                    0,
+                    openAppIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+                views.setOnClickPendingIntent(R.id.segmented_widget_small, pendingIntent)
+            }
             // Add a refresh action
             val refreshIntent = Intent(context, SimpleTextWidgetProvider::class.java).apply {
                 action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
@@ -221,7 +236,7 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
         hardTotalCount: Int,
         hardSolvedCount: Int
     ) {
-        val stroke_Width = 35f
+        val stroke_Width = 20f
 
         // Get color resources
         val easyBaseColor = ContextCompat.getColor(context, R.color.easy_base_blue)
@@ -311,7 +326,7 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
         val mainTextPaint = Paint().apply {
             color = Color.WHITE
             textAlign = Paint.Align.CENTER
-            textSize = 140f
+            textSize = 70f
             isFakeBoldText = true
             isAntiAlias = true
         }
@@ -319,7 +334,7 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
         val smallTextPaint = Paint().apply {
             color = Color.WHITE
             textAlign = Paint.Align.CENTER
-            textSize = 80f
+            textSize = 40f
             isAntiAlias = true
         }
 
@@ -332,7 +347,7 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
         // Draw the total with a slash before it in smaller text
         val totalText = "/$total"
         val totalX = width / 2f
-        val totalY = height / 2f + 80f  // Adjusted for proper spacing
+        val totalY = height / 2f + 60f  // Adjusted for proper spacing
         canvas.drawText(totalText, totalX, totalY, smallTextPaint)
     }
 

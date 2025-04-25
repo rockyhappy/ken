@@ -6,12 +6,15 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.util.Log
+import com.devrachit.ken.widget.SegmentedProgressLarge.SegmentedProgressWidgetLargeProvider
 
 class WidgetUpdateReceiver : BroadcastReceiver() {
     
     companion object {
         const val ACTION_PERIODIC_UPDATE = "com.devrachit.ken.ACTION_UPDATE_WIDGET"
+        const val ACTION_ON_OPEN_APP_UPDATE = "com.devrachit.ken.ACTION_UPDATE_WIDGET_ON_OPEN"
         private const val TAG = "WidgetUpdateReceiver"
         
         // Schedule a periodic update
@@ -29,7 +32,7 @@ class WidgetUpdateReceiver : BroadcastReceiver() {
             
             // Get AlarmManager and schedule updates every hour
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val intervalMillis = 60 * 60 * 1000L // 1 hour
+            val intervalMillis = 15 * 60 * 1000L // 1 hour
             
             // Start the alarm
             alarmManager.setRepeating(
@@ -64,21 +67,24 @@ class WidgetUpdateReceiver : BroadcastReceiver() {
     }
     
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == ACTION_PERIODIC_UPDATE) {
-            val appWidgetManager = AppWidgetManager.getInstance(context)
-            val appWidgetIds = appWidgetManager.getAppWidgetIds(
-                android.content.ComponentName(context, SimpleTextWidgetProvider::class.java)
-            )
-            
-            if (appWidgetIds.isNotEmpty()) {
-                // Update the widgets
-                val updateIntent = Intent(context, SimpleTextWidgetProvider::class.java).apply {
-                    action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds)
-                }
-                context.sendBroadcast(updateIntent)
-                Log.d(TAG, "Sent update broadcast to ${appWidgetIds.size} widgets")
+        if (intent.action == ACTION_PERIODIC_UPDATE || intent.action == ACTION_ON_OPEN_APP_UPDATE) {
+            // Update the SimpleTextWidget
+            val simpleTextIntent = Intent(context, SimpleTextWidgetProvider::class.java).apply {
+                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                val ids = AppWidgetManager.getInstance(context)
+                    .getAppWidgetIds(ComponentName(context, SimpleTextWidgetProvider::class.java))
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
             }
+            context.sendBroadcast(simpleTextIntent)
+            
+            // Update the SegmentedProgressWidgetLarge
+            val segmentedProgressIntent = Intent(context, SegmentedProgressWidgetLargeProvider::class.java).apply {
+                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                val ids = AppWidgetManager.getInstance(context)
+                    .getAppWidgetIds(ComponentName(context, SegmentedProgressWidgetLargeProvider::class.java))
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+            }
+            context.sendBroadcast(segmentedProgressIntent)
         }
     }
 }

@@ -4,7 +4,7 @@
     android:initialLayout="@layout/simple_text_widget"
     android:minWidth="500dp"
     android:minHeight="50dp"
-    android:previewImage="@drawable/logo"
+    android:previewImage="@drawable/widget1"
     android:resizeMode="horizontal"
     android:targetCellWidth="5"
     android:targetCellHeight="1"

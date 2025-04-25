@@ -1,5 +1,6 @@
 package com.devrachit.ken.data.local.datastore
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -49,6 +50,7 @@ class DataStoreRepository(private val context: Context) {
     // thus ensuring only a single instance of DataStoreRepository exists throughout
     // the application's lifecycle.
     companion object {
+
         @Volatile
         private var INSTANCE: DataStoreRepository? = null
 

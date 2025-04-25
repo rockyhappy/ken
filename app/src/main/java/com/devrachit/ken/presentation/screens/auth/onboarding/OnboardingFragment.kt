@@ -1,5 +1,8 @@
 package com.devrachit.ken.presentation.screens.auth.onboarding
 
+import android.appwidget.AppWidgetManager
+import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -70,7 +73,9 @@ class OnboardingFragment : Fragment() {
                 }
                 
                 if (userValues.value.isUserNameVerified) {
+                    updateAppWidgets(username = userValues.value.userName.toString())
                     navigateToNewActivity(username = userValues.value.userName.toString())
+
                 }
                 
                 // Show network error dialog when not connected
@@ -104,5 +109,19 @@ class OnboardingFragment : Fragment() {
         startActivity(intent)
         requireActivity().finish()
         requireActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+    }
+    private fun updateAppWidgets(username: String)
+    {
+        val appWidgetManager = AppWidgetManager.getInstance(requireContext())
+        val widgetComponentName = ComponentName(requireContext(), AppWidgetProvider::class.java)
+        val widgetIds = appWidgetManager.getAppWidgetIds(widgetComponentName)
+
+        // Trigger widget update via broadcast
+        val updateIntent = Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE).apply {
+            component = widgetComponentName
+            putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
+            putExtra(NAVKEYUSERNAME, username)
+        }
+        requireContext().sendBroadcast(updateIntent)
     }
 }
