@@ -44,6 +44,12 @@ fun rememberNavigationItems() = remember {
             R.drawable.ic_sheets_outlined,
             R.drawable.ic_sheets_filled,
             Screen.Sheets.route
+        ),
+        4 to NavItemData(
+            "Logout",
+            R.drawable.ic_logout_outlined,
+            R.drawable.ic_logout_filled,
+            Screen.Logout.route
         )
     )
 }

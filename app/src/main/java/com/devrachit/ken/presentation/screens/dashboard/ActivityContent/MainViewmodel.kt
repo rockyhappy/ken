@@ -10,6 +10,8 @@ import com.devrachit.ken.data.local.datastore.DataStoreRepository
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
+import com.devrachit.ken.domain.usecases.logout.LogoutUseCase
+import com.devrachit.ken.presentation.screens.auth.login.LoginNavigationState
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -28,7 +30,9 @@ data class States(
     val isLoadingUserInfo: Boolean = false,
     val leetCodeUserInfo: LeetCodeUserInfo,
     val error: String? = null,
-    val isSuccess: Boolean = false
+    val isSuccess: Boolean = false,
+    val showDialogLoading: Boolean = false,
+    val navigateToLogin: Boolean = false
 )
 
 @HiltViewModel
@@ -38,7 +42,8 @@ class MainViewModel @Inject constructor(
     private val getUserInfoUseCase: GetUserInfoUseCase,
     private val dataStoreRepository: DataStoreRepository,
     private val getUserQuestionStatusUseCase: GetUserQuestionStatusUseCase,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(false)
@@ -148,5 +153,24 @@ class MainViewModel @Inject constructor(
             error = displayMessage
         )
         Timber.e("Error checking username: $errorMessage")
+    }
+
+    fun logout() {
+        viewModelScope.launch(Dispatchers.IO) {
+            logoutUseCase()
+                .collectLatest { result ->
+                    when (result) {
+                        is Resource.Loading -> {
+                            _userValues.value = _userValues.value.copy(showDialogLoading = true)
+                        }
+                        is Resource.Success -> {
+                            _userValues.value = _userValues.value.copy(showDialogLoading = true, navigateToLogin = true)
+                        }
+                        is Resource.Error -> {
+                            _userValues.value = _userValues.value.copy(showDialogLoading = false)
+                        }
+                    }
+                }
+        }
     }
 }

@@ -1,5 +1,7 @@
 package com.devrachit.ken.presentation.screens.dashboard.ActivityContent
 
+import android.os.Process
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -32,12 +34,10 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.devrachit.ken.R
+import com.devrachit.ken.utility.composeUtility.ExitAppDialog
 import com.devrachit.ken.presentation.navigation.NavGraph
 import com.devrachit.ken.presentation.navigation.Screen
 import com.devrachit.ken.presentation.navigation.navigateToTab
@@ -46,10 +46,8 @@ import com.devrachit.ken.presentation.screens.dashboard.Widgets.DashboardHeader
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.NavItem
 import com.devrachit.ken.utility.composeUtility.sdp
 import com.devrachit.ken.utility.composeUtility.shadowEffect
-import com.devrachit.ken.utility.composeUtility.shadowEffect2
 import com.google.accompanist.pager.ExperimentalPagerApi
 import kotlinx.coroutines.Job
-
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -59,19 +57,13 @@ fun ScreenContents(
     modifier: Modifier = Modifier,
     onClick: () -> Job,
     drawerProgress: Float = 0f,
-    navController : NavHostController
+    navController: NavHostController
 ) {
-    // Create NavController that's shared with NavGraph
-//    val navController = rememberNavController()
-    
-    // Get current back stack entry
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    
-    // Bottom row animation parameters
+
     val yOffset = lerp(0f, 100f, drawerProgress)
     val alpha = lerp(1f, 0f, drawerProgress)
 
-    // Add spring animation for scale when row reappears
     val scale = animateFloatAsState(
         targetValue = if (drawerProgress < 0.5f) 1f else 0.8f,
         animationSpec = spring(
@@ -83,13 +75,24 @@ fun ScreenContents(
     val navItems = rememberNavigationItems()
     val currentRoute = navBackStackEntry?.destination?.route ?: Screen.Home.route
 
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = currentRoute == Screen.Home.route) {
+        showExitDialog = true
+    }
+
+    if (showExitDialog) {
+        ExitAppDialog(
+            showDialog = showExitDialog,
+            onDismissRequest = { showExitDialog = false },
+            onConfirmExit = { Process.killProcess(Process.myPid()) }
+        )
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
-            .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(0.dp)
-            )
+            .shadow(elevation = 8.dp, shape = RoundedCornerShape(0.dp))
             .background(Color.White)
     ) {
         Column(
@@ -103,7 +106,6 @@ fun ScreenContents(
                 drawerProgress = drawerProgress
             )
             Box {
-                // Pass the navController to NavGraph
                 NavGraph(navController = navController)
 
                 Row(
@@ -126,11 +128,11 @@ fun ScreenContents(
                         )
                         .background(colorResource(R.color.card_elevated))
                         .padding(horizontal = 22.sdp, vertical = 8.sdp),
-                    horizontalArrangement = Arrangement.Absolute.SpaceEvenly,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Use a loop to create all navigation items
-                    navItems.forEach { (index, itemData) ->
+                    navItems.forEach { (_, itemData) ->
+                        if (itemData.route != Screen.Logout.route)
                         NavItem(
                             label = itemData.label,
                             outlinedIconRes = itemData.outlinedIcon,
@@ -146,4 +148,3 @@ fun ScreenContents(
         }
     }
 }
-

@@ -1162,5 +1162,6 @@
     <color name="medium_filled_yellow">#FFB700</color>
     <color name="hard_base_red">#512B2B</color>
     <color name="hard_filled_red">#F63737</color>
-
+    <color name="solved_color">#4CAF50</color>
+    <color name="attempting_color">#00BCD4</color>
 </resources>

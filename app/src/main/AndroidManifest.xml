@@ -34,6 +34,33 @@
             android:theme="@style/Theme.Ken"
             tools:ignore="DiscouragedApi">
         </activity>
+        <receiver
+            android:name=".widget.SimpleTextWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/simple_text_widget_info" />
+        </receiver>
+        <receiver
+            android:name=".widget.SegmentedProgressLarge.SegmentedProgressWidgetLargeProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/segemented_progress_large" />
+        </receiver>
+        <receiver
+            android:name=".widget.WidgetUpdateReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.devrachit.ken.ACTION_UPDATE_WIDGET" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
