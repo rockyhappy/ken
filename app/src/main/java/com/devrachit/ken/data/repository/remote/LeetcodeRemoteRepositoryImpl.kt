@@ -5,6 +5,7 @@ import com.devrachit.ken.data.remote.services.LeetcodeApiService
 import com.devrachit.ken.domain.models.CurrentTimeResponse
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
 import com.devrachit.ken.domain.models.UserInfoResponse
+import com.devrachit.ken.domain.models.UserProfileCalendarResponse
 import com.devrachit.ken.domain.models.UserQuestionStatusData
 import com.devrachit.ken.domain.models.UserQuestionStatusResponse
 import com.devrachit.ken.domain.repository.remote.LeetcodeRemoteRepository
@@ -72,13 +73,13 @@ class LeetcodeRemoteRepositoryImpl @Inject constructor(
 
     }
 
-    override suspend fun fetchUserProfileCalender(username: String): Resource<Any?> {
+    override suspend fun fetchUserProfileCalender(username: String): Resource<UserProfileCalendarResponse> {
         val jsonRequest = GraphqlQuery.getUserProfileCalendarJsonRequest(username = username)
         val request = jsonRequest.toString().toRequestBody("application/json".toMediaType())
         return try {
             val response = apiService.fetUserProfileCalender(request)
             val responseBody = response.string()
-            val userProfileCalendar = json.decodeFromString<Any?>(responseBody)
+            val userProfileCalendar = json.decodeFromString<UserProfileCalendarResponse>(responseBody)
             Resource.Success(userProfileCalendar)
 
         } catch (e: Exception) {

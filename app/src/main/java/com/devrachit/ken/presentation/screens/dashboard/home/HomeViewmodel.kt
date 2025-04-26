@@ -70,7 +70,7 @@ class HomeViewmodel @Inject constructor(
     }
 
     private suspend fun fetchUserProfileCalender(username: String) {
-        getUserProfileCalenderUseCase(username).collectLatest{
+        getUserProfileCalenderUseCase(username,forceRefresh = true).collectLatest{
 
         }
     }
