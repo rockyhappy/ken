@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devrachit.ken.data.local.datastore.DataStoreRepository
 import com.devrachit.ken.domain.models.toQuestionProgressUiState
+import com.devrachit.ken.domain.usecases.getCurrentTime.GetCurrentTime
+import com.devrachit.ken.domain.usecases.getUserProfileCalender.GetUserProfileCalenderUseCase
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,16 +21,20 @@ import javax.inject.Inject
 class HomeViewmodel @Inject constructor(
     private val dataStoreRepository: DataStoreRepository,
     private val getUserQuestionStatusUseCase: GetUserQuestionStatusUseCase,
-): ViewModel(){
+    private val getCurrentTime: GetCurrentTime,
+    private val getUserProfileCalenderUseCase: GetUserProfileCalenderUseCase
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiStates())
-    val uiState  : StateFlow<HomeUiStates> = _uiState.asStateFlow()
+    val uiState: StateFlow<HomeUiStates> = _uiState.asStateFlow()
 
 
     fun loadUserDetails() {
         viewModelScope.launch(Dispatchers.IO) {
             val username = dataStoreRepository.readPrimaryUsername()
             if (!username.isNullOrEmpty()) {
+                fetchUserProfileCalender(username)
+                fetchCurrentTime()
                 fetchUserQuestionStatus(username)
             }
         }
@@ -40,14 +46,16 @@ class HomeViewmodel @Inject constructor(
                 is Resource.Loading -> {
 
                 }
+
                 is Resource.Success -> {
                     val data = it.data
-                    if(data != null)
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        questionProgress = data.toQuestionProgressUiState()
-                    )
+                    if (data != null)
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            questionProgress = data.toQuestionProgressUiState()
+                        )
                 }
+
                 is Resource.Error -> {
 
                 }
@@ -55,6 +63,16 @@ class HomeViewmodel @Inject constructor(
         }
     }
 
+    private suspend fun fetchCurrentTime() {
+        getCurrentTime().collectLatest {
 
+        }
+    }
+
+    private suspend fun fetchUserProfileCalender(username: String) {
+        getUserProfileCalenderUseCase(username).collectLatest{
+
+        }
+    }
 
 }

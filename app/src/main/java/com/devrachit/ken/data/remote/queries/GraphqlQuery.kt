@@ -85,5 +85,51 @@ class GraphqlQuery {
                 put("variables", JSONObject().put("username", username))
             }
         }
+
+        val currentDataQuery = """
+        query currentTimestamp {
+          currentTimestamp
+        }
+    """.trimIndent()
+
+        fun getCurrentDataJsonRequest(): JSONObject {
+            return JSONObject().apply {
+                put("query", currentDataQuery)
+                put("operationName", "currentTimestamp")
+                put("variables", JSONObject())
+            }
+        }
+
+        val getUserProfileCalenderQuery = """
+    query userProfileCalendar(${"$"}username: String!, ${"$"}year: Int) {
+      matchedUser(username: ${"$"}username) {
+        userCalendar(year: ${"$"}year) {
+          activeYears
+          streak
+          totalActiveDays
+          dccBadges {
+            timestamp
+            badge {
+              name
+              icon
+            }
+          }
+          submissionCalendar
+        }
+      }
+    }
+    """.trimIndent()
+
+        fun getUserProfileCalendarJsonRequest(username: String, year: Int? = null): JSONObject {
+            val variables = JSONObject().put("username", username)
+            if (year != null) {
+                variables.put("year", year)
+            }
+            return JSONObject().apply {
+                put("query", getUserProfileCalenderQuery)
+                put("operationName", "userProfileCalendar")
+                put("variables", variables)
+            }
+        }
     }
 }

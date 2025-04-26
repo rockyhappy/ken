@@ -2,6 +2,7 @@ package com.devrachit.ken.domain.repository.remote
 
 import com.devrachit.ken.data.remote.queries.GraphqlQuery
 import com.devrachit.ken.data.remote.services.LeetcodeApiService
+import com.devrachit.ken.domain.models.CurrentTimeResponse
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
 import com.devrachit.ken.domain.models.UserInfoResponse
 import com.devrachit.ken.domain.models.UserQuestionStatusData
@@ -16,4 +17,6 @@ import javax.inject.Inject
 interface LeetcodeRemoteRepository {
     suspend fun fetchUserInfo(username: String): Resource<LeetCodeUserInfo>
     suspend fun fetchUserRankingInfo(username: String): Resource<UserQuestionStatusData>
+    suspend fun fetchCurrentData(): Resource<CurrentTimeResponse>
+    suspend fun fetchUserProfileCalender(username : String): Resource<Any?>
 }
