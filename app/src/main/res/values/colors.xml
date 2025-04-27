@@ -1164,4 +1164,8 @@
     <color name="hard_filled_red">#F63737</color>
     <color name="solved_color">#4CAF50</color>
     <color name="attempting_color">#00BCD4</color>
+    <color name="heatmap1">#7FE18B</color>
+    <color name="heatmap2">#28C244</color>
+    <color name="heatmap3">#109932</color>
+    <color name="heatmap4">#016620</color>
 </resources>
