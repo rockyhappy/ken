@@ -20,7 +20,7 @@ class LogoutUseCase @Inject constructor(
     operator fun invoke(): Flow<Resource<Boolean>> = flow {
         emit(Resource.Loading())
         try {
-            localRepository.clearCache()
+//            localRepository.clearCache()
             dataStoteRepository.clearPrimaryUsername()
             emit(Resource.Success(true))
         }

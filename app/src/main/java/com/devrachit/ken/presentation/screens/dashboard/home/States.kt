@@ -1,8 +1,11 @@
 package com.devrachit.ken.presentation.screens.dashboard.home
 
+import com.devrachit.ken.domain.models.UserCalendar
+
 data class HomeUiStates(
     val isLoading: Boolean = false,
-    val questionProgress: QuestionProgressUiState = QuestionProgressUiState()
+    val questionProgress: QuestionProgressUiState = QuestionProgressUiState(),
+    val userProfileCalender :UserCalendar? = null
 )
 
 data class QuestionProgressUiState(
