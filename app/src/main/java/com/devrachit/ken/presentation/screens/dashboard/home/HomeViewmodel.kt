@@ -1,5 +1,6 @@
 package com.devrachit.ken.presentation.screens.dashboard.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devrachit.ken.data.local.datastore.DataStoreRepository
@@ -65,13 +66,36 @@ class HomeViewmodel @Inject constructor(
 
     private suspend fun fetchCurrentTime() {
         getCurrentTime().collectLatest {
+            when(it){
+                is Resource.Loading -> {
 
+                }
+                is Resource.Success -> {
+                    _uiState.value = _uiState.value.copy(
+                        currentTimestamp = it.data?.data?.currentTimestamp)
+                    Log.d("HomeViewModel", "Current Time: ${it.data?.data?.currentTimestamp}")
+                }
+                is Resource.Error -> {
+
+                }
+            }
         }
     }
 
     private suspend fun fetchUserProfileCalender(username: String) {
         getUserProfileCalenderUseCase(username,forceRefresh = true).collectLatest{
-
+            when(it){
+                is Resource.Loading -> {
+                    
+                }
+                is Resource.Success -> {
+                    _uiState.value = _uiState.value.copy(
+                        userProfileCalender = it.data)
+                }
+                is Resource.Error -> {
+                    
+                }
+            }
         }
     }
 

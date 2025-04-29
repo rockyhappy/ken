@@ -18,7 +18,7 @@ import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
         UserQuestionStatusEntity::class,
         UserProfileCalenderEntity::class
                ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(LeetCodeConverters::class)

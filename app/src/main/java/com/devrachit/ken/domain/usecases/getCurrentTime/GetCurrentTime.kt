@@ -1,5 +1,6 @@
 package com.devrachit.ken.domain.usecases.getCurrentTime
 
+import android.util.Log
 import com.devrachit.ken.data.local.datastore.DataStoreRepository
 import com.devrachit.ken.domain.models.CurrentTimeData
 import com.devrachit.ken.domain.models.CurrentTimeResponse
@@ -20,13 +21,14 @@ class GetCurrentTime @Inject constructor(
     private val networkManager: NetworkManager
 ) {
     operator fun invoke(): Flow<Resource<CurrentTimeResponse>> = flow {
-
+        Log.d("HomeViewModel", "Current Time: ")
         emit(Resource.Loading())
         val isNetworkAvailable = networkManager.isConnected()
         if (isNetworkAvailable) {
             val currentTime = remoteRepository.fetchCurrentData()
-            println(currentTime)
+            println("hii thie is the current time "+currentTime)
             dataStoreRepository.savePrimaryTime(currentTime.data?.data?.currentTimestamp.toString())
+            Log.d("HomeViewModel", "Current Time: ")
             emit(currentTime)
         } else {
             val currentTime = dataStoreRepository.readPrimaryTime()

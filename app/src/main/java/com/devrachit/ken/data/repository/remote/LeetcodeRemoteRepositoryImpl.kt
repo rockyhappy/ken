@@ -64,8 +64,10 @@ class LeetcodeRemoteRepositoryImpl @Inject constructor(
 
         return try {
             val response = apiService.fetchCurrentTime(request)
+            println("Response: Current Data:$response")
             val responseBody = response.string()
             val currentData = json.decodeFromString<CurrentTimeResponse>(responseBody)
+            println("Response: Current Data:$currentData")
             Resource.Success(currentData)
         } catch (e: Exception) {
             Resource.Error("Error fetching current data: ${e.message}")

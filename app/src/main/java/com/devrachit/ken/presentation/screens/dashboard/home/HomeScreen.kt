@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import com.devrachit.ken.R
+import com.devrachit.ken.presentation.screens.dashboard.Widgets.HeatmapCard
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.QuestionProgressCard
 import com.devrachit.ken.utility.composeUtility.sdp
 
@@ -35,7 +36,12 @@ fun HomeScreen(
             questionProgress = uiState.questionProgress,
             modifier = Modifier.padding(top = 20.sdp, start = 18.sdp, end = 18.sdp)
         )
-        
+        if(uiState.currentTimestamp!=null )
+        HeatmapCard(
+            modifier=Modifier.padding(top = 20.sdp, start = 18.sdp, end = 18.sdp),
+            currentTimestamp = uiState.currentTimestamp,
+            calenderDetails = uiState.userProfileCalender?.submissionCalendar?: ""
+        )
 
     }
 }

@@ -5,7 +5,8 @@ import com.devrachit.ken.domain.models.UserCalendar
 data class HomeUiStates(
     val isLoading: Boolean = false,
     val questionProgress: QuestionProgressUiState = QuestionProgressUiState(),
-    val userProfileCalender :UserCalendar? = null
+    val userProfileCalender :UserCalendar? = null,
+    val currentTimestamp: Double?=null
 )
 
 data class QuestionProgressUiState(
