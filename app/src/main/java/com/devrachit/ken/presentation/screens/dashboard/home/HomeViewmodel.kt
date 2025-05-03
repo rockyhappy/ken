@@ -33,17 +33,27 @@ class HomeViewmodel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiStates())
     val uiState: StateFlow<HomeUiStates> = _uiState.asStateFlow()
 
+    private var questionStatusLoading = false
+    private var currentTimeLoading = false
+    private var calendarLoading = false
+    private var submissionsLoading = false
 
+    private fun updateLoadingState() {
+        val isLoading = questionStatusLoading || currentTimeLoading || 
+                        calendarLoading || submissionsLoading
+        
+        _uiState.value = _uiState.value.copy(isLoading = isLoading)
+    }
 
     fun loadUserDetails() {
         viewModelScope.launch {
-            // Read username on IO thread
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            
             val username = withContext(Dispatchers.IO) {
                 dataStoreRepository.readPrimaryUsername()
             }
 
             if (!username.isNullOrEmpty()) {
-                // Run all API calls concurrently on IO threads
                 coroutineScope {
                     launch(Dispatchers.IO) { fetchUserProfileCalender(username) }
                     launch(Dispatchers.IO) { fetchCurrentTime() }
@@ -55,40 +65,56 @@ class HomeViewmodel @Inject constructor(
     }
 
     private suspend fun fetchUserQuestionStatus(username: String) {
+        questionStatusLoading = true
+        updateLoadingState()
+        
         getUserQuestionStatusUseCase(username, forceRefresh = true).collectLatest {
             when (it) {
                 is Resource.Loading -> {
-
+                    questionStatusLoading = true
+                    updateLoadingState()
                 }
 
                 is Resource.Success -> {
                     val data = it.data
-                    if (data != null)
+                    if (data != null) {
                         _uiState.value = _uiState.value.copy(
-                            isLoading = false,
                             questionProgress = data.toQuestionProgressUiState()
                         )
+                    }
+                    questionStatusLoading = false
+                    updateLoadingState()
                 }
 
                 is Resource.Error -> {
-                        fetchUserQuestionStatus(username)
+                    questionStatusLoading = false
+                    updateLoadingState()
+                    fetchUserQuestionStatus(username)
                 }
             }
         }
     }
 
     private suspend fun fetchCurrentTime() {
+        currentTimeLoading = true
+        updateLoadingState()
+        
         getCurrentTime().collectLatest {
             when(it){
                 is Resource.Loading -> {
-
+                    currentTimeLoading = true
+                    updateLoadingState()
                 }
                 is Resource.Success -> {
                     _uiState.value = _uiState.value.copy(
                         currentTimestamp = it.data?.data?.currentTimestamp)
                     Log.d("HomeViewModel", "Current Time: ${it.data?.data?.currentTimestamp}")
+                    currentTimeLoading = false
+                    updateLoadingState()
                 }
                 is Resource.Error -> {
+                    currentTimeLoading = false
+                    updateLoadingState()
                     fetchCurrentTime()
                 }
             }
@@ -96,16 +122,24 @@ class HomeViewmodel @Inject constructor(
     }
 
     private suspend fun fetchUserProfileCalender(username: String) {
+        calendarLoading = true
+        updateLoadingState()
+        
         getUserProfileCalenderUseCase(username,forceRefresh = true).collectLatest{
             when(it){
                 is Resource.Loading -> {
-                    
+                    calendarLoading = true
+                    updateLoadingState()
                 }
                 is Resource.Success -> {
                     _uiState.value = _uiState.value.copy(
                         userProfileCalender = it.data)
+                    calendarLoading = false
+                    updateLoadingState()
                 }
                 is Resource.Error -> {
+                    calendarLoading = false
+                    updateLoadingState()
                     fetchUserProfileCalender(username)
                 }
             }
@@ -113,21 +147,28 @@ class HomeViewmodel @Inject constructor(
     }
 
     private suspend fun fetchUserRecentSubmission(username: String, limit : Int? =15) {
+        submissionsLoading = true
+        updateLoadingState()
+        
         getUserRecentSubmissionUseCase(username = username, limit = limit, forceRefresh = true).collectLatest {
             when(it){
                 is Resource.Loading -> {
-
+                    submissionsLoading = true
+                    updateLoadingState()
                 }
                 is Resource.Success -> {
                     _uiState.value = _uiState.value.copy(
                         recentSubmissions = it.data
                     )
+                    submissionsLoading = false
+                    updateLoadingState()
                 }
                 is Resource.Error -> {
+                    submissionsLoading = false
+                    updateLoadingState()
                     fetchUserRecentSubmission(username, limit)
                 }
             }
         }
     }
-
 }

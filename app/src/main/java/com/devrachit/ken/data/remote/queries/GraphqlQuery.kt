@@ -185,6 +185,24 @@ class GraphqlQuery {
                 put("variables", JSONObject().put("username", username).put("limit", limit))
             }
         }
+        val getContestRatingHistogramQuery = """
+    query contestRatingHistogram {
+      contestRatingHistogram {
+        userCount
+        ratingStart
+        ratingEnd
+        topPercentage
+      }
+    }
+    """.trimIndent()
+
+        fun getContestRatingHistogramJsonRequest(): JSONObject {
+            return JSONObject().apply {
+                put("query", getContestRatingHistogramQuery)
+                put("operationName", "contestRatingHistogram")
+                put("variables", JSONObject())
+            }
+        }
     }
 
 }
