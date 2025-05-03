@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -61,10 +62,11 @@ fun QuestionProgressCard(
                 modifier = Modifier.padding(bottom = 20.sdp, start = 0.sdp, top = 10.sdp),
                 style = TextStyleInter20Lh24Fw700()
             )
-            Row()
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            )
             {
-
-
                 // Progress indicator on the left
                 SegmentedProgressIndicator2(
                     solved = questionProgress.solved,

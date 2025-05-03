@@ -1,12 +1,14 @@
 package com.devrachit.ken.presentation.screens.dashboard.home
 
 import com.devrachit.ken.domain.models.UserCalendar
+import com.devrachit.ken.domain.models.UserRecentAcSubmissionResponse
 
 data class HomeUiStates(
     val isLoading: Boolean = false,
     val questionProgress: QuestionProgressUiState = QuestionProgressUiState(),
     val userProfileCalender :UserCalendar? = null,
-    val currentTimestamp: Double?=null
+    val currentTimestamp: Double?=null,
+    val recentSubmissions :UserRecentAcSubmissionResponse ? = null
 )
 
 data class QuestionProgressUiState(

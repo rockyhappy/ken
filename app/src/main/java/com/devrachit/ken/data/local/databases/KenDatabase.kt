@@ -7,18 +7,21 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.devrachit.ken.data.local.dao.LeetCodeUserDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserProfileCalenderDao
+import com.devrachit.ken.data.local.dao.LeetCodeUserRecentSubmissionDao
 import com.devrachit.ken.data.local.entity.LeetCodeConverters
 import com.devrachit.ken.data.local.entity.LeetCodeUserEntity
 import com.devrachit.ken.data.local.entity.UserProfileCalenderEntity
 import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
+import com.devrachit.ken.data.local.entity.UserRecentSubmissionEntity
 
 @Database(
     entities = [
         LeetCodeUserEntity::class,
         UserQuestionStatusEntity::class,
-        UserProfileCalenderEntity::class
+        UserProfileCalenderEntity::class,
+        UserRecentSubmissionEntity::class
                ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(LeetCodeConverters::class)
@@ -26,6 +29,7 @@ abstract class KenDatabase : RoomDatabase() {
 
     abstract fun leetCodeUserDao(): LeetCodeUserDao
     abstract fun leetcodeUserProfileCalenderDao(): LeetCodeUserProfileCalenderDao
+    abstract fun leetcodeUserRecentSubmissionDao(): LeetCodeUserRecentSubmissionDao
 
     companion object {
         @Volatile

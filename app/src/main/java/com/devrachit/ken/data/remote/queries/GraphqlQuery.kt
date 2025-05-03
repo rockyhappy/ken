@@ -131,5 +131,60 @@ class GraphqlQuery {
                 put("variables", variables)
             }
         }
+        val getUserContestRankingQuery = """
+    query userContestRankingInfo(${"$"}username: String!) {
+      userContestRanking(username: ${"$"}username) {
+        attendedContestsCount
+        rating
+        globalRanking
+        totalParticipants
+        topPercentage
+        badge {
+          name
+        }
+      }
+      userContestRankingHistory(username: ${"$"}username) {
+        attended
+        trendDirection
+        problemsSolved
+        totalProblems
+        finishTimeInSeconds
+        rating
+        ranking
+        contest {
+          title
+          startTime
+        }
+      }
     }
+    """.trimIndent()
+
+        fun getUserContestRankingJsonRequest(username: String): JSONObject {
+            return JSONObject().apply {
+                put("query", getUserContestRankingQuery)
+                put("operationName", "userContestRankingInfo")
+                put("variables", JSONObject().put("username", username))
+            }
+        }
+
+        val getRecentAcSubmissionsQuery = """
+    query recentAcSubmissions(${"$"}username: String!, ${"$"}limit: Int!) {
+      recentAcSubmissionList(username: ${"$"}username, limit: ${"$"}limit) {
+        id
+        title
+        titleSlug
+        timestamp
+      }
+    }
+    """.trimIndent()
+
+        fun getRecentAcSubmissionsJsonRequest(username: String, limit: Int?=15): JSONObject {
+            return JSONObject().apply {
+                put("query", getRecentAcSubmissionsQuery)
+                put("operationName", "recentAcSubmissions")
+                put("variables", JSONObject().put("username", username).put("limit", limit))
+            }
+        }
+    }
+
 }

@@ -8,6 +8,7 @@ import com.devrachit.ken.domain.models.UserInfoResponse
 import com.devrachit.ken.domain.models.UserProfileCalendarResponse
 import com.devrachit.ken.domain.models.UserQuestionStatusData
 import com.devrachit.ken.domain.models.UserQuestionStatusResponse
+import com.devrachit.ken.domain.models.UserRecentAcSubmissionResponse
 import com.devrachit.ken.domain.repository.remote.LeetcodeRemoteRepository
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import kotlinx.serialization.json.Json
@@ -86,6 +87,19 @@ class LeetcodeRemoteRepositoryImpl @Inject constructor(
 
         } catch (e: Exception) {
             Resource.Error("Error fetching user profile calendar: ${e.message}")
+        }
+    }
+
+    override suspend fun fetchUserRecentAcSubmissions(username: String, limit: Int?): Resource<UserRecentAcSubmissionResponse> {
+        val jsonRequest = GraphqlQuery.getRecentAcSubmissionsJsonRequest(username = username , limit=limit?:15)
+        val request = jsonRequest.toString().toRequestBody("application/json".toMediaType())
+        return try {
+            val response = apiService.fetchRecentSubmissionList(request)
+            val responseBody = response.string()
+            val userRecentAcSubmissions = json.decodeFromString<UserRecentAcSubmissionResponse>(responseBody)
+            Resource.Success(userRecentAcSubmissions)
+        }catch (e: Exception){
+            Resource.Error("Error fetching user recent ac submissions: ${e.message}")
         }
     }
 }

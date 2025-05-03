@@ -2,9 +2,11 @@ package com.devrachit.ken.data.repository.local
 
 import com.devrachit.ken.data.local.dao.LeetCodeUserDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserProfileCalenderDao
+import com.devrachit.ken.data.local.dao.LeetCodeUserRecentSubmissionDao
 import com.devrachit.ken.data.local.entity.LeetCodeUserEntity
 import com.devrachit.ken.data.local.entity.UserProfileCalenderEntity
 import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
+import com.devrachit.ken.data.local.entity.UserRecentSubmissionEntity
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
 import com.devrachit.ken.domain.models.UserCalendar
 import com.devrachit.ken.domain.models.UserProfileCalendarData
@@ -17,7 +19,8 @@ import javax.inject.Inject
 
 class LeetcodeLocalRepositoryImpl @Inject constructor(
     private val userDao: LeetCodeUserDao,
-    private val userProfileCalenderDao : LeetCodeUserProfileCalenderDao
+    private val userProfileCalenderDao : LeetCodeUserProfileCalenderDao,
+    private val userRecentSubmissionDao: LeetCodeUserRecentSubmissionDao
 ) : LeetcodeLocalRepository {
 
     override fun getUserInfoFlow(username: String): Flow<Resource<LeetCodeUserInfo>> {
@@ -84,6 +87,12 @@ class LeetcodeLocalRepositoryImpl @Inject constructor(
     override suspend fun saveUserQuestionStatus(userQuestionStatus: UserQuestionStatusEntity) {
         userDao.insertUserQuestionStatus(userQuestionStatus)
     }
+    override suspend fun deleteAllUserQuestionStatus() {
+        userDao.deleteAllUserQuestionStatus()
+    }
+    override suspend fun deleteUserQuestionStatus(username: String) {
+        userDao.deleteUserQuestionStatus(username)
+    }
 
     override suspend fun getUserProfileCalender(username: String): Resource<UserProfileCalenderEntity> {
         val data =userProfileCalenderDao.getUserProfileCalender(username)
@@ -108,5 +117,37 @@ class LeetcodeLocalRepositoryImpl @Inject constructor(
 
     override suspend fun getLastUserProfileCalenderFetchTime(username: String): Long? {
         return userProfileCalenderDao.getUserProfileCalender(username)?.lastFetchTime
+    }
+
+
+    // these functions are for recent submissions
+    override suspend fun saveRecentSubmissions(
+        username: String,
+        recentSubmissions: UserRecentSubmissionEntity
+    ) {
+        userRecentSubmissionDao.insertAll(recentSubmissions)
+    }
+
+    override suspend fun deleteAllRecentSubmissions() {
+        userRecentSubmissionDao.deleteAllUserRecentSubmissions()
+    }
+    override suspend fun deleteRecentSubmissions(username: String) {
+        userRecentSubmissionDao.deleteUserRecentSubmission(username)
+    }
+    override suspend fun getRecentSubmissions(username: String): Resource<UserRecentSubmissionEntity> {
+        val data = userRecentSubmissionDao.getRecentSubmissions(username)
+        return if(data != null) {
+            Resource.Success(data)
+        }else
+        {
+            Resource.Error("No data found")
+        }
+    }
+
+    override suspend fun getLastRecentSubmissionsFetchTime(username: String): Long? {
+        userRecentSubmissionDao.getRecentSubmissions(username)?.let {
+            return it.lastFetchTime
+        }
+        return null
     }
 }

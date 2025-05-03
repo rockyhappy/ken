@@ -3,6 +3,7 @@ package com.devrachit.ken.di.modules
 import android.content.Context
 import com.devrachit.ken.data.local.dao.LeetCodeUserDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserProfileCalenderDao
+import com.devrachit.ken.data.local.dao.LeetCodeUserRecentSubmissionDao
 import com.devrachit.ken.data.local.databases.KenDatabase
 import com.devrachit.ken.data.remote.services.LeetcodeApiService
 import com.devrachit.ken.data.repository.local.LeetcodeLocalRepositoryImpl
@@ -37,13 +38,20 @@ object RepositoryModule {
 
     @Provides
     @Singleton
+    fun provideLeetcodeUserRecentSubmissionDao(database: KenDatabase) =
+        database.leetcodeUserRecentSubmissionDao()
+
+    @Provides
+    @Singleton
     fun provideLeetcodeLocalRepository(
         userDao: LeetCodeUserDao,
         userProfileCalenderDao: LeetCodeUserProfileCalenderDao,
+        userRecentSubmissionDao: LeetCodeUserRecentSubmissionDao
     ): LeetcodeLocalRepository {
         return LeetcodeLocalRepositoryImpl(
             userDao = userDao,
-            userProfileCalenderDao = userProfileCalenderDao
+            userProfileCalenderDao = userProfileCalenderDao,
+            userRecentSubmissionDao = userRecentSubmissionDao
         )
     }
 

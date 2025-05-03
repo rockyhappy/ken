@@ -35,4 +35,10 @@ interface LeetCodeUserDao {
 
     @Query("SELECT * FROM USER_QUESTION_STATUS WHERE username = :username")
     suspend fun getUserQuestionStatus(username: String): UserQuestionStatusEntity?
+
+    @Query("DELETE FROM USER_QUESTION_STATUS WHERE username = :username")
+    suspend fun deleteUserQuestionStatus(username: String)
+
+    @Query("DELETE FROM USER_QUESTION_STATUS")
+    suspend fun deleteAllUserQuestionStatus()
 }
