@@ -20,7 +20,14 @@ class LogoutUseCase @Inject constructor(
     operator fun invoke(): Flow<Resource<Boolean>> = flow {
         emit(Resource.Loading())
         try {
+            // These operations will run sequentially by default
+            // We could use coroutineScope with multiple launches for parallel execution
+            // but for logout it's safer to clear everything sequentially
+            // to ensure complete cleanup before confirming success
             localRepository.clearCache()
+            localRepository.deleteAllUserQuestionStatus()
+            localRepository.deleteAllRecentSubmissions()
+            localRepository.deleteAllUserProfileCalender()
             dataStoteRepository.clearPrimaryUsername()
             emit(Resource.Success(true))
         }

@@ -6,24 +6,35 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.devrachit.ken.data.local.dao.LeetCodeUserDao
+import com.devrachit.ken.data.local.dao.LeetCodeUserProfileCalenderDao
+import com.devrachit.ken.data.local.dao.LeetCodeUserRecentSubmissionDao
 import com.devrachit.ken.data.local.entity.LeetCodeConverters
 import com.devrachit.ken.data.local.entity.LeetCodeUserEntity
+import com.devrachit.ken.data.local.entity.UserProfileCalenderEntity
 import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
+import com.devrachit.ken.data.local.entity.UserRecentSubmissionEntity
 
 @Database(
-    entities = [LeetCodeUserEntity::class, UserQuestionStatusEntity::class],
-    version = 2,
+    entities = [
+        LeetCodeUserEntity::class,
+        UserQuestionStatusEntity::class,
+        UserProfileCalenderEntity::class,
+        UserRecentSubmissionEntity::class
+               ],
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(LeetCodeConverters::class)
 abstract class KenDatabase : RoomDatabase() {
-    
+
     abstract fun leetCodeUserDao(): LeetCodeUserDao
-    
+    abstract fun leetcodeUserProfileCalenderDao(): LeetCodeUserProfileCalenderDao
+    abstract fun leetcodeUserRecentSubmissionDao(): LeetCodeUserRecentSubmissionDao
+
     companion object {
         @Volatile
         private var INSTANCE: KenDatabase? = null
-        
+
         fun getDatabase(context: Context): KenDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -31,8 +42,8 @@ abstract class KenDatabase : RoomDatabase() {
                     KenDatabase::class.java,
                     "ken_database"
                 )
-                .fallbackToDestructiveMigration()
-                .build()
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }
