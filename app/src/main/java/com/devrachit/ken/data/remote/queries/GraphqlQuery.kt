@@ -85,5 +85,106 @@ class GraphqlQuery {
                 put("variables", JSONObject().put("username", username))
             }
         }
+
+        val currentDataQuery = """
+        query currentTimestamp {
+          currentTimestamp
+        }
+    """.trimIndent()
+
+        fun getCurrentDataJsonRequest(): JSONObject {
+            return JSONObject().apply {
+                put("query", currentDataQuery)
+                put("operationName", "currentTimestamp")
+                put("variables", JSONObject())
+            }
+        }
+
+        val getUserProfileCalenderQuery = """
+    query userProfileCalendar(${"$"}username: String!, ${"$"}year: Int) {
+      matchedUser(username: ${"$"}username) {
+        userCalendar(year: ${"$"}year) {
+          activeYears
+          streak
+          totalActiveDays
+          dccBadges {
+            timestamp
+            badge {
+              name
+              icon
+            }
+          }
+          submissionCalendar
+        }
+      }
     }
+    """.trimIndent()
+
+        fun getUserProfileCalendarJsonRequest(username: String, year: Int? = null): JSONObject {
+            val variables = JSONObject().put("username", username)
+            if (year != null) {
+                variables.put("year", year)
+            }
+            return JSONObject().apply {
+                put("query", getUserProfileCalenderQuery)
+                put("operationName", "userProfileCalendar")
+                put("variables", variables)
+            }
+        }
+        val getUserContestRankingQuery = """
+    query userContestRankingInfo(${"$"}username: String!) {
+      userContestRanking(username: ${"$"}username) {
+        attendedContestsCount
+        rating
+        globalRanking
+        totalParticipants
+        topPercentage
+        badge {
+          name
+        }
+      }
+      userContestRankingHistory(username: ${"$"}username) {
+        attended
+        trendDirection
+        problemsSolved
+        totalProblems
+        finishTimeInSeconds
+        rating
+        ranking
+        contest {
+          title
+          startTime
+        }
+      }
+    }
+    """.trimIndent()
+
+        fun getUserContestRankingJsonRequest(username: String): JSONObject {
+            return JSONObject().apply {
+                put("query", getUserContestRankingQuery)
+                put("operationName", "userContestRankingInfo")
+                put("variables", JSONObject().put("username", username))
+            }
+        }
+
+        val getRecentAcSubmissionsQuery = """
+    query recentAcSubmissions(${"$"}username: String!, ${"$"}limit: Int!) {
+      recentAcSubmissionList(username: ${"$"}username, limit: ${"$"}limit) {
+        id
+        title
+        titleSlug
+        timestamp
+      }
+    }
+    """.trimIndent()
+
+        fun getRecentAcSubmissionsJsonRequest(username: String, limit: Int?=15): JSONObject {
+            return JSONObject().apply {
+                put("query", getRecentAcSubmissionsQuery)
+                put("operationName", "recentAcSubmissions")
+                put("variables", JSONObject().put("username", username).put("limit", limit))
+            }
+        }
+    }
+
 }

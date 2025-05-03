@@ -2,10 +2,13 @@ package com.devrachit.ken.data.repository.remote
 
 import com.devrachit.ken.data.remote.queries.GraphqlQuery
 import com.devrachit.ken.data.remote.services.LeetcodeApiService
+import com.devrachit.ken.domain.models.CurrentTimeResponse
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
 import com.devrachit.ken.domain.models.UserInfoResponse
+import com.devrachit.ken.domain.models.UserProfileCalendarResponse
 import com.devrachit.ken.domain.models.UserQuestionStatusData
 import com.devrachit.ken.domain.models.UserQuestionStatusResponse
+import com.devrachit.ken.domain.models.UserRecentAcSubmissionResponse
 import com.devrachit.ken.domain.repository.remote.LeetcodeRemoteRepository
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import kotlinx.serialization.json.Json
@@ -20,7 +23,7 @@ class LeetcodeRemoteRepositoryImpl @Inject constructor(
     private val json = Json { ignoreUnknownKeys = true }
 
     override suspend fun fetchUserInfo(username: String): Resource<LeetCodeUserInfo> {
-        val jsonRequest = GraphqlQuery.getUserExistsJsonRequest(username=username)
+        val jsonRequest = GraphqlQuery.getUserExistsJsonRequest(username = username)
         val requestBody = jsonRequest.toString().toRequestBody("application/json".toMediaType())
 
         return try {
@@ -33,27 +36,70 @@ class LeetcodeRemoteRepositoryImpl @Inject constructor(
                 Resource.Success(userInfo)
             } ?: Resource.Error("User not found")
         } catch (e: Exception) {
-            Timber.e("Error fetching user: ${e.message}", e)
             Resource.Error("Error fetching user: ${e.message}")
         }
     }
 
     override suspend fun fetchUserRankingInfo(username: String): Resource<UserQuestionStatusData> {
-        val jsonRequest = GraphqlQuery.getUserQuestionCountJsonRequest(username=username)
+        val jsonRequest = GraphqlQuery.getUserQuestionCountJsonRequest(username = username)
         val requestBody = jsonRequest.toString().toRequestBody("application/json".toMediaType())
 
         return try {
             val response = apiService.fetchUserQuestionCount(requestBody)
             val responseBody = response.string()
-            val userQuestionStatusData = json.decodeFromString<UserQuestionStatusResponse>(responseBody)
+            val userQuestionStatusData =
+                json.decodeFromString<UserQuestionStatusResponse>(responseBody)
 
             userQuestionStatusData.data?.let {
-                val userQuestionStatusData= it
+                val userQuestionStatusData = it
                 Resource.Success(userQuestionStatusData)
             } ?: Resource.Error("User not found")
         } catch (e: Exception) {
-            Timber.e("Error fetching user: ${e.message}", e)
             Resource.Error("Error fetching user: ${e.message}")
+        }
+    }
+
+    override suspend fun fetchCurrentData(): Resource<CurrentTimeResponse> {
+        val jsonRequest = GraphqlQuery.getCurrentDataJsonRequest()
+        val request = jsonRequest.toString().toRequestBody("application/json".toMediaType())
+
+        return try {
+            val response = apiService.fetchCurrentTime(request)
+            println("Response: Current Data:$response")
+            val responseBody = response.string()
+            val currentData = json.decodeFromString<CurrentTimeResponse>(responseBody)
+            println("Response: Current Data:$currentData")
+            Resource.Success(currentData)
+        } catch (e: Exception) {
+            Resource.Error("Error fetching current data: ${e.message}")
+        }
+
+    }
+
+    override suspend fun fetchUserProfileCalender(username: String): Resource<UserProfileCalendarResponse> {
+        val jsonRequest = GraphqlQuery.getUserProfileCalendarJsonRequest(username = username)
+        val request = jsonRequest.toString().toRequestBody("application/json".toMediaType())
+        return try {
+            val response = apiService.fetUserProfileCalender(request)
+            val responseBody = response.string()
+            val userProfileCalendar = json.decodeFromString<UserProfileCalendarResponse>(responseBody)
+            Resource.Success(userProfileCalendar)
+
+        } catch (e: Exception) {
+            Resource.Error("Error fetching user profile calendar: ${e.message}")
+        }
+    }
+
+    override suspend fun fetchUserRecentAcSubmissions(username: String, limit: Int?): Resource<UserRecentAcSubmissionResponse> {
+        val jsonRequest = GraphqlQuery.getRecentAcSubmissionsJsonRequest(username = username , limit=limit?:15)
+        val request = jsonRequest.toString().toRequestBody("application/json".toMediaType())
+        return try {
+            val response = apiService.fetchRecentSubmissionList(request)
+            val responseBody = response.string()
+            val userRecentAcSubmissions = json.decodeFromString<UserRecentAcSubmissionResponse>(responseBody)
+            Resource.Success(userRecentAcSubmissions)
+        }catch (e: Exception){
+            Resource.Error("Error fetching user recent ac submissions: ${e.message}")
         }
     }
 }

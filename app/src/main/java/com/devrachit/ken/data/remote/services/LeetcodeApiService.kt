@@ -15,4 +15,21 @@ interface LeetcodeApiService {
     @Headers("Content-Type: application/json", "Referer: https://leetcode.com/")
     @POST("graphql")
     suspend fun fetchUserQuestionCount(@Body requestBody: RequestBody): ResponseBody
+
+    @Headers("Content-Type: application/json", "Referer: https://leetcode.com/")
+    @POST("graphql")
+    suspend fun fetchUserHeatMap(@Body requestBody: RequestBody): ResponseBody
+
+    @Headers("Content-Type: application/json", "Referer: https://leetcode.com/")
+    @POST("graphql")
+    suspend fun fetchCurrentTime(@Body requestBody: RequestBody): ResponseBody
+
+    @Headers("Content-Type: application/json", "Referer: https://leetcode.com/")
+    @POST("graphql")
+    suspend fun fetUserProfileCalender(@Body requestBody: RequestBody): ResponseBody
+    
+    @Headers("Content-Type: application/json", "Referer: https://leetcode.com/")
+    @POST("graphql")
+    suspend fun fetchRecentSubmissionList(@Body requestBody: RequestBody): ResponseBody
+
 }
