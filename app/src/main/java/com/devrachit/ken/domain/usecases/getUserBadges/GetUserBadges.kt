@@ -19,6 +19,7 @@ class GetUserBadgesUseCase  @Inject constructor(
     operator fun invoke(username :String) :Flow<Resource<Any?>> = flow{
         emit(Resource.Loading())
         try{
+            
             val response= remoteRepository.fetchUserBadges(username = username )
             emit(Resource.Success(response))
             Log.d("GetUserBadgesUseCase", "invoke: $response")

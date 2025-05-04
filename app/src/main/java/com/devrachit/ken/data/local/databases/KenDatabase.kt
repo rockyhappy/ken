@@ -5,11 +5,13 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.devrachit.ken.data.local.dao.LeetCodeUserContestRatingDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserProfileCalenderDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserRecentSubmissionDao
 import com.devrachit.ken.data.local.entity.LeetCodeConverters
 import com.devrachit.ken.data.local.entity.LeetCodeUserEntity
+import com.devrachit.ken.data.local.entity.UserContestRankingEntity
 import com.devrachit.ken.data.local.entity.UserProfileCalenderEntity
 import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
 import com.devrachit.ken.data.local.entity.UserRecentSubmissionEntity
@@ -19,9 +21,10 @@ import com.devrachit.ken.data.local.entity.UserRecentSubmissionEntity
         LeetCodeUserEntity::class,
         UserQuestionStatusEntity::class,
         UserProfileCalenderEntity::class,
-        UserRecentSubmissionEntity::class
+        UserRecentSubmissionEntity::class,
+        UserContestRankingEntity::class
                ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(LeetCodeConverters::class)
@@ -30,6 +33,7 @@ abstract class KenDatabase : RoomDatabase() {
     abstract fun leetCodeUserDao(): LeetCodeUserDao
     abstract fun leetcodeUserProfileCalenderDao(): LeetCodeUserProfileCalenderDao
     abstract fun leetcodeUserRecentSubmissionDao(): LeetCodeUserRecentSubmissionDao
+    abstract fun leetcodeUserContestRankingDao(): LeetCodeUserContestRatingDao
 
     companion object {
         @Volatile

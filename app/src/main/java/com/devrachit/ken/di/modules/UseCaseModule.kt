@@ -109,13 +109,13 @@ object UseCaseModule {
 
     @Provides
     fun providesGetContestRankingHistogramUseCase(
-        localRepository: LeetcodeLocalRepository,
+        dataStoreRepository: DataStoreRepository,
         remoteRepository: LeetcodeRemoteRepository,
         cachePolicy: CachePolicy,
         networkManager: NetworkManager
     ): GetContestRankingHistogramUseCase {
         return GetContestRankingHistogramUseCase(
-            localRepository = localRepository,
+            dataStoreRepository = dataStoreRepository,
             remoteRepository = remoteRepository,
             cachePolicy = cachePolicy,
             networkManager = networkManager

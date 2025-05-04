@@ -3,6 +3,7 @@ package com.devrachit.ken.domain.repository.local
 import com.devrachit.ken.data.local.entity.UserProfileCalenderEntity
 import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
 import com.devrachit.ken.data.local.entity.UserRecentSubmissionEntity
+import com.devrachit.ken.data.local.entity.UserContestRankingEntity
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
 import com.devrachit.ken.domain.models.UserCalendar
 import com.devrachit.ken.domain.models.UserQuestionStatusData
@@ -38,4 +39,11 @@ interface LeetcodeLocalRepository {
     suspend fun deleteRecentSubmissions(username: String)
     suspend fun deleteAllRecentSubmissions()
     suspend fun getLastRecentSubmissionsFetchTime(username: String): Long?
+
+    // These functions are for user contest ranking
+    suspend fun getUserContestRanking(username: String): Resource<UserContestRankingEntity>
+    suspend fun saveUserContestRanking(username: String, contestRanking: UserContestRankingEntity)
+    suspend fun deleteUserContestRanking(username: String)
+    suspend fun deleteAllUserContestRankings()
+    suspend fun getLastUserContestRankingFetchTime(username: String): Long?
 }

@@ -5,9 +5,13 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.devrachit.ken.domain.models.ContestRatingHistogramResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Singleton
 
 // Define DataStore at the package level to ensure there's only one instance
@@ -87,6 +91,37 @@ class DataStoreRepository(private val context: Context) {
         return context.dataStore.data
             .map { preferences ->
                 preferences[Primary_Time_Key]
+            }.firstOrNull()
+    }
+
+    private val CONTEST_RATING_HISTOGRAM_KEY = stringPreferencesKey("contest_rating_histogram")
+    private val json = Json { ignoreUnknownKeys = true }
+
+    val contestRatingHistogram: Flow<ContestRatingHistogramResponse?> = context.dataStore.data
+        .map { preferences ->
+            preferences[CONTEST_RATING_HISTOGRAM_KEY]?.let {
+                json.decodeFromString<ContestRatingHistogramResponse>(it)
+            }
+        }
+
+    suspend fun saveContestRatingHistogram(histogramResponse: ContestRatingHistogramResponse) {
+        context.dataStore.edit { preferences ->
+            preferences[CONTEST_RATING_HISTOGRAM_KEY] = json.encodeToString(histogramResponse)
+        }
+    }
+
+    suspend fun clearContestRatingHistogram() {
+        context.dataStore.edit { preferences ->
+            preferences.remove(CONTEST_RATING_HISTOGRAM_KEY)
+        }
+    }
+
+    suspend fun readContestRatingHistogram(): ContestRatingHistogramResponse? {
+        return context.dataStore.data
+            .map { preferences ->
+                preferences[CONTEST_RATING_HISTOGRAM_KEY]?.let {
+                    json.decodeFromString<ContestRatingHistogramResponse>(it)
+                }
             }.firstOrNull()
     }
 

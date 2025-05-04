@@ -132,6 +132,33 @@ class GraphqlQuery {
             }
         }
 
+//        val getUserContestRankingQuery = """
+//    query userContestRankingInfo(${"$"}username: String!) {
+//      userContestRanking(username: ${"$"}username) {
+//        attendedContestsCount
+//        rating
+//        globalRanking
+//        totalParticipants
+//        topPercentage
+//        badge {
+//          name
+//        }
+//      }
+//      userContestRankingHistory(username: ${"$"}username) {
+//        attended
+//        trendDirection
+//        problemsSolved
+//        totalProblems
+//        finishTimeInSeconds
+//        rating
+//        ranking
+//        contest {
+//          title
+//          startTime
+//        }
+//      }
+//    }
+//    """.trimIndent()
         val getUserContestRankingQuery = """
     query userContestRankingInfo(${"$"}username: String!) {
       userContestRanking(username: ${"$"}username) {
@@ -142,19 +169,6 @@ class GraphqlQuery {
         topPercentage
         badge {
           name
-        }
-      }
-      userContestRankingHistory(username: ${"$"}username) {
-        attended
-        trendDirection
-        problemsSolved
-        totalProblems
-        finishTimeInSeconds
-        rating
-        ranking
-        contest {
-          title
-          startTime
         }
       }
     }
@@ -207,41 +221,6 @@ class GraphqlQuery {
         }
 
 
-        val getUserRatingQuery = """
-    query userContestRankingInfo(${"$"}username: String!) {
-      userContestRanking(username: ${"$"}username) {
-        attendedContestsCount
-        rating
-        globalRanking
-        totalParticipants
-        topPercentage
-        badge {
-          name
-        }
-      }
-      userContestRankingHistory(username: ${"$"}username) {
-        attended
-        trendDirection
-        problemsSolved
-        totalProblems
-        finishTimeInSeconds
-        rating
-        ranking
-        contest {
-          title
-          startTime
-        }
-      }
-    }
-    """.trimIndent()
-
-        fun getUserRatingJsonRequest(username: String): JSONObject {
-            return JSONObject().apply {
-                put("query", getUserRatingQuery)
-                put("operationName", "userContestRankingInfo")
-                put("variables", JSONObject().put("username", username))
-            }
-        }
 
         val getUserBadgesQuery = """
     query userBadges(${"$"}username: String!) {

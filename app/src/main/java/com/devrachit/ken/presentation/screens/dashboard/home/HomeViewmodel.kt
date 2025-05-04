@@ -52,7 +52,8 @@ class HomeViewmodel @Inject constructor(
                         _loadingState.value.calendarLoading ||
                         _loadingState.value.submissionsLoading ||
                         _loadingState.value.badgesLoading ||
-                        _loadingState.value.contestRankingLoading)
+                        _loadingState.value.contestRankingLoading||
+                        _loadingState.value.contestRankingHistogramLoading)
     }
 
     fun loadUserDetails() {
@@ -72,7 +73,7 @@ class HomeViewmodel @Inject constructor(
                     launch(Dispatchers.IO) { fetchUserRecentSubmission(username, 15) }
                     launch(Dispatchers.IO) { fetchUserBadges(username) }
                     launch(Dispatchers.IO) { fetchUserContestRanking(username) }
-                    launch(Dispatchers.IO) { fetchContestRankingHistogram(username) }
+                    launch(Dispatchers.IO) { fetchContestRankingHistogram() }
                 }
             }
         }
@@ -226,14 +227,15 @@ class HomeViewmodel @Inject constructor(
         _loadingState.value.contestRankingLoading = true
         updateLoadingState()
 
-        getUserContestRankingUseCase(username).collectLatest {
-            when (it) {
+        getUserContestRankingUseCase(username = username, forceRefresh = true).collectLatest {
+            when(it) {
                 is Resource.Loading -> {
                     _loadingState.value.contestRankingLoading = true
                     updateLoadingState()
                 }
 
                 is Resource.Success -> {
+                    _uiState.value=_uiState.value.copy(userContestRankingResponse = it.data)
                     _loadingState.value.contestRankingLoading = false
                     updateLoadingState()
                 }
@@ -247,7 +249,7 @@ class HomeViewmodel @Inject constructor(
         }
     }
 
-    private suspend fun fetchContestRankingHistogram(username: String) {
+    private suspend fun fetchContestRankingHistogram() {
         _loadingState.value.contestRankingHistogramLoading = true
         updateLoadingState()
 
@@ -259,6 +261,7 @@ class HomeViewmodel @Inject constructor(
                 }
 
                 is Resource.Success -> {
+                    _uiState.value= _uiState.value.copy(contestRatingHistogramResponse = it.data)
                     _loadingState.value.contestRankingHistogramLoading = false
                     updateLoadingState()
                 }
@@ -266,7 +269,7 @@ class HomeViewmodel @Inject constructor(
                 is Resource.Error -> {
                     _loadingState.value.contestRankingHistogramLoading = false
                     updateLoadingState()
-                    fetchContestRankingHistogram(username)
+                    fetchContestRankingHistogram()
                 }
             }
         }

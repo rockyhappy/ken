@@ -2,8 +2,10 @@ package com.devrachit.ken.domain.repository.remote
 
 import com.devrachit.ken.data.remote.queries.GraphqlQuery
 import com.devrachit.ken.data.remote.services.LeetcodeApiService
+import com.devrachit.ken.domain.models.ContestRatingHistogramResponse
 import com.devrachit.ken.domain.models.CurrentTimeResponse
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
+import com.devrachit.ken.domain.models.UserContestRankingResponse
 import com.devrachit.ken.domain.models.UserInfoResponse
 import com.devrachit.ken.domain.models.UserProfileCalendarResponse
 import com.devrachit.ken.domain.models.UserQuestionStatusData
@@ -22,7 +24,7 @@ interface LeetcodeRemoteRepository {
     suspend fun fetchCurrentData(): Resource<CurrentTimeResponse>
     suspend fun fetchUserProfileCalender(username : String): Resource<UserProfileCalendarResponse>
     suspend fun fetchUserRecentAcSubmissions(username: String, limit: Int?= 15): Resource<UserRecentAcSubmissionResponse>
-    suspend fun fetchContestRankingHistogram(): Resource<Any?>
-    suspend fun fetchUserContestRanking(username : String): Resource<Any?>
+    suspend fun fetchContestRankingHistogram(): Resource<ContestRatingHistogramResponse>
+    suspend fun fetchUserContestRanking(username : String): Resource<UserContestRankingResponse>
     suspend fun fetchUserBadges(username: String): Resource<Any?>
 }
