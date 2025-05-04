@@ -131,6 +131,34 @@ class GraphqlQuery {
                 put("variables", variables)
             }
         }
+
+//        val getUserContestRankingQuery = """
+//    query userContestRankingInfo(${"$"}username: String!) {
+//      userContestRanking(username: ${"$"}username) {
+//        attendedContestsCount
+//        rating
+//        globalRanking
+//        totalParticipants
+//        topPercentage
+//        badge {
+//          name
+//        }
+//      }
+//      userContestRankingHistory(username: ${"$"}username) {
+//        attended
+//        trendDirection
+//        problemsSolved
+//        totalProblems
+//        finishTimeInSeconds
+//        rating
+//        ranking
+//        contest {
+//          title
+//          startTime
+//        }
+//      }
+//    }
+//    """.trimIndent()
         val getUserContestRankingQuery = """
     query userContestRankingInfo(${"$"}username: String!) {
       userContestRanking(username: ${"$"}username) {
@@ -141,19 +169,6 @@ class GraphqlQuery {
         topPercentage
         badge {
           name
-        }
-      }
-      userContestRankingHistory(username: ${"$"}username) {
-        attended
-        trendDirection
-        problemsSolved
-        totalProblems
-        finishTimeInSeconds
-        rating
-        ranking
-        contest {
-          title
-          startTime
         }
       }
     }
@@ -178,13 +193,70 @@ class GraphqlQuery {
     }
     """.trimIndent()
 
-        fun getRecentAcSubmissionsJsonRequest(username: String, limit: Int?=15): JSONObject {
+        fun getRecentAcSubmissionsJsonRequest(username: String, limit: Int? = 15): JSONObject {
             return JSONObject().apply {
                 put("query", getRecentAcSubmissionsQuery)
                 put("operationName", "recentAcSubmissions")
                 put("variables", JSONObject().put("username", username).put("limit", limit))
             }
         }
-    }
 
+        val getContestRatingHistogramQuery = """
+    query contestRatingHistogram {
+      contestRatingHistogram {
+        userCount
+        ratingStart
+        ratingEnd
+        topPercentage
+      }
+    }
+    """.trimIndent()
+
+        fun getContestRatingHistogramJsonRequest(): JSONObject {
+            return JSONObject().apply {
+                put("query", getContestRatingHistogramQuery)
+                put("operationName", "contestRatingHistogram")
+                put("variables", JSONObject())
+            }
+        }
+
+
+
+        val getUserBadgesQuery = """
+    query userBadges(${"$"}username: String!) {
+      matchedUser(username: ${"$"}username) {
+        badges {
+          id
+          name
+          shortName
+          displayName
+          icon
+          hoverText
+          medal {
+            slug
+            config {
+              iconGif
+              iconGifBackground
+            }
+          }
+          creationDate
+          category
+        }
+        upcomingBadges {
+          name
+          icon
+          progress
+        }
+      }
+    }
+    """.trimIndent()
+
+        fun getUserBadgesJsonRequest(username: String): JSONObject {
+            return JSONObject().apply {
+                put("query", getUserBadgesQuery)
+                put("operationName", "userBadges")
+                put("variables", JSONObject().put("username", username))
+            }
+        }
+    }
 }

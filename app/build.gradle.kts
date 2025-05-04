@@ -154,7 +154,8 @@ dependencies {
     implementation(libs.datastore.preferences)
 
 
-    // TODO: Remove these chucker dependencies  
+    // TODO: Remove these chucker dependencies
+//    implementation("androidx.compose.material3:material3:1.2.0")
     debugImplementation("com.github.chuckerteam.chucker:library:4.0.0") // For Debug
     releaseImplementation("com.github.chuckerteam.chucker:library-no-op:4.0.0") // No-op in release
 }

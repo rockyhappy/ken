@@ -1,9 +1,11 @@
 package com.devrachit.ken.data.repository.local
 
+import com.devrachit.ken.data.local.dao.LeetCodeUserContestRatingDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserProfileCalenderDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserRecentSubmissionDao
 import com.devrachit.ken.data.local.entity.LeetCodeUserEntity
+import com.devrachit.ken.data.local.entity.UserContestRankingEntity
 import com.devrachit.ken.data.local.entity.UserProfileCalenderEntity
 import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
 import com.devrachit.ken.data.local.entity.UserRecentSubmissionEntity
@@ -19,8 +21,9 @@ import javax.inject.Inject
 
 class LeetcodeLocalRepositoryImpl @Inject constructor(
     private val userDao: LeetCodeUserDao,
-    private val userProfileCalenderDao : LeetCodeUserProfileCalenderDao,
-    private val userRecentSubmissionDao: LeetCodeUserRecentSubmissionDao
+    private val userProfileCalenderDao: LeetCodeUserProfileCalenderDao,
+    private val userRecentSubmissionDao: LeetCodeUserRecentSubmissionDao,
+    private val userContestRatingDao: LeetCodeUserContestRatingDao
 ) : LeetcodeLocalRepository {
 
     override fun getUserInfoFlow(username: String): Flow<Resource<LeetCodeUserInfo>> {
@@ -74,12 +77,11 @@ class LeetcodeLocalRepositoryImpl @Inject constructor(
         return userDao.getUserQuestionStatus(username)?.lastFetchTime
     }
 
-    override suspend fun getUserQuestionStatus(username: String) : Resource<UserQuestionStatusData> {
+    override suspend fun getUserQuestionStatus(username: String): Resource<UserQuestionStatusData> {
         val data = userDao.getUserQuestionStatus(username)?.toDomainModel()
         return if (data != null) {
             Resource.Success(data)
-        }
-        else {
+        } else {
             Resource.Error("User Question Status not found in cache")
         }
     }
@@ -95,11 +97,10 @@ class LeetcodeLocalRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getUserProfileCalender(username: String): Resource<UserProfileCalenderEntity> {
-        val data =userProfileCalenderDao.getUserProfileCalender(username)
-        return if(data != null) {
-           Resource.Success(data)
-        }
-        else {
+        val data = userProfileCalenderDao.getUserProfileCalender(username)
+        return if (data != null) {
+            Resource.Success(data)
+        } else {
             Resource.Error("User Profile Calender not found in cache")
         }
     }
@@ -131,15 +132,16 @@ class LeetcodeLocalRepositoryImpl @Inject constructor(
     override suspend fun deleteAllRecentSubmissions() {
         userRecentSubmissionDao.deleteAllUserRecentSubmissions()
     }
+
     override suspend fun deleteRecentSubmissions(username: String) {
         userRecentSubmissionDao.deleteUserRecentSubmission(username)
     }
+
     override suspend fun getRecentSubmissions(username: String): Resource<UserRecentSubmissionEntity> {
         val data = userRecentSubmissionDao.getRecentSubmissions(username)
-        return if(data != null) {
+        return if (data != null) {
             Resource.Success(data)
-        }else
-        {
+        } else {
             Resource.Error("No data found")
         }
     }
@@ -149,5 +151,30 @@ class LeetcodeLocalRepositoryImpl @Inject constructor(
             return it.lastFetchTime
         }
         return null
+    }
+
+    override suspend fun getUserContestRanking(username: String): Resource<UserContestRankingEntity> {
+        val data = userContestRatingDao.getUserContestRanking(username)
+        return if (data != null) {
+            Resource.Success(data)
+        } else {
+            Resource.Error("User Contest Ranking not found in cache")
+        }
+    }
+
+    override suspend fun saveUserContestRanking(username: String, contestRanking: UserContestRankingEntity) {
+        userContestRatingDao.insertAll(contestRanking)
+    }
+
+    override suspend fun deleteUserContestRanking(username: String) {
+        userContestRatingDao.deleteUserContestRanking(username)
+    }
+
+    override suspend fun deleteAllUserContestRankings() {
+        userContestRatingDao.deleteAllUserContestRankings()
+    }
+
+    override suspend fun getLastUserContestRankingFetchTime(username: String): Long? {
+        return userContestRatingDao.getUserContestRanking(username)?.lastFetchTime
     }
 }
