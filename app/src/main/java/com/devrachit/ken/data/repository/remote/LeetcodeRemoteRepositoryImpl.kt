@@ -102,4 +102,45 @@ class LeetcodeRemoteRepositoryImpl @Inject constructor(
             Resource.Error("Error fetching user recent ac submissions: ${e.message}")
         }
     }
+
+    override suspend fun fetchContestRankingHistogram(): Resource<Any?> {
+        val jsonRequest = GraphqlQuery.getContestRatingHistogramJsonRequest()
+        val request = jsonRequest.toString().toRequestBody("application/json".toMediaType())
+        return try {
+            val response = apiService.fetchContestRankingHistogram(request)
+            val responseBody = response.string()
+            val contestRankingHistogram = json.decodeFromString<Any?>(responseBody)
+            Resource.Success(contestRankingHistogram)
+        }
+        catch (e: Exception){
+            Resource.Error("Error fetching contest ranking histogram: ${e.message}")
+        }
+    }
+
+    override suspend fun fetchUserBadges(username : String): Resource<Any?> {
+        val jsonRequest = GraphqlQuery.getUserBadgesJsonRequest(username = username)
+        val request = jsonRequest.toString().toRequestBody("application/json".toMediaType())
+        return try {
+            val response = apiService.fetchUserBadges(request)
+            val responseBody = response.string()
+            val userBadges = json.decodeFromString<Any?>(responseBody)
+            Resource.Success(userBadges)
+        }
+        catch (e: Exception){
+            Resource.Error("Error fetching user badges: ${e.message}")
+        }
+    }
+
+    override suspend fun fetchUserContestRanking(username: String): Resource<Any?> {
+        val jsonRequest = GraphqlQuery.getUserContestRankingJsonRequest(username = username)
+        val request = jsonRequest.toString().toRequestBody("application/json".toMediaType())
+        return try {
+            val response = apiService.fetchUserContestRanking(request)
+            val responseBody = response.string()
+            val userContestRanking = json.decodeFromString<Any?>(responseBody)
+            Resource.Success(userContestRanking)
+        }catch (e: Exception){
+            Resource.Error("Error fetching user contest ranking: ${e.message}")
+        }
+    }
 }

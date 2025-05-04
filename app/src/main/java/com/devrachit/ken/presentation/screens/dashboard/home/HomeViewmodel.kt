@@ -5,7 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devrachit.ken.data.local.datastore.DataStoreRepository
 import com.devrachit.ken.domain.models.toQuestionProgressUiState
+import com.devrachit.ken.domain.usecases.getContestRankingHistogram.GetContestRankingHistogramUseCase
 import com.devrachit.ken.domain.usecases.getCurrentTime.GetCurrentTime
+import com.devrachit.ken.domain.usecases.getUserBadges.GetUserBadgesUseCase
+import com.devrachit.ken.domain.usecases.getUserContestRanking.GetUserContestRankingUseCase
 import com.devrachit.ken.domain.usecases.getUserProfileCalender.GetUserProfileCalenderUseCase
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
 import com.devrachit.ken.domain.usecases.getUserRecentSubmission.GetUserRecentSubmissionUseCase
@@ -20,6 +23,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 @HiltViewModel
 class HomeViewmodel @Inject constructor(
@@ -27,28 +32,34 @@ class HomeViewmodel @Inject constructor(
     private val getUserQuestionStatusUseCase: GetUserQuestionStatusUseCase,
     private val getCurrentTime: GetCurrentTime,
     private val getUserProfileCalenderUseCase: GetUserProfileCalenderUseCase,
-    private val getUserRecentSubmissionUseCase: GetUserRecentSubmissionUseCase
+    private val getUserRecentSubmissionUseCase: GetUserRecentSubmissionUseCase,
+    private val getUserBadgesUseCase: GetUserBadgesUseCase,
+    private val getUserContestRankingUseCase: GetUserContestRankingUseCase,
+    private val getContestRankingHistogramUseCase: GetContestRankingHistogramUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiStates())
     val uiState: StateFlow<HomeUiStates> = _uiState.asStateFlow()
 
-    private var questionStatusLoading = false
-    private var currentTimeLoading = false
-    private var calendarLoading = false
-    private var submissionsLoading = false
+    private val _loadingState = MutableStateFlow(LoadingStates())
+    val loadingState: StateFlow<LoadingStates> = _loadingState.asStateFlow()
 
-    private fun updateLoadingState() {
-        val isLoading = questionStatusLoading || currentTimeLoading || 
-                        calendarLoading || submissionsLoading
-        
-        _uiState.value = _uiState.value.copy(isLoading = isLoading)
+    private suspend fun updateLoadingState() {
+        _uiState.value =
+            _uiState.value.copy(
+                isLoading = _loadingState.value.questionStatusLoading ||
+                        _loadingState.value.currentTimeLoading ||
+                        _loadingState.value.calendarLoading ||
+                        _loadingState.value.submissionsLoading ||
+                        _loadingState.value.badgesLoading ||
+                        _loadingState.value.contestRankingLoading)
     }
 
     fun loadUserDetails() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
-            
+            _loadingState.value.pullToRefreshLoading = true
+
             val username = withContext(Dispatchers.IO) {
                 dataStoreRepository.readPrimaryUsername()
             }
@@ -59,19 +70,22 @@ class HomeViewmodel @Inject constructor(
                     launch(Dispatchers.IO) { fetchCurrentTime() }
                     launch(Dispatchers.IO) { fetchUserQuestionStatus(username) }
                     launch(Dispatchers.IO) { fetchUserRecentSubmission(username, 15) }
+                    launch(Dispatchers.IO) { fetchUserBadges(username) }
+                    launch(Dispatchers.IO) { fetchUserContestRanking(username) }
+                    launch(Dispatchers.IO) { fetchContestRankingHistogram(username) }
                 }
             }
         }
     }
 
     private suspend fun fetchUserQuestionStatus(username: String) {
-        questionStatusLoading = true
+        _loadingState.value.questionStatusLoading = true
         updateLoadingState()
-        
+
         getUserQuestionStatusUseCase(username, forceRefresh = true).collectLatest {
             when (it) {
                 is Resource.Loading -> {
-                    questionStatusLoading = true
+                    _loadingState.value.questionStatusLoading = true
                     updateLoadingState()
                 }
 
@@ -82,12 +96,12 @@ class HomeViewmodel @Inject constructor(
                             questionProgress = data.toQuestionProgressUiState()
                         )
                     }
-                    questionStatusLoading = false
+                    _loadingState.value.questionStatusLoading = false
                     updateLoadingState()
                 }
 
                 is Resource.Error -> {
-                    questionStatusLoading = false
+                    _loadingState.value.questionStatusLoading = false
                     updateLoadingState()
                     fetchUserQuestionStatus(username)
                 }
@@ -96,24 +110,26 @@ class HomeViewmodel @Inject constructor(
     }
 
     private suspend fun fetchCurrentTime() {
-        currentTimeLoading = true
+        _loadingState.value.currentTimeLoading = true
         updateLoadingState()
-        
+
         getCurrentTime().collectLatest {
-            when(it){
+            when (it) {
                 is Resource.Loading -> {
-                    currentTimeLoading = true
+                    _loadingState.value.currentTimeLoading = true
                     updateLoadingState()
                 }
+
                 is Resource.Success -> {
                     _uiState.value = _uiState.value.copy(
-                        currentTimestamp = it.data?.data?.currentTimestamp)
-                    Log.d("HomeViewModel", "Current Time: ${it.data?.data?.currentTimestamp}")
-                    currentTimeLoading = false
+                        currentTimestamp = it.data?.data?.currentTimestamp
+                    )
+                    _loadingState.value.currentTimeLoading = false
                     updateLoadingState()
                 }
+
                 is Resource.Error -> {
-                    currentTimeLoading = false
+                    _loadingState.value.currentTimeLoading = false
                     updateLoadingState()
                     fetchCurrentTime()
                 }
@@ -122,23 +138,26 @@ class HomeViewmodel @Inject constructor(
     }
 
     private suspend fun fetchUserProfileCalender(username: String) {
-        calendarLoading = true
+        _loadingState.value.calendarLoading = true
         updateLoadingState()
-        
-        getUserProfileCalenderUseCase(username,forceRefresh = true).collectLatest{
-            when(it){
+
+        getUserProfileCalenderUseCase(username, forceRefresh = true).collectLatest {
+            when (it) {
                 is Resource.Loading -> {
-                    calendarLoading = true
+                    _loadingState.value.calendarLoading = true
                     updateLoadingState()
                 }
+
                 is Resource.Success -> {
                     _uiState.value = _uiState.value.copy(
-                        userProfileCalender = it.data)
-                    calendarLoading = false
+                        userProfileCalender = it.data
+                    )
+                    _loadingState.value.calendarLoading = false
                     updateLoadingState()
                 }
+
                 is Resource.Error -> {
-                    calendarLoading = false
+                    _loadingState.value.calendarLoading = false
                     updateLoadingState()
                     fetchUserProfileCalender(username)
                 }
@@ -146,27 +165,108 @@ class HomeViewmodel @Inject constructor(
         }
     }
 
-    private suspend fun fetchUserRecentSubmission(username: String, limit : Int? =15) {
-        submissionsLoading = true
+    private suspend fun fetchUserRecentSubmission(username: String, limit: Int? = 15) {
+        _loadingState.value.submissionsLoading = true
         updateLoadingState()
-        
-        getUserRecentSubmissionUseCase(username = username, limit = limit, forceRefresh = true).collectLatest {
-            when(it){
+
+        getUserRecentSubmissionUseCase(
+            username = username,
+            limit = limit,
+            forceRefresh = true
+        ).collectLatest {
+            when (it) {
                 is Resource.Loading -> {
-                    submissionsLoading = true
+                    _loadingState.value.submissionsLoading = true
                     updateLoadingState()
                 }
+
                 is Resource.Success -> {
                     _uiState.value = _uiState.value.copy(
                         recentSubmissions = it.data
                     )
-                    submissionsLoading = false
+                    _loadingState.value.submissionsLoading = false
                     updateLoadingState()
                 }
+
                 is Resource.Error -> {
-                    submissionsLoading = false
+                    _loadingState.value.submissionsLoading = false
                     updateLoadingState()
                     fetchUserRecentSubmission(username, limit)
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchUserBadges(username: String) {
+        _loadingState.value.badgesLoading = true
+        updateLoadingState()
+
+        getUserBadgesUseCase(username).collectLatest {
+            when (it) {
+                is Resource.Loading -> {
+                    _loadingState.value.badgesLoading = true
+                    updateLoadingState()
+                }
+
+                is Resource.Success -> {
+                    _loadingState.value.badgesLoading = false
+                    updateLoadingState()
+                }
+
+                is Resource.Error -> {
+                    _loadingState.value.badgesLoading = false
+                    updateLoadingState()
+                    fetchUserBadges(username)
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchUserContestRanking(username: String) {
+        _loadingState.value.contestRankingLoading = true
+        updateLoadingState()
+
+        getUserContestRankingUseCase(username).collectLatest {
+            when (it) {
+                is Resource.Loading -> {
+                    _loadingState.value.contestRankingLoading = true
+                    updateLoadingState()
+                }
+
+                is Resource.Success -> {
+                    _loadingState.value.contestRankingLoading = false
+                    updateLoadingState()
+                }
+
+                is Resource.Error -> {
+                    _loadingState.value.contestRankingLoading = false
+                    updateLoadingState()
+                    fetchUserContestRanking(username)
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchContestRankingHistogram(username: String) {
+        _loadingState.value.contestRankingHistogramLoading = true
+        updateLoadingState()
+
+        getContestRankingHistogramUseCase().collectLatest {
+            when (it) {
+                is Resource.Loading -> {
+                    _loadingState.value.contestRankingHistogramLoading = true
+                    updateLoadingState()
+                }
+
+                is Resource.Success -> {
+                    _loadingState.value.contestRankingHistogramLoading = false
+                    updateLoadingState()
+                }
+
+                is Resource.Error -> {
+                    _loadingState.value.contestRankingHistogramLoading = false
+                    updateLoadingState()
+                    fetchContestRankingHistogram(username)
                 }
             }
         }

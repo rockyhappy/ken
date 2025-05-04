@@ -22,4 +22,7 @@ interface LeetcodeRemoteRepository {
     suspend fun fetchCurrentData(): Resource<CurrentTimeResponse>
     suspend fun fetchUserProfileCalender(username : String): Resource<UserProfileCalendarResponse>
     suspend fun fetchUserRecentAcSubmissions(username: String, limit: Int?= 15): Resource<UserRecentAcSubmissionResponse>
+    suspend fun fetchContestRankingHistogram(): Resource<Any?>
+    suspend fun fetchUserContestRanking(username : String): Resource<Any?>
+    suspend fun fetchUserBadges(username: String): Resource<Any?>
 }
