@@ -26,12 +26,11 @@ class GetUserContestRankingUseCase @Inject constructor(
         emit(Resource.Loading())
 
         val isNetworkAvailable = networkManager.isConnected()
-        
-        // Try to use cache if not forcing refresh or network is unavailable
+        Log.d("RankingUseCase", "Network available: $isNetworkAvailable")
         if (!forceRefresh || !isNetworkAvailable) {
             val lastFetchTime = localRepository.getLastUserContestRankingFetchTime(username)
             
-            // Use cache if it's valid or if network is unavailable (even with force refresh)
+            
             if (cachePolicy.isCacheValid(lastFetchTime) || !isNetworkAvailable) {
                 val cachedData = localRepository.getUserContestRanking(username)
                 if (cachedData is Resource.Success && cachedData.data != null) {
@@ -47,12 +46,14 @@ class GetUserContestRankingUseCase @Inject constructor(
         if (isNetworkAvailable) {
             try {
                 val networkResult = remoteRepository.fetchUserContestRanking(username)
+                Log.d("RankingfUseCase", "Api result: $networkResult")
                 when (networkResult) {
                     is Resource.Success -> {
                         if (networkResult.data != null) {
                             val contestRankingData = networkResult.data.data.userContestRanking
                             // Save to local repository
-                            Log.d("GetUserContestRankingUseCase", "Contest ranking data fetched from network")
+                            Log.d("Special ", networkResult.data.toString())
+//                            Log.d("GetUserContestRankingUseCase", "Contest ranking data fetched from network")
                             localRepository.saveUserContestRanking(
                                 username,
                                 UserContestRankingEntity.fromDomainModel(

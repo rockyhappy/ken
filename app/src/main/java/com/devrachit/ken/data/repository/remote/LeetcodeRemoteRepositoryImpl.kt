@@ -1,5 +1,6 @@
 package com.devrachit.ken.data.repository.remote
 
+import android.util.Log
 import com.devrachit.ken.data.remote.queries.GraphqlQuery
 import com.devrachit.ken.data.remote.services.LeetcodeApiService
 import com.devrachit.ken.domain.models.ContestRatingHistogramResponse
@@ -141,6 +142,7 @@ class LeetcodeRemoteRepositoryImpl @Inject constructor(
             val responseBody = response.string()
             val userContestRanking = json.decodeFromString<UserContestRankingResponse>(responseBody)
             Resource.Success(userContestRanking)
+
         }catch (e: Exception){
             Resource.Error("Error fetching user contest ranking: ${e.message}")
         }

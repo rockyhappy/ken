@@ -54,6 +54,15 @@ class HomeViewmodel @Inject constructor(
                         _loadingState.value.badgesLoading ||
                         _loadingState.value.contestRankingLoading||
                         _loadingState.value.contestRankingHistogramLoading)
+
+        Log.d("LoadingState", "isLoading: ${_uiState.value.isLoading}, " +
+                "questionStatus: ${_loadingState.value.questionStatusLoading}, " +
+                "currentTime: ${_loadingState.value.currentTimeLoading}, " +
+                "calendar: ${_loadingState.value.calendarLoading}, " +
+                "submissions: ${_loadingState.value.submissionsLoading}, " +
+                "badges: ${_loadingState.value.badgesLoading}, " +
+                "contestRanking: ${_loadingState.value.contestRankingLoading}, " +
+                "contestHistogram: ${_loadingState.value.contestRankingHistogramLoading}")
     }
 
     fun loadUserDetails() {
@@ -71,7 +80,7 @@ class HomeViewmodel @Inject constructor(
                     launch(Dispatchers.IO) { fetchCurrentTime() }
                     launch(Dispatchers.IO) { fetchUserQuestionStatus(username) }
                     launch(Dispatchers.IO) { fetchUserRecentSubmission(username, 15) }
-                    launch(Dispatchers.IO) { fetchUserBadges(username) }
+//                    launch(Dispatchers.IO) { fetchUserBadges(username) }
                     launch(Dispatchers.IO) { fetchUserContestRanking(username) }
                     launch(Dispatchers.IO) { fetchContestRankingHistogram() }
                 }
