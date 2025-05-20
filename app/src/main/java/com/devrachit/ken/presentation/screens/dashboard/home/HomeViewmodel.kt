@@ -80,7 +80,7 @@ class HomeViewmodel @Inject constructor(
                     launch(Dispatchers.IO) { fetchCurrentTime() }
                     launch(Dispatchers.IO) { fetchUserQuestionStatus(username) }
                     launch(Dispatchers.IO) { fetchUserRecentSubmission(username, 15) }
-//                    launch(Dispatchers.IO) { fetchUserBadges(username) }
+                    launch(Dispatchers.IO) { fetchUserBadges(username) }
                     launch(Dispatchers.IO) { fetchUserContestRanking(username) }
                     launch(Dispatchers.IO) { fetchContestRankingHistogram() }
                 }
@@ -211,7 +211,7 @@ class HomeViewmodel @Inject constructor(
         _loadingState.value.badgesLoading = true
         updateLoadingState()
 
-        getUserBadgesUseCase(username).collectLatest {
+        getUserBadgesUseCase(username, forceRefresh = true).collectLatest {
             when (it) {
                 is Resource.Loading -> {
                     _loadingState.value.badgesLoading = true
@@ -219,11 +219,13 @@ class HomeViewmodel @Inject constructor(
                 }
 
                 is Resource.Success -> {
+                    _uiState.value=_uiState.value.copy(userBadgesResponse = it.data)
                     _loadingState.value.badgesLoading = false
                     updateLoadingState()
                 }
 
                 is Resource.Error -> {
+                    Log.d("TAG", "fetchUserBadges: ${it.message}")
                     _loadingState.value.badgesLoading = false
                     updateLoadingState()
                     fetchUserBadges(username)

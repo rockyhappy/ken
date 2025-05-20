@@ -6,6 +6,7 @@ import com.devrachit.ken.data.remote.services.LeetcodeApiService
 import com.devrachit.ken.domain.models.ContestRatingHistogramResponse
 import com.devrachit.ken.domain.models.CurrentTimeResponse
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
+import com.devrachit.ken.domain.models.UserBadgesResponse
 import com.devrachit.ken.domain.models.UserContestRankingResponse
 import com.devrachit.ken.domain.models.UserInfoResponse
 import com.devrachit.ken.domain.models.UserProfileCalendarResponse
@@ -120,13 +121,13 @@ class LeetcodeRemoteRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun fetchUserBadges(username : String): Resource<Any?> {
+    override suspend fun fetchUserBadges(username : String): Resource<UserBadgesResponse> {
         val jsonRequest = GraphqlQuery.getUserBadgesJsonRequest(username = username)
         val request = jsonRequest.toString().toRequestBody("application/json".toMediaType())
         return try {
             val response = apiService.fetchUserBadges(request)
             val responseBody = response.string()
-            val userBadges = json.decodeFromString<Any?>(responseBody)
+            val userBadges = json.decodeFromString<UserBadgesResponse>(responseBody)
             Resource.Success(userBadges)
         }
         catch (e: Exception){
