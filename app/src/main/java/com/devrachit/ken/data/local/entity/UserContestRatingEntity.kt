@@ -16,7 +16,7 @@ data class UserContestRankingEntity(
     val globalRanking: Int,
     val totalParticipants: Int,
     val topPercentage: Double,
-    val badgeName: String,
+    val badgeName: String?,
     val lastFetchTime: Long = System.currentTimeMillis()
 ) {
     fun toDomainModel(): UserContestRankingResponse {
@@ -44,7 +44,7 @@ data class UserContestRankingEntity(
                 globalRanking = ranking.globalRanking,
                 totalParticipants = ranking.totalParticipants,
                 topPercentage = ranking.topPercentage,
-                badgeName = ranking.badge.name,
+                badgeName = ranking.badge?.name ,
                 lastFetchTime = cacheTimestamp
             )
         }

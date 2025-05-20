@@ -1168,4 +1168,5 @@
     <color name="heatmap2">#28C244</color>
     <color name="heatmap3">#109932</color>
     <color name="heatmap4">#016620</color>
+    <color name="primary_color_dark">#FFA116</color>
 </resources>

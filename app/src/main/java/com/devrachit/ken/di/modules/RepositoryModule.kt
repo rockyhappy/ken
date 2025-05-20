@@ -1,6 +1,7 @@
 package com.devrachit.ken.di.modules
 
 import android.content.Context
+import com.devrachit.ken.data.local.dao.LeetCodeUserBadgesDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserContestRatingDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserProfileCalenderDao
@@ -49,17 +50,24 @@ object RepositoryModule {
 
     @Provides
     @Singleton
+    fun provideLeetcodeUserBadgesDao(database: KenDatabase) =
+        database.leetcodeUserBadgesDao()
+
+    @Provides
+    @Singleton
     fun provideLeetcodeLocalRepository(
         userDao: LeetCodeUserDao,
         userProfileCalenderDao: LeetCodeUserProfileCalenderDao,
         userRecentSubmissionDao: LeetCodeUserRecentSubmissionDao,
-        userContestRatingDao: LeetCodeUserContestRatingDao
+        userContestRatingDao: LeetCodeUserContestRatingDao,
+        userBadgesDao: LeetCodeUserBadgesDao
     ): LeetcodeLocalRepository {
         return LeetcodeLocalRepositoryImpl(
             userDao = userDao,
             userProfileCalenderDao = userProfileCalenderDao,
             userRecentSubmissionDao = userRecentSubmissionDao,
-            userContestRatingDao = userContestRatingDao
+            userContestRatingDao = userContestRatingDao,
+            userBadgesDao = userBadgesDao
         )
     }
 

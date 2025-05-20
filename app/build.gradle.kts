@@ -117,6 +117,7 @@ dependencies {
     implementation(libs.protobuf.javalite)
 
     implementation(libs.coil)
+    implementation(libs.coil.gif)
     implementation(libs.timber)
     implementation(libs.googlePlayServiceAuth)
 

@@ -28,6 +28,8 @@ class LogoutUseCase @Inject constructor(
             localRepository.deleteAllUserQuestionStatus()
             localRepository.deleteAllRecentSubmissions()
             localRepository.deleteAllUserProfileCalender()
+            localRepository.deleteAllUserBadges()
+            localRepository.deleteAllUserContestRankings()
             dataStoteRepository.clearPrimaryUsername()
             emit(Resource.Success(true))
         }

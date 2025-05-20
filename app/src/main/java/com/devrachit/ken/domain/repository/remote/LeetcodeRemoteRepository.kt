@@ -10,6 +10,7 @@ import com.devrachit.ken.domain.models.UserInfoResponse
 import com.devrachit.ken.domain.models.UserProfileCalendarResponse
 import com.devrachit.ken.domain.models.UserQuestionStatusData
 import com.devrachit.ken.domain.models.UserRecentAcSubmissionResponse
+import com.devrachit.ken.domain.models.UserBadgesResponse
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -26,5 +27,5 @@ interface LeetcodeRemoteRepository {
     suspend fun fetchUserRecentAcSubmissions(username: String, limit: Int?= 15): Resource<UserRecentAcSubmissionResponse>
     suspend fun fetchContestRankingHistogram(): Resource<ContestRatingHistogramResponse>
     suspend fun fetchUserContestRanking(username : String): Resource<UserContestRankingResponse>
-    suspend fun fetchUserBadges(username: String): Resource<Any?>
+    suspend fun fetchUserBadges(username: String): Resource<UserBadgesResponse>
 }

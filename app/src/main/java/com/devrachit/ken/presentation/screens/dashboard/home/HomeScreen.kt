@@ -34,6 +34,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.Color
+import com.devrachit.ken.presentation.screens.dashboard.Widgets.BadgesWidget
+import com.devrachit.ken.presentation.screens.dashboard.Widgets.ContestHistogram
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -56,8 +59,8 @@ fun HomeScreen(
             setHasInitiallyLoaded(true)
         }
     }
-
     Box(modifier = Modifier.fillMaxSize()) {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -86,7 +89,31 @@ fun HomeScreen(
 
                 else -> HomeScreenShimmer()
             }
+            when {
+                uiState.contestRatingHistogramResponse != null && uiState.userContestRankingResponse != null -> {
+                    ContestHistogram(
+                        contestRatingHistogramResponse = uiState.contestRatingHistogramResponse,
+                        userContestRankingResponse = uiState.userContestRankingResponse,
+                        modifier = Modifier.padding(top = 20.sdp, start = 18.sdp, end = 18.sdp),
+                    )
+                }
 
+                else -> HomeScreenShimmer()
+            }
+            when {
+                uiState.userBadgesResponse != null && (uiState.userBadgesResponse.data?.matchedUser?.badges?.size
+                    ?: 0) > 0 -> {
+                    BadgesWidget(
+                        modifier = Modifier.padding(
+                            top = 20.sdp,
+                            start = 18.sdp,
+                            end = 18.sdp
+                        ),
+                        userBadgesResponse = uiState.userBadgesResponse
+                    )
+                }
+                else -> HomeScreenShimmer()
+            }
             when {
                 uiState.recentSubmissions != null -> {
                     RecentSubmissionCard(
@@ -103,7 +130,13 @@ fun HomeScreen(
 
                 else -> HomeScreenShimmer()
             }
+
         }
+
+//        Text(
+//            text=uiState.userBadgesResponse.toString(),
+//            color= Color.White,
+//        )
         PullRefreshIndicator(
             refreshing = uiState.isLoading,
             state = pullRefreshState,

@@ -19,10 +19,10 @@ data class UserContestRanking(
     val globalRanking: Int,
     val totalParticipants: Int,
     val topPercentage: Double,
-    val badge: BadgeName
+    val badge: BadgeName?
 )
 
 @Serializable
 data class BadgeName(
-    val name: String
+    val name: String?
 )
