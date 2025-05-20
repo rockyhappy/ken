@@ -3,7 +3,10 @@ package com.devrachit.ken.domain.repository.local
 import com.devrachit.ken.data.local.entity.UserProfileCalenderEntity
 import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
 import com.devrachit.ken.data.local.entity.UserRecentSubmissionEntity
+import com.devrachit.ken.data.local.entity.UserContestRankingEntity
+import com.devrachit.ken.data.local.entity.UserBadgesEntity
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
+import com.devrachit.ken.domain.models.UserBadges
 import com.devrachit.ken.domain.models.UserCalendar
 import com.devrachit.ken.domain.models.UserQuestionStatusData
 import com.devrachit.ken.utility.NetworkUtility.Resource
@@ -38,4 +41,18 @@ interface LeetcodeLocalRepository {
     suspend fun deleteRecentSubmissions(username: String)
     suspend fun deleteAllRecentSubmissions()
     suspend fun getLastRecentSubmissionsFetchTime(username: String): Long?
+
+    // These functions are for user contest ranking
+    suspend fun getUserContestRanking(username: String): Resource<UserContestRankingEntity>
+    suspend fun saveUserContestRanking(username: String, contestRanking: UserContestRankingEntity)
+    suspend fun deleteUserContestRanking(username: String)
+    suspend fun deleteAllUserContestRankings()
+    suspend fun getLastUserContestRankingFetchTime(username: String): Long?
+
+    // These functions are for user badges
+    suspend fun getUserBadges(username: String): Resource<UserBadgesEntity>
+    suspend fun saveUserBadges(username: String, userBadges: UserBadgesEntity)
+    suspend fun deleteUserBadges(username: String)
+    suspend fun deleteAllUserBadges()
+    suspend fun getLastUserBadgesFetchTime(username: String): Long?
 }

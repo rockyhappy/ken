@@ -55,7 +55,7 @@ fun RecentSubmissionCard(
         modifier = modifier
             .padding(bottom = 100.sdp)
             .fillMaxWidth()
-            .height(400.sdp)
+            .height(800.sdp)
             .clip(RoundedCornerShape(10.sdp))
             .border(
                 border = BorderStroke(
@@ -82,6 +82,7 @@ fun RecentSubmissionCard(
                 Row(
                     modifier = Modifier
                         .padding(horizontal = 10.sdp, vertical = 5.sdp)
+
                         .fillMaxWidth()
                         .border(
                             border = BorderStroke(
@@ -89,8 +90,9 @@ fun RecentSubmissionCard(
                                 color = colorResource(R.color.white).copy(alpha = 0.2f)
                             ), shape = RoundedCornerShape(10.sdp)
                         )
+                        .clickable{onItemClick}
                         .padding(horizontal = 10.sdp, vertical = 10.sdp)
-                        .clickable{onItemClick},
+                        ,
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {

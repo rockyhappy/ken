@@ -4,7 +4,10 @@ import com.devrachit.ken.data.local.datastore.DataStoreRepository
 import com.devrachit.ken.domain.policy.CachePolicy
 import com.devrachit.ken.domain.repository.local.LeetcodeLocalRepository
 import com.devrachit.ken.domain.repository.remote.LeetcodeRemoteRepository
+import com.devrachit.ken.domain.usecases.getContestRankingHistogram.GetContestRankingHistogramUseCase
 import com.devrachit.ken.domain.usecases.getCurrentTime.GetCurrentTime
+import com.devrachit.ken.domain.usecases.getUserBadges.GetUserBadgesUseCase
+import com.devrachit.ken.domain.usecases.getUserContestRanking.GetUserContestRankingUseCase
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
 import com.devrachit.ken.domain.usecases.getUserProfileCalender.GetUserProfileCalenderUseCase
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
@@ -95,12 +98,56 @@ object UseCaseModule {
         remoteRepository: LeetcodeRemoteRepository,
         cachePolicy: CachePolicy,
         networkManager: NetworkManager
-    ): GetUserRecentSubmissionUseCase{
+    ): GetUserRecentSubmissionUseCase {
         return GetUserRecentSubmissionUseCase(
             localRepository = localRepository,
             remoteRepository = remoteRepository,
             cachePolicy = cachePolicy,
-            networkManager = networkManager)
+            networkManager = networkManager
+        )
     }
 
+    @Provides
+    fun providesGetContestRankingHistogramUseCase(
+        dataStoreRepository: DataStoreRepository,
+        remoteRepository: LeetcodeRemoteRepository,
+        cachePolicy: CachePolicy,
+        networkManager: NetworkManager
+    ): GetContestRankingHistogramUseCase {
+        return GetContestRankingHistogramUseCase(
+            dataStoreRepository = dataStoreRepository,
+            remoteRepository = remoteRepository,
+            cachePolicy = cachePolicy,
+            networkManager = networkManager
+        )
+    }
+
+    @Provides
+    fun providesGetUserBadgesUseCase(
+        localRepository: LeetcodeLocalRepository,
+        remoteRepository: LeetcodeRemoteRepository,
+        cachePolicy: CachePolicy,
+        networkManager: NetworkManager
+    ): GetUserBadgesUseCase{
+        return GetUserBadgesUseCase(
+            localRepository = localRepository,
+            remoteRepository = remoteRepository,
+            cachePolicy = cachePolicy,
+            networkManager = networkManager
+            )
+    }
+
+    @Provides
+    fun providesGetUserContestRankingUseCase(
+        localRepository: LeetcodeLocalRepository,
+        remoteRepository: LeetcodeRemoteRepository,
+        cachePolicy: CachePolicy,
+        networkManager: NetworkManager): GetUserContestRankingUseCase{
+        return GetUserContestRankingUseCase(
+            localRepository = localRepository,
+            remoteRepository = remoteRepository,
+            cachePolicy = cachePolicy,
+            networkManager = networkManager
+            )
+    }
 }

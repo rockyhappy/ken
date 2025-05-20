@@ -128,9 +128,9 @@ fun HeatmapRevamp(
                         val dayModel = dayToActivityMap[i]
                         val color = when {
                             dayModel == null -> Color.Gray.copy(alpha = 0.2f)
-                            dayModel.contributions > 10 -> heatmap1
-                            dayModel.contributions > 5 -> heatmap2
-                            dayModel.contributions > 2 -> heatmap3
+                            dayModel.contributions > 4-> heatmap1
+                            dayModel.contributions > 2 -> heatmap2
+                            dayModel.contributions > 1 -> heatmap3
                             else -> heatmap4
                         }
 

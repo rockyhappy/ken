@@ -32,4 +32,16 @@ interface LeetcodeApiService {
     @POST("graphql")
     suspend fun fetchRecentSubmissionList(@Body requestBody: RequestBody): ResponseBody
 
+    @Headers("Content-Type: application/json", "Referer: https://leetcode.com/")
+    @POST("graphql")
+    suspend fun fetchContestRankingHistogram(@Body requestBody: RequestBody): ResponseBody
+
+    @Headers("Content-Type: application/json", "Referer: https://leetcode.com/")
+    @POST("graphql")
+    suspend fun fetchUserContestRanking(@Body requestBody: RequestBody): ResponseBody
+
+    @Headers("Content-Type: application/json", "Referer: https://leetcode.com/")
+    @POST("graphql")
+    suspend fun fetchUserBadges(@Body requestBody: RequestBody): ResponseBody
+
 }

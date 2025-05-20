@@ -1,9 +1,13 @@
 package com.devrachit.ken.data.repository.remote
 
+import android.util.Log
 import com.devrachit.ken.data.remote.queries.GraphqlQuery
 import com.devrachit.ken.data.remote.services.LeetcodeApiService
+import com.devrachit.ken.domain.models.ContestRatingHistogramResponse
 import com.devrachit.ken.domain.models.CurrentTimeResponse
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
+import com.devrachit.ken.domain.models.UserBadgesResponse
+import com.devrachit.ken.domain.models.UserContestRankingResponse
 import com.devrachit.ken.domain.models.UserInfoResponse
 import com.devrachit.ken.domain.models.UserProfileCalendarResponse
 import com.devrachit.ken.domain.models.UserQuestionStatusData
@@ -100,6 +104,48 @@ class LeetcodeRemoteRepositoryImpl @Inject constructor(
             Resource.Success(userRecentAcSubmissions)
         }catch (e: Exception){
             Resource.Error("Error fetching user recent ac submissions: ${e.message}")
+        }
+    }
+
+    override suspend fun fetchContestRankingHistogram(): Resource<ContestRatingHistogramResponse> {
+        val jsonRequest = GraphqlQuery.getContestRatingHistogramJsonRequest()
+        val request = jsonRequest.toString().toRequestBody("application/json".toMediaType())
+        return try {
+            val response = apiService.fetchContestRankingHistogram(request)
+            val responseBody = response.string()
+            val contestRankingHistogram = json.decodeFromString<ContestRatingHistogramResponse>(responseBody)
+            Resource.Success(contestRankingHistogram)
+        }
+        catch (e: Exception){
+            Resource.Error("Error fetching contest ranking histogram: ${e.message}")
+        }
+    }
+
+    override suspend fun fetchUserBadges(username : String): Resource<UserBadgesResponse> {
+        val jsonRequest = GraphqlQuery.getUserBadgesJsonRequest(username = username)
+        val request = jsonRequest.toString().toRequestBody("application/json".toMediaType())
+        return try {
+            val response = apiService.fetchUserBadges(request)
+            val responseBody = response.string()
+            val userBadges = json.decodeFromString<UserBadgesResponse>(responseBody)
+            Resource.Success(userBadges)
+        }
+        catch (e: Exception){
+            Resource.Error("Error fetching user badges: ${e.message}")
+        }
+    }
+
+    override suspend fun fetchUserContestRanking(username: String): Resource<UserContestRankingResponse> {
+        val jsonRequest = GraphqlQuery.getUserContestRankingJsonRequest(username = username)
+        val request = jsonRequest.toString().toRequestBody("application/json".toMediaType())
+        return try {
+            val response = apiService.fetchUserContestRanking(request)
+            val responseBody = response.string()
+            val userContestRanking = json.decodeFromString<UserContestRankingResponse>(responseBody)
+            Resource.Success(userContestRanking)
+
+        }catch (e: Exception){
+            Resource.Error("Error fetching user contest ranking: ${e.message}")
         }
     }
 }
