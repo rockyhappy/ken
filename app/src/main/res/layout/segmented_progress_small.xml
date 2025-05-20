@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="@drawable/widget_background"
+    android:orientation="vertical"
+    android:id="@+id/segmented_widget_small"
+    android:padding="8dp">
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="username"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:maxLines="1"
+        />
+
+    <ImageView
+        android:id="@+id/widget_drawing"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="@dimen/_8sdp"
+        android:contentDescription="Progress chart"
+        android:elevation="@dimen/_1sdp"
+        android:scaleType="fitCenter" />
+
+
+</LinearLayout>

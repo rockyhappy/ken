@@ -4,5 +4,6 @@ class Constants {
     companion object {
         val  NAVKEYUSERNAME ="USERNAME"
         val USERCONTESTPARTICIPATIONERROR = "USERCONTESTPARTICIPATIONERROR"
+        const val DEFAULT_USERNAME = "pudv95"
     }
 }

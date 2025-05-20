@@ -20,6 +20,7 @@
             android:name=".presentation.screens.auth.AuthActivity"
             android:exported="true"
             android:screenOrientation="portrait"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.Ken" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,6 +32,7 @@
             android:name=".presentation.screens.dashboard.ActivityContent.MainActivity"
             android:exported="false"
             android:screenOrientation="portrait"
+
             android:theme="@style/Theme.Ken"
             tools:ignore="DiscouragedApi">
         </activity>
@@ -53,6 +55,16 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/segemented_progress_large" />
+        </receiver>
+        <receiver
+            android:name=".widget.SegmentedProgressSmall.SegmentedProgressWidgetSmallProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/segmented_progress_small" />
         </receiver>
         <receiver
             android:name=".widget.WidgetUpdateReceiver"
