@@ -65,7 +65,7 @@ class SegmentedProgressWidgetLargeProvider : AppWidgetProvider() {
         widgetScope.launch {
             var userName = "Loading..."
             try {
-                userName = dataStoreRepository.readPrimaryUsername() ?: "LeetCoder"
+                userName = dataStoreRepository.readPrimaryUsername() ?: "leetcode"
                 Log.d(TAG, "Username: $userName")
                 for (appWidgetId in appWidgetIds) {
                     val loadingViews =

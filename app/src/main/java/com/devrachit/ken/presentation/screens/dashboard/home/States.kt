@@ -16,6 +16,7 @@ data class HomeUiStates(
     val contestRatingHistogramResponse : ContestRatingHistogramResponse?=null,
     val userContestRankingResponse: UserContestRankingResponse? = null,
     val userBadgesResponse: UserBadgesResponse? = null,
+    var userParticipationInAnyContest: Boolean = true,
 )
 
 data class QuestionProgressUiState(

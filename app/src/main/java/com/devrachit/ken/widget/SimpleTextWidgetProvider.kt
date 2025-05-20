@@ -62,7 +62,7 @@ class SimpleTextWidgetProvider : AppWidgetProvider() {
         widgetScope.launch {
             var userName = "Loading..."
             try {
-                userName = dataStoreRepository.readPrimaryUsername() ?: "LeetCoder"
+                userName = dataStoreRepository.readPrimaryUsername() ?: "leetcode"
                 Log.d(TAG, "Username: $userName")
                 for (appWidgetId in appWidgetIds) {
                     val loadingViews = RemoteViews(context.packageName, R.layout.simple_text_widget)

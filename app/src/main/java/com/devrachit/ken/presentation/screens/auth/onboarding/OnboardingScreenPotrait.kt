@@ -279,7 +279,8 @@ fun OnboardingScreenPortrait(
                 }
                 OutlinedButton(
                     onClick = {
-
+                        updateUserName("leetcode")
+                        onContinueButtonClick()
                     },
                     modifier = Modifier
                         .padding(start = 24.sdp, end = 24.sdp, top = 16.sdp)
