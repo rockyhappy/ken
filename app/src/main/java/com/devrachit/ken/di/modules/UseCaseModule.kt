@@ -8,6 +8,7 @@ import com.devrachit.ken.domain.usecases.getContestRankingHistogram.GetContestRa
 import com.devrachit.ken.domain.usecases.getCurrentTime.GetCurrentTime
 import com.devrachit.ken.domain.usecases.getUserBadges.GetUserBadgesUseCase
 import com.devrachit.ken.domain.usecases.getUserContestRanking.GetUserContestRankingUseCase
+import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetAllUsersUsecase
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
 import com.devrachit.ken.domain.usecases.getUserProfileCalender.GetUserProfileCalenderUseCase
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
@@ -150,4 +151,14 @@ object UseCaseModule {
             networkManager = networkManager
             )
     }
+    @Provides
+    fun providesGetAllUsersUseCase(
+        localRepository: LeetcodeLocalRepository,
+        cachePolicy: CachePolicy): GetAllUsersUsecase{
+        return GetAllUsersUsecase(
+            localRepository = localRepository,
+            cachePolicy = cachePolicy
+            )
+    }
+
 }

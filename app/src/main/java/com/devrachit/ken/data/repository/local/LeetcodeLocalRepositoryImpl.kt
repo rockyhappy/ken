@@ -206,4 +206,8 @@ class LeetcodeLocalRepositoryImpl @Inject constructor(
     override suspend fun getLastUserBadgesFetchTime(username: String): Long? {
         return userBadgesDao.getUserBadges(username)?.lastFetchTime
     }
+
+    override suspend fun getAllUsers():List<LeetCodeUserEntity>{
+        return userDao.getAllUsers()
+    }
 }

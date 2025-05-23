@@ -5,5 +5,10 @@ import com.devrachit.ken.presentation.screens.dashboard.home.QuestionProgressUiS
 
 data class CompareUiStates(
     val friendsQuestionProgressInfo: Map<String, QuestionProgressUiState>? = emptyMap(),
-    val friendsDetails: Map<String, LeetCodeUserInfo>?= emptyMap()
+    val friendsDetails: Map<String, LeetCodeUserInfo>?= emptyMap(),
+    val isLoading: Boolean = false ,
+)
+
+data class LoadingStates(
+    var isLoadingUserList: Boolean = false,
 )

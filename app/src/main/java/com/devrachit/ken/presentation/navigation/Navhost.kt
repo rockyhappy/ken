@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.devrachit.ken.presentation.screens.dashboard.compare.CompareScreen
+import com.devrachit.ken.presentation.screens.dashboard.compare.CompareViewModel
 import com.devrachit.ken.presentation.screens.dashboard.home.HomeScreen
 import com.devrachit.ken.presentation.screens.dashboard.home.HomeViewmodel
 import com.devrachit.ken.presentation.screens.dashboard.questions.QuestionsScreen
@@ -44,7 +45,12 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
         }
         
         animatedComposable(Screen.Compare.route) {
-            CompareScreen()
+            val viewmodel = hiltViewModel<CompareViewModel>()
+            CompareScreen(
+                uiState = viewmodel.userStatesValues.collectAsStateWithLifecycle().value,
+                loadingStates = viewmodel.loadingStatesValues.collectAsStateWithLifecycle().value,
+                onFirstLoad = { viewmodel.loadAllUsersInfo()}
+            )
         }
         
         animatedComposable(Screen.Sheets.route) {
