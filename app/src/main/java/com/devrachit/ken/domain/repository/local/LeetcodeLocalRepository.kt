@@ -28,6 +28,7 @@ interface LeetcodeLocalRepository {
     suspend fun saveUserQuestionStatus(userQuestionStatus: UserQuestionStatusEntity)
     suspend fun deleteUserQuestionStatus(username: String)
     suspend fun deleteAllUserQuestionStatus()
+    suspend fun getAllUserQuestionStatuses(): List<UserQuestionStatusEntity>
 
     // These function are for the User Streak
     suspend fun getUserProfileCalender(username: String): Resource<UserProfileCalenderEntity>
@@ -35,7 +36,7 @@ interface LeetcodeLocalRepository {
     suspend fun deleteUserProfileCalender(username: String)
     suspend fun deleteAllUserProfileCalender()
     suspend fun getLastUserProfileCalenderFetchTime(username: String): Long?
-
+    suspend fun getAllUserCalendars(): List<UserProfileCalenderEntity>
 
     // these functions are for user Recent Submissions
     suspend fun saveRecentSubmissions(username: String, recentSubmissions: UserRecentSubmissionEntity)
