@@ -33,6 +33,7 @@ interface LeetCodeUserProfileCalenderDao {
     @Query("DELETE FROM user_calendars WHERE lastFetchTime < :timestamp")
     suspend fun deleteExpiredCacheEntries(timestamp: Long): Int
     
-    
+    @Query("SELECT * FROM user_calendars")
+    suspend fun getAllUserCalendars(): List<UserProfileCalenderEntity>
     
 }

@@ -9,6 +9,7 @@ import com.devrachit.ken.domain.repository.local.LeetcodeLocalRepository
 import com.devrachit.ken.domain.repository.remote.LeetcodeRemoteRepository
 import com.devrachit.ken.utility.NetworkUtility.NetworkManager
 import com.devrachit.ken.utility.NetworkUtility.Resource
+import com.devrachit.ken.utility.constants.Constants.Companion.USERCONTESTPARTICIPATIONERROR
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -29,8 +30,8 @@ class GetUserContestRankingUseCase @Inject constructor(
         Log.d("RankingUseCase", "Network available: $isNetworkAvailable")
         if (!forceRefresh || !isNetworkAvailable) {
             val lastFetchTime = localRepository.getLastUserContestRankingFetchTime(username)
-            
-            
+
+
             if (cachePolicy.isCacheValid(lastFetchTime) || !isNetworkAvailable) {
                 val cachedData = localRepository.getUserContestRanking(username)
                 if (cachedData is Resource.Success && cachedData.data != null) {
@@ -71,13 +72,17 @@ class GetUserContestRankingUseCase @Inject constructor(
                             }
                         }
                     }
+
                     is Resource.Error -> {
+                        if (networkResult.message == USERCONTESTPARTICIPATIONERROR)
+                            emit(Resource.Error(networkResult.message))
                         emit(Resource.Error(networkResult.message ?: "Unknown error"))
                         val cachedData = localRepository.getUserContestRanking(username)
                         if (cachedData is Resource.Success && cachedData.data != null) {
                             emit(Resource.Success(cachedData.data.toDomainModel()))
                         }
                     }
+
                     is Resource.Loading -> {
                         // This shouldn't happen, but just in case
                         val cachedData = localRepository.getUserContestRanking(username)

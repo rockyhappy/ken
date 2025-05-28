@@ -65,6 +65,7 @@ import com.devrachit.ken.ui.theme.TextStyleInter24Lh36Fw700
 import com.devrachit.ken.utility.composeUtility.CompletePreviews
 import com.devrachit.ken.utility.composeUtility.OrientationPreviews
 import com.devrachit.ken.utility.composeUtility.sdp
+import com.devrachit.ken.utility.constants.Constants.Companion.DEFAULT_USERNAME
 
 @Composable
 fun OnboardingScreenPortrait(
@@ -279,7 +280,8 @@ fun OnboardingScreenPortrait(
                 }
                 OutlinedButton(
                     onClick = {
-
+                        updateUserName(DEFAULT_USERNAME)
+                        onContinueButtonClick()
                     },
                     modifier = Modifier
                         .padding(start = 24.sdp, end = 24.sdp, top = 16.sdp)

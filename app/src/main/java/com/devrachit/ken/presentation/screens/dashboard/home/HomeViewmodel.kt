@@ -13,6 +13,7 @@ import com.devrachit.ken.domain.usecases.getUserProfileCalender.GetUserProfileCa
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
 import com.devrachit.ken.domain.usecases.getUserRecentSubmission.GetUserRecentSubmissionUseCase
 import com.devrachit.ken.utility.NetworkUtility.Resource
+import com.devrachit.ken.utility.constants.Constants.Companion.USERCONTESTPARTICIPATIONERROR
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -52,17 +53,9 @@ class HomeViewmodel @Inject constructor(
                         _loadingState.value.calendarLoading ||
                         _loadingState.value.submissionsLoading ||
                         _loadingState.value.badgesLoading ||
-                        _loadingState.value.contestRankingLoading||
-                        _loadingState.value.contestRankingHistogramLoading)
-
-        Log.d("LoadingState", "isLoading: ${_uiState.value.isLoading}, " +
-                "questionStatus: ${_loadingState.value.questionStatusLoading}, " +
-                "currentTime: ${_loadingState.value.currentTimeLoading}, " +
-                "calendar: ${_loadingState.value.calendarLoading}, " +
-                "submissions: ${_loadingState.value.submissionsLoading}, " +
-                "badges: ${_loadingState.value.badgesLoading}, " +
-                "contestRanking: ${_loadingState.value.contestRankingLoading}, " +
-                "contestHistogram: ${_loadingState.value.contestRankingHistogramLoading}")
+                        _loadingState.value.contestRankingLoading ||
+                        _loadingState.value.contestRankingHistogramLoading
+            )
     }
 
     fun loadUserDetails() {
@@ -219,7 +212,7 @@ class HomeViewmodel @Inject constructor(
                 }
 
                 is Resource.Success -> {
-                    _uiState.value=_uiState.value.copy(userBadgesResponse = it.data)
+                    _uiState.value = _uiState.value.copy(userBadgesResponse = it.data)
                     _loadingState.value.badgesLoading = false
                     updateLoadingState()
                 }
@@ -239,14 +232,15 @@ class HomeViewmodel @Inject constructor(
         updateLoadingState()
 
         getUserContestRankingUseCase(username = username, forceRefresh = true).collectLatest {
-            when(it) {
+            when (it) {
                 is Resource.Loading -> {
                     _loadingState.value.contestRankingLoading = true
                     updateLoadingState()
                 }
 
                 is Resource.Success -> {
-                    _uiState.value=_uiState.value.copy(userContestRankingResponse = it.data)
+                    Log.d("TAGUserCheck", "fetchUserContestRanking: ${it.data}")
+                    _uiState.value = _uiState.value.copy(userContestRankingResponse = it.data)
                     _loadingState.value.contestRankingLoading = false
                     updateLoadingState()
                 }
@@ -254,7 +248,10 @@ class HomeViewmodel @Inject constructor(
                 is Resource.Error -> {
                     _loadingState.value.contestRankingLoading = false
                     updateLoadingState()
-                    fetchUserContestRanking(username)
+                    if (it.message != USERCONTESTPARTICIPATIONERROR)
+                        fetchUserContestRanking(username)
+                    else
+                        _uiState.value.userParticipationInAnyContest = false
                 }
             }
         }
@@ -272,7 +269,7 @@ class HomeViewmodel @Inject constructor(
                 }
 
                 is Resource.Success -> {
-                    _uiState.value= _uiState.value.copy(contestRatingHistogramResponse = it.data)
+                    _uiState.value = _uiState.value.copy(contestRatingHistogramResponse = it.data)
                     _loadingState.value.contestRankingHistogramLoading = false
                     updateLoadingState()
                 }

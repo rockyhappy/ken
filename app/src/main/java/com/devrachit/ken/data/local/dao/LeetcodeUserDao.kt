@@ -28,6 +28,8 @@ interface LeetCodeUserDao {
     @Query("SELECT * FROM leetcode_users WHERE lastFetchTime < :timestamp")
     suspend fun getExpiredCacheEntries(timestamp: Long): List<LeetCodeUserEntity>
 
+    @Query("SELECT * FROM leetcode_users")
+    suspend fun getAllUsers(): List<LeetCodeUserEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUserQuestionStatus(userQuestionStatus: UserQuestionStatusEntity)
@@ -41,4 +43,7 @@ interface LeetCodeUserDao {
 
     @Query("DELETE FROM USER_QUESTION_STATUS")
     suspend fun deleteAllUserQuestionStatus()
+
+    @Query("SELECT * FROM USER_QUESTION_STATUS")
+    suspend fun getAllUserQuestionStatuses(): List<UserQuestionStatusEntity>
 }

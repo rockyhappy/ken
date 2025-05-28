@@ -10,7 +10,8 @@
 
     <ImageView
         android:id="@+id/widget_drawing"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="0.4"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/_8sdp"
         android:layout_marginTop="8dp"
@@ -19,7 +20,8 @@
         android:scaleType="fitCenter" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="0.6"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:orientation="vertical">

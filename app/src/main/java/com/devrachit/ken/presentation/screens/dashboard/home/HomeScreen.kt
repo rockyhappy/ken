@@ -90,7 +90,9 @@ fun HomeScreen(
                 else -> HomeScreenShimmer()
             }
             when {
-                uiState.contestRatingHistogramResponse != null && uiState.userContestRankingResponse != null -> {
+                uiState.contestRatingHistogramResponse != null &&
+                        uiState.userContestRankingResponse != null &&
+                        uiState.userParticipationInAnyContest -> {
                     ContestHistogram(
                         contestRatingHistogramResponse = uiState.contestRatingHistogramResponse,
                         userContestRankingResponse = uiState.userContestRankingResponse,
@@ -98,11 +100,14 @@ fun HomeScreen(
                     )
                 }
 
+                !uiState.userParticipationInAnyContest -> {
+
+                }
+
                 else -> HomeScreenShimmer()
             }
             when {
-                uiState.userBadgesResponse != null && (uiState.userBadgesResponse.data?.matchedUser?.badges?.size
-                    ?: 0) > 0 -> {
+                uiState.userBadgesResponse != null && (uiState.userBadgesResponse.data?.matchedUser?.badges?.size != 0) -> {
                     BadgesWidget(
                         modifier = Modifier.padding(
                             top = 20.sdp,
@@ -112,6 +117,11 @@ fun HomeScreen(
                         userBadgesResponse = uiState.userBadgesResponse
                     )
                 }
+
+                uiState.userBadgesResponse != null && (uiState.userBadgesResponse.data?.matchedUser?.badges?.size) == 0 -> {
+                    // user has no badge don't need to show any
+                }
+
                 else -> HomeScreenShimmer()
             }
             when {

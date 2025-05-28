@@ -111,11 +111,13 @@ fun HomeScreenDrawer(
                 style = TextStyleInter24Lh36Fw700(),
                 modifier = Modifier.padding(top = 8.sdp, start = 10.sdp),
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                color = Color.White
             )
             Text(
                 text = uiState.leetCodeUserInfo.profile?.realName.toString(),
                 style = TextStyleInter14Lh18Fw400(),
+                color = Color.White,
                 modifier = Modifier
                     .padding(top = 1.sdp, start = 10.sdp)
                     .alpha(0.5f)

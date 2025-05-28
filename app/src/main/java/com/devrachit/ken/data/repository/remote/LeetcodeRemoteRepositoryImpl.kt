@@ -15,6 +15,7 @@ import com.devrachit.ken.domain.models.UserQuestionStatusResponse
 import com.devrachit.ken.domain.models.UserRecentAcSubmissionResponse
 import com.devrachit.ken.domain.repository.remote.LeetcodeRemoteRepository
 import com.devrachit.ken.utility.NetworkUtility.Resource
+import com.devrachit.ken.utility.constants.Constants.Companion.USERCONTESTPARTICIPATIONERROR
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -141,8 +142,12 @@ class LeetcodeRemoteRepositoryImpl @Inject constructor(
         return try {
             val response = apiService.fetchUserContestRanking(request)
             val responseBody = response.string()
-            val userContestRanking = json.decodeFromString<UserContestRankingResponse>(responseBody)
-            Resource.Success(userContestRanking)
+            try{
+                val userContestRanking = json.decodeFromString<UserContestRankingResponse>(responseBody)
+                Resource.Success(userContestRanking)
+            }catch (e: Exception){
+                Resource.Error(USERCONTESTPARTICIPATIONERROR)
+            }
 
         }catch (e: Exception){
             Resource.Error("Error fetching user contest ranking: ${e.message}")

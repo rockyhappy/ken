@@ -1,33 +1,20 @@
 package com.devrachit.ken.presentation.screens.auth
 
 import android.animation.ObjectAnimator
-import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.enableEdgeToEdge
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.doOnEnd
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import com.devrachit.ken.presentation.screens.dashboard.ActivityContent.MainActivity
 import com.devrachit.ken.R
 import com.devrachit.ken.databinding.ActivityAuthBinding
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ActivityContext
-import javax.inject.Inject
-import kotlin.text.toFloat
 
 @AndroidEntryPoint
 class AuthActivity : AppCompatActivity() {
