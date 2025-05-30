@@ -29,6 +29,7 @@ import com.devrachit.ken.presentation.screens.dashboard.userdetails.UserDetailsV
 import com.devrachit.ken.utility.composeUtility.LoadingDialog
 import com.devrachit.ken.utility.constants.Constants.Companion.NAVKEYUSERNAME
 import dagger.hilt.android.AndroidEntryPoint
+import android.util.Log
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -106,18 +107,9 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
     }
 
-//    override fun finish() {
-//        super.finish()
-//        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-//    }
-        override fun finish() {
+    override fun finish() {
         super.finish()
-        val options = ActivityOptionsCompat.makeCustomAnimation(
-            this,
-            R.anim.slide_in_right,
-            R.anim.slide_out_left
-        )
-        startActivity(intent, options.toBundle())
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
     private fun navigateToNewActivity(context: MainActivity) {
