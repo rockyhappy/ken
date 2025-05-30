@@ -49,7 +49,9 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
             CompareScreen(
                 uiState = viewmodel.userStatesValues.collectAsStateWithLifecycle().value,
                 loadingStates = viewmodel.loadingStatesValues.collectAsStateWithLifecycle().value,
-                onFirstLoad = { viewmodel.loadAllUsersInfo()}
+                onFirstLoad = { viewmodel.loadAllUsersInfo() },
+                onSearchTextChange = { query -> viewmodel.updateSearchQuery(query) },
+                onSuggestionClick = { username, userInfo -> viewmodel.selectSearchResult(username, userInfo) }
             )
         }
         

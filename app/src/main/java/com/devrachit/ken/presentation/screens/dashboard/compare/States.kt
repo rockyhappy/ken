@@ -9,7 +9,11 @@ data class CompareUiStates(
     val friendsDetails: Map<String, LeetCodeUserInfo>?= emptyMap(),
     val currentTimestamp: Double? = null,
     val userProfileCalender: Map<String, UserCalendar>? = emptyMap(),
-    val isLoading: Boolean = false ,
+    val isLoading: Boolean = false,
+    val searchQuery: String = "",
+    val searchResults: Map<String, LeetCodeUserInfo> = emptyMap(),
+    val showSearchSuggestions: Boolean = false,
+    val isSearching: Boolean = false
 )
 
 data class LoadingStates(
