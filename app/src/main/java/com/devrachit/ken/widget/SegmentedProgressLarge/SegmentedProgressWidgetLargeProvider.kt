@@ -22,6 +22,7 @@ import com.devrachit.ken.domain.models.toQuestionProgressUiState
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
 import com.devrachit.ken.presentation.screens.dashboard.home.QuestionProgressUiState
 import com.devrachit.ken.utility.NetworkUtility.Resource
+import com.devrachit.ken.utility.constants.Constants.Companion.DEFAULT_USERNAME
 import com.devrachit.ken.widget.WidgetUpdateReceiver
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -65,7 +66,7 @@ class SegmentedProgressWidgetLargeProvider : AppWidgetProvider() {
         widgetScope.launch {
             var userName = "Loading..."
             try {
-                userName = dataStoreRepository.readPrimaryUsername() ?: "LeetCoder"
+                userName = dataStoreRepository.readPrimaryUsername() ?: DEFAULT_USERNAME
                 Log.d(TAG, "Username: $userName")
                 for (appWidgetId in appWidgetIds) {
                     val loadingViews =

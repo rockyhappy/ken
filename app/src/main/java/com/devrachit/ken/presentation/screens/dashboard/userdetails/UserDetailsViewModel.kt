@@ -1,14 +1,15 @@
-package com.devrachit.ken.presentation.screens.dashboard.home
+package com.devrachit.ken.presentation.screens.dashboard.userdetails
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.devrachit.ken.data.local.datastore.DataStoreRepository
 import com.devrachit.ken.domain.models.toQuestionProgressUiState
 import com.devrachit.ken.domain.usecases.getContestRankingHistogram.GetContestRankingHistogramUseCase
 import com.devrachit.ken.domain.usecases.getCurrentTime.GetCurrentTime
 import com.devrachit.ken.domain.usecases.getUserBadges.GetUserBadgesUseCase
 import com.devrachit.ken.domain.usecases.getUserContestRanking.GetUserContestRankingUseCase
+import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
 import com.devrachit.ken.domain.usecases.getUserProfileCalender.GetUserProfileCalenderUseCase
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
 import com.devrachit.ken.domain.usecases.getUserRecentSubmission.GetUserRecentSubmissionUseCase
@@ -24,14 +25,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
 @HiltViewModel
-class HomeViewmodel @Inject constructor(
-    private val dataStoreRepository: DataStoreRepository,
+class UserDetailsViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
     private val getUserQuestionStatusUseCase: GetUserQuestionStatusUseCase,
     private val getCurrentTime: GetCurrentTime,
+    private val getUserInfoUseCase: GetUserInfoUseCase,
     private val getUserProfileCalenderUseCase: GetUserProfileCalenderUseCase,
     private val getUserRecentSubmissionUseCase: GetUserRecentSubmissionUseCase,
     private val getUserBadgesUseCase: GetUserBadgesUseCase,
@@ -39,11 +39,20 @@ class HomeViewmodel @Inject constructor(
     private val getContestRankingHistogramUseCase: GetContestRankingHistogramUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(HomeUiStates())
-    val uiState: StateFlow<HomeUiStates> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(UserDetailsUiStates())
+    val uiState: StateFlow<UserDetailsUiStates> = _uiState.asStateFlow()
 
-    private val _loadingState = MutableStateFlow(LoadingStates())
-    val loadingState: StateFlow<LoadingStates> = _loadingState.asStateFlow()
+    private val _loadingState = MutableStateFlow(UserDetailsLoadingStates())
+    val loadingState: StateFlow<UserDetailsLoadingStates> = _loadingState.asStateFlow()
+
+    private val username: String = savedStateHandle.get<String>("username") ?: ""
+
+    init {
+        _uiState.value = _uiState.value.copy(username = username)
+        if (username.isNotEmpty()) {
+            loadUserDetails()
+        }
+    }
 
     private suspend fun updateLoadingState() {
         _uiState.value =
@@ -63,12 +72,9 @@ class HomeViewmodel @Inject constructor(
             _uiState.value = _uiState.value.copy(isLoading = true)
             _loadingState.value.pullToRefreshLoading = true
 
-            val username = withContext(Dispatchers.IO) {
-                dataStoreRepository.readPrimaryUsername()
-            }
-
-            if (!username.isNullOrEmpty()) {
+            if (username.isNotEmpty()) {
                 coroutineScope {
+                    launch(Dispatchers.IO) { fetchUserInfo(username) }
                     launch(Dispatchers.IO) { fetchUserProfileCalender(username) }
                     launch(Dispatchers.IO) { fetchCurrentTime() }
                     launch(Dispatchers.IO) { fetchUserQuestionStatus(username) }
@@ -95,8 +101,19 @@ class HomeViewmodel @Inject constructor(
                 is Resource.Success -> {
                     val data = it.data
                     if (data != null) {
+                        val homeQuestionProgress = data.toQuestionProgressUiState()
                         _uiState.value = _uiState.value.copy(
-                            questionProgress = data.toQuestionProgressUiState()
+                            questionProgress = UserDetailsQuestionProgressUiState(
+                                solved = homeQuestionProgress.solved,
+                                attempting = homeQuestionProgress.attempting,
+                                total = homeQuestionProgress.total,
+                                easyTotalCount = homeQuestionProgress.easyTotalCount,
+                                easySolvedCount = homeQuestionProgress.easySolvedCount,
+                                mediumTotalCount = homeQuestionProgress.mediumTotalCount,
+                                mediumSolvedCount = homeQuestionProgress.mediumSolvedCount,
+                                hardTotalCount = homeQuestionProgress.hardTotalCount,
+                                hardSolvedCount = homeQuestionProgress.hardSolvedCount
+                            )
                         )
                     }
                     _loadingState.value.questionStatusLoading = false
@@ -163,6 +180,27 @@ class HomeViewmodel @Inject constructor(
                     _loadingState.value.calendarLoading = false
                     updateLoadingState()
                     fetchUserProfileCalender(username)
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchUserInfo(username: String) {
+        getUserInfoUseCase(username, forceRefresh = true).collectLatest {
+            when (it) {
+                is Resource.Loading -> {
+                    // Loading state handled by overall loading
+                }
+
+                is Resource.Success -> {
+                    _uiState.value = _uiState.value.copy(
+                        userProfile = it.data
+                    )
+                }
+
+                is Resource.Error -> {
+                    // Error handling - could retry or show error state
+                    fetchUserInfo(username)
                 }
             }
         }

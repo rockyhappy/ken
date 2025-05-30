@@ -1,5 +1,6 @@
 package com.devrachit.ken.domain.repository.local
 
+import com.devrachit.ken.data.local.entity.LeetCodeUserEntity
 import com.devrachit.ken.data.local.entity.UserProfileCalenderEntity
 import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
 import com.devrachit.ken.data.local.entity.UserRecentSubmissionEntity
@@ -20,12 +21,14 @@ interface LeetcodeLocalRepository {
     suspend fun clearCache()
     suspend fun clearUserCache(username: String)
     suspend fun cleanExpiredCache(expiryTimeMillis: Long)
+    suspend fun getAllUsers() : List<LeetCodeUserEntity>
 
     suspend fun getLastUserQuestionStatusFetchTime(username: String): Long?
     suspend fun getUserQuestionStatus(username: String): Resource<UserQuestionStatusData>
     suspend fun saveUserQuestionStatus(userQuestionStatus: UserQuestionStatusEntity)
     suspend fun deleteUserQuestionStatus(username: String)
     suspend fun deleteAllUserQuestionStatus()
+    suspend fun getAllUserQuestionStatuses(): List<UserQuestionStatusEntity>
 
     // These function are for the User Streak
     suspend fun getUserProfileCalender(username: String): Resource<UserProfileCalenderEntity>
@@ -33,7 +36,7 @@ interface LeetcodeLocalRepository {
     suspend fun deleteUserProfileCalender(username: String)
     suspend fun deleteAllUserProfileCalender()
     suspend fun getLastUserProfileCalenderFetchTime(username: String): Long?
-
+    suspend fun getAllUserCalendars(): List<UserProfileCalenderEntity>
 
     // these functions are for user Recent Submissions
     suspend fun saveRecentSubmissions(username: String, recentSubmissions: UserRecentSubmissionEntity)

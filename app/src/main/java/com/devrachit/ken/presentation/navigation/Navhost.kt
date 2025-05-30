@@ -12,20 +12,27 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.devrachit.ken.presentation.screens.dashboard.compare.CompareScreen
+import com.devrachit.ken.presentation.screens.dashboard.compare.CompareViewModel
 import com.devrachit.ken.presentation.screens.dashboard.home.HomeScreen
 import com.devrachit.ken.presentation.screens.dashboard.home.HomeViewmodel
 import com.devrachit.ken.presentation.screens.dashboard.questions.QuestionsScreen
 import com.devrachit.ken.presentation.screens.dashboard.sheets.SheetsScreen
+import com.devrachit.ken.presentation.screens.dashboard.userdetails.UserDetailsScreen
 
 
 private const val ANIMATION_DURATION = 300
 
 @Composable
-fun NavGraph(navController: NavHostController = rememberNavController()) {
+fun NavGraph(
+    navController: NavHostController = rememberNavController(),
+    appNavController: NavHostController? = null
+) {
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route
@@ -44,12 +51,24 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
         }
         
         animatedComposable(Screen.Compare.route) {
-            CompareScreen()
+            val viewmodel = hiltViewModel<CompareViewModel>()
+            CompareScreen(
+                uiState = viewmodel.userStatesValues.collectAsStateWithLifecycle().value,
+                loadingStates = viewmodel.loadingStatesValues.collectAsStateWithLifecycle().value,
+                onFirstLoad = { viewmodel.loadAllUsersInfo() },
+                onSearchTextChange = { query -> viewmodel.updateSearchQuery(query) },
+                onSuggestionClick = { username, userInfo -> viewmodel.selectSearchResult(username, userInfo) },
+                onNavigateToUserDetails = { username -> 
+                    appNavController?.navigate(Screen.UserDetails.createRoute(username))
+                }
+            )
         }
         
         animatedComposable(Screen.Sheets.route) {
             SheetsScreen()
         }
+        
+        // UserDetails route removed as it's now handled at the app level
     }
 }
 /**

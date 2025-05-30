@@ -21,3 +21,17 @@ fun DashboardHeader(
         UsernameDisplay(username = username, drawerProgress = drawerProgress)
     }
 }
+@Composable
+fun DashboardHeaderDetails(
+    username: String,
+    onClick: () -> Unit,
+    drawerProgress: Float = 0f
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        BackButton(onClick = onClick, drawerProgress = drawerProgress)
+        UsernameDisplay(username = username, drawerProgress = drawerProgress)
+    }
+}

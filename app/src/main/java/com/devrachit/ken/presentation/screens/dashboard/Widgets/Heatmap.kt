@@ -1,557 +1,274 @@
-package com.devrachit.ken.presentation.screens.dashboard.Widgets
+package  com.devrachit.ken.presentation.screens.dashboard.Widgets
 
-import android.util.Log
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
-import com.devrachit.ken.domain.models.UserCalendar
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import java.text.SimpleDateFormat
-import java.util.*
+import com.devrachit.ken.R
+import com.devrachit.ken.presentation.screens.dashboard.Widgets.ActivityData
+import com.devrachit.ken.presentation.screens.dashboard.Widgets.DayModel
+import com.devrachit.ken.presentation.screens.dashboard.Widgets.parseCalendarData
+import com.devrachit.ken.ui.theme.TextStyleInter12Lh16Fw700
+import com.devrachit.ken.utility.composeUtility.CompletePreviews
+import com.devrachit.ken.utility.composeUtility.sdp
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.format.TextStyle
+import java.util.Locale
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 /**
- * A composable that displays a GitHub-style heatmap of activity for the last 4 months
- *
- * @param activityData Map of timestamps (seconds since epoch as strings) to activity counts
- * @param currentTimestamp Current timestamp in seconds since epoch
+ * A composable that displays a GitHub-style heatmap showing activity over the last 4 months
  */
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
-fun ActivityHeatmap(
-    activityData: Map<String, Int>,
+fun HeatmapRevamp2(
+    activityData: ActivityData,
     currentTimestamp: Double,
     modifier: Modifier = Modifier
 ) {
-    // Convert the string keys to Long timestamps
-    val parsedData = remember(activityData) {
-        activityData.mapKeys { (key, _) -> key.toLong() }
-    }
+    val heatmap1 = colorResource(id = R.color.heatmap1)
+    val heatmap2 = colorResource(id = R.color.heatmap2)
+    val heatmap3 = colorResource(id = R.color.heatmap3)
+    val heatmap4 = colorResource(id = R.color.heatmap4)
+    val heatmap5 = Color.Transparent
 
-    // Convert the current timestamp to a Date
+    val cellSize = 10.sdp
+    val cellSpacing = 2.sdp
+    val cornerRadius = 2.sdp
     val currentDate = remember(currentTimestamp) {
-        Date((currentTimestamp * 1000).toLong())
+        val instant = Instant.ofEpochSecond(currentTimestamp.toLong())
+        LocalDate.ofInstant(instant, ZoneOffset.UTC)
     }
 
-    // Calculate the date 4 months ago
-    val fourMonthsAgo = remember(currentDate) {
-        val calendar = Calendar.getInstance()
-        calendar.time = currentDate
-        calendar.add(Calendar.MONTH, -4)
-        calendar.time
+
+    val currentDayOfWeek = currentDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+    val currentMonth = currentDate.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
+    val currentDayOfMonth = currentDate.dayOfMonth
+
+
+    val dayInfo = "Current day: $currentDayOfWeek, $currentMonth $currentDayOfMonth"
+    val currentMonthData = activityData.dayModels.filter { dayModel ->
+        val localDate = LocalDate.of(dayModel.year, dayModel.monthPosition + 1, dayModel.day)
+        localDate.month == currentDate.month && localDate.year == currentDate.year
     }
 
-    // Filter the data to show only the last 4 months
-    val filteredData = remember(parsedData, fourMonthsAgo) {
-        parsedData.filter { (timestamp, _) ->
-            val date = Date(timestamp * 1000)
-            date.after(fourMonthsAgo) || date == fourMonthsAgo
-        }
-    }
 
-    // Generate a continuous series of dates for the last 4 months
-    val allDates = remember(fourMonthsAgo, currentDate) {
-        val dates = mutableListOf<Date>()
-        val calendar = Calendar.getInstance()
-        calendar.time = fourMonthsAgo
-
-        // Reset time to beginning of day
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
-
-        val endCalendar = Calendar.getInstance()
-        endCalendar.time = currentDate
-        endCalendar.set(Calendar.HOUR_OF_DAY, 23)
-        endCalendar.set(Calendar.MINUTE, 59)
-        endCalendar.set(Calendar.SECOND, 59)
-
-        while (calendar.time.before(endCalendar.time) || calendar.time == endCalendar.time) {
-            dates.add(calendar.time)
-            calendar.add(Calendar.DAY_OF_MONTH, 1)
-        }
-        dates
-    }
-
-    // Organize dates into a grid format (7 rows for days of week, columns for weeks)
-    val calendar = Calendar.getInstance()
-
-    // First, organize by week
-    val weeks = remember(allDates) {
-        val result = mutableListOf<List<Date?>>()
-        val weekMap = mutableMapOf<Int, MutableList<Pair<Int, Date>>>() // Week number -> List of (day of week, date) pairs
-
-        // Group dates by week
-        for (date in allDates) {
-            calendar.time = date
-            val weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR)
-            val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1 // 0-based (0 = Sunday)
-
-            if (!weekMap.containsKey(weekOfYear)) {
-                weekMap[weekOfYear] = mutableListOf()
-            }
-            weekMap[weekOfYear]?.add(Pair(dayOfWeek, date))
-        }
-
-        // Sort weeks and convert to grid format
-        val sortedWeeks = weekMap.keys.sorted()
-        for (weekNum in sortedWeeks) {
-            val daysInWeek = weekMap[weekNum] ?: continue
-            val weekArray = arrayOfNulls<Date>(7)
-
-            // Place each day in its correct position in the week
-            for ((dayOfWeek, date) in daysInWeek) {
-                weekArray[dayOfWeek] = date
-            }
-
-            result.add(weekArray.toList())
-        }
-
-        result
-    }
-
-    // Format for month labels
-    val monthFormat = remember { SimpleDateFormat("MMM", Locale.getDefault()) }
-
-    // Generate month labels at the appropriate positions
-    val monthLabels = remember(weeks) {
-        val labels = mutableListOf<Pair<String, Int>>() // Month name, position (week number)
-        var lastMonth = -1
-        var weekOffset = 0
-
-        for (weekIndex in weeks.indices) {
-            val week = weeks[weekIndex]
-            // Look for the first date in the week where the day is 1 (first of month)
-            for (date in week) {
-                if (date != null) {
-                    calendar.time = date
-
-                    // If it's the first week or the first day of a month
-                    if (weekIndex == 0 || calendar.get(Calendar.DAY_OF_MONTH) == 1) {
-                        val monthName = monthFormat.format(date)
-                        val month = calendar.get(Calendar.MONTH)
-
-                        // Add extra spacing between months for visual separation
-                        if (lastMonth != -1 && month != lastMonth) {
-                            weekOffset += 1
-                        }
-                        lastMonth = month
-
-                        // Avoid duplicates
-                        if (labels.isEmpty() || labels.last().first != monthName) {
-                            labels.add(Pair(monthName, weekIndex + weekOffset))
-                        }
-                        break
-                    }
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState().apply {
+                androidx.compose.runtime.LaunchedEffect(Unit) {
+                    animateScrollTo(
+                        value = this@apply.maxValue,
+                        animationSpec = tween(durationMillis = 500) // Use tween for fixed duration
+                        // animationSpec = spring() // Alternative: Use spring (duration determined by physics)
+                    )
                 }
-            }
-        }
-
-        labels
-    }
-
-    // Find maximum activity count for color scaling
-    val maxActivity = remember(filteredData) {
-        val max = filteredData.values.maxOrNull() ?: 10
-        // Log maximum activity to debug color issues
-        try { 
-            Log.d("ActivityHeatmap", "Max activity count: $max from ${filteredData.size} entries")
-        } catch (e: Exception) {
-            // Ignore log errors
-        }
-        max
-    }
-
-    Column(modifier = modifier.padding(16.dp)) {
-        // Heatmap title
-        Text(
-            text = "Activity Heatmap",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        Card(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                // Month labels
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 32.dp, bottom = 4.dp) // Align with grid below
-                ) {
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        monthLabels.forEach { (month, index) ->
-                            Text(
-                                text = month,
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier
-                                    .padding(start = (index * 14).dp)
-                                    .zIndex(1f),
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
-                }
-
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    // Day of week labels
-                    Column(
-                        modifier = Modifier.width(24.dp),
-                        horizontalAlignment = Alignment.End
-                    ) {
-                        val days = listOf("S", "M", "T", "W", "T", "F", "S")
-                        days.forEach { day ->
-                            Text(
-                                text = day,
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(end = 4.dp, top = 4.dp, bottom = 4.dp),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                            )
-                        }
-                    }
-
-                    // Heatmap grid
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp)
-                    ) {
-                        // Use Canvas for drawing the grid of squares
-                        Canvas(modifier = Modifier.fillMaxSize()) {
-                            val cellSize = 12.dp.toPx()
-                            val cellPadding = 2.dp.toPx()
-
-                            // Track current month for visual separation
-                            var currentMonth = -1
-                            var monthOffsetMap = mutableMapOf<Int, Float>()
-                            var totalOffset = 0f
-                            var monthSeparators = mutableListOf<Pair<Float, Float>>() // x position, height
-
-                            for (weekIndex in weeks.indices) {
-                                val week = weeks[weekIndex]
-                                for (dayIndex in week.indices) {
-                                    val date = week[dayIndex]
-
-                                    if (date != null) {
-                                        calendar.time = date
-                                        calendar.set(Calendar.HOUR_OF_DAY, 0)
-                                        calendar.set(Calendar.MINUTE, 0)
-                                        calendar.set(Calendar.SECOND, 0)
-                                        calendar.set(Calendar.MILLISECOND, 0)
-
-                                        val timestamp = calendar.timeInMillis / 1000
-                                        val activityCount = filteredData[timestamp] ?: 0
-
-                                        // Add month separation
-                                        val month = calendar.get(Calendar.MONTH)
-                                        var xOffset = 0f
-
-                                        if (currentMonth != -1 && month != currentMonth) {
-                                            // Add separation between months
-                                            totalOffset += cellPadding * 5  // Wider separation
-                                            monthOffsetMap[weekIndex] = totalOffset
-                                            
-                                            // Store position for drawing separator line
-                                            val sepX = weekIndex * (cellSize + cellPadding) + totalOffset - (cellPadding * 2.5f)
-                                            monthSeparators.add(Pair(sepX, 7 * (cellSize + cellPadding)))
-                                        }
-                                        currentMonth = month
-
-                                        // Apply accumulated offset
-                                        xOffset = monthOffsetMap.filter { it.key <= weekIndex }
-                                            .values.sum()
-
-                                        // Calculate position
-                                        val x = weekIndex * (cellSize + cellPadding) + xOffset
-                                        val y = dayIndex * (cellSize + cellPadding)
-
-                                        // Draw the cell
-                                        drawRect(
-                                            color = getColorForActivity(activityCount, maxActivity),
-                                            topLeft = Offset(x, y),
-                                            size = Size(cellSize, cellSize)
-                                        )
-
-                                        // Debug color log for first few cells
-                                        if (weekIndex < 3 && dayIndex < 3) {
-                                            try {
-                                                Log.d("ActivityHeatmap", "Cell[$weekIndex,$dayIndex] date=${Date(timestamp*1000)}, timestamp=$timestamp, count=$activityCount, color=${getColorForActivity(activityCount, maxActivity)}")
-                                            } catch (e: Exception) {
-                                                // Ignore log errors
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            // Draw month separators
-                            for ((x, height) in monthSeparators) {
-                                drawLine(
-                                    color = Color.LightGray.copy(alpha = 0.5f),
-                                    start = Offset(x, 0f),
-                                    end = Offset(x, height),
-                                    strokeWidth = cellPadding / 2
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Color legend
-            Row(
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .align(Alignment.End),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            })
+            .padding(start=20.sdp, end=20.sdp)
+        ,
+        horizontalArrangement = Arrangement.spacedBy(40.sdp),
+    ) {
+        val numMonths :Long = 7
+        for( i in numMonths downTo 1)
+        {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(cellSpacing),
+            ){
+                val previousMonthDate = currentDate.minusMonths(i.toLong())
                 Text(
-                    text = "Less",
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(end = 4.dp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    text = previousMonthDate.month.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                    style = TextStyleInter12Lh16Fw700(),
+                    modifier = Modifier
+                        .padding(bottom = 10.sdp)
+                        .width(50.sdp),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    color = colorResource(id = R.color.white)
                 )
+                Canvas(modifier = Modifier.size(width = 50.sdp, height = 100.sdp)) {
 
-                // Show sample cells with increasing intensity
-                Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                    val levels = 5
-                    repeat(levels) { i ->
-                        val activityLevel = if (i == 0) 0 else (i * maxActivity) / (levels - 1)
-                        Box(
-                            modifier = Modifier
-                                .size(12.dp)
-                                .background(getColorForActivity(activityLevel, maxActivity))
+
+                    // Filter the activity data to get entries only for the previous month
+                    val previousMonthData = activityData.dayModels.filter { dayModel ->
+                        val localDate =
+                            LocalDate.of(dayModel.year, dayModel.monthPosition + 1, dayModel.day)
+                        localDate.month == previousMonthDate.month && localDate.year == previousMonthDate.year
+                    }
+
+                    // Create a map for quick lookup of contributions by day for the previous month
+                    val dayToActivityMap = previousMonthData.associateBy { it.day }
+
+                    // Determine the first day of the previous month
+                    val firstDayOfMonth =
+                        LocalDate.of(previousMonthDate.year, previousMonthDate.month, 1)
+
+                    // Calculate the day of the week for the first day of the previous month (0 = Sunday, 1 = Monday, etc.)
+                    val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
+
+                    // Get the total number of days in the previous month (will be used in the loop outside this selection)
+                    val daysInMonth = previousMonthDate.lengthOfMonth()
+
+                    for (i in 1..daysInMonth) {
+                        val dayModel = dayToActivityMap[i]
+                        val color = when {
+                            dayModel == null -> Color.Gray.copy(alpha = 0.2f)
+                            dayModel.contributions > 4-> heatmap1
+                            dayModel.contributions > 2 -> heatmap2
+                            dayModel.contributions > 1 -> heatmap3
+                            else -> heatmap4
+                        }
+
+
+                        val dayOfWeek = (firstDayOfWeek + i - 1) % 7
+                        val weekNumber = (firstDayOfWeek + i - 1) / 7
+
+                        val xOffset = weekNumber * (cellSize.toPx() + cellSpacing.toPx())
+                        val yOffset = dayOfWeek * (cellSize.toPx() + cellSpacing.toPx())
+
+                        drawRoundRect(
+                            color = color,
+                            size = Size(width = cellSize.toPx(), height = cellSize.toPx()),
+                            topLeft = Offset(xOffset, yOffset),
+                            cornerRadius = CornerRadius(cornerRadius.toPx(), cornerRadius.toPx())
                         )
                     }
                 }
-
-                Text(
-                    text = "More",
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 4.dp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
             }
+        }
 
-            // Activity statistics
-            Row(
+        Column(
+            modifier = Modifier.padding(start = 0.sdp)
+        )
+        {
+            Text(
+                text = currentDate.month.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                style = TextStyleInter12Lh16Fw700(),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        text = "${filteredData.size}",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = "Active days",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    .padding(bottom = 10.sdp)
+                    .width(50.sdp),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                color = colorResource(id = R.color.white)
+            )
+            Canvas(modifier = Modifier.size(width = 50.sdp, height = 100.sdp)) {
+
+//        Canvas(modifier = Modifier.fillMaxSize()) {
+
+                val dayToActivityMap = currentMonthData.associateBy { it.day }
+
+
+                val firstDayOfMonth = LocalDate.of(currentDate.year, currentDate.month, 1)
+                val firstDayOfWeek =
+                    firstDayOfMonth.dayOfWeek.value % 7 // 0 = Sunday, 1 = Monday, etc.
+
+
+                for (i in 1..currentDayOfMonth) {
+                    val dayModel = dayToActivityMap[i]
+                    val color = when {
+                        dayModel == null -> Color.Gray.copy(alpha = 0.2f)
+                        dayModel.contributions > 10 -> heatmap1
+                        dayModel.contributions > 5 -> heatmap2
+                        dayModel.contributions > 2 -> heatmap3
+                        else -> heatmap4
+                    }
+
+
+                    val dayOfWeek = (firstDayOfWeek + i - 1) % 7
+                    val weekNumber = (firstDayOfWeek + i - 1) / 7
+
+                    val xOffset = weekNumber * (cellSize.toPx() + cellSpacing.toPx())
+                    val yOffset = dayOfWeek * (cellSize.toPx() + cellSpacing.toPx())
+
+                    drawRoundRect(
+                        color = color,
+                        size = Size(width = cellSize.toPx(), height = cellSize.toPx()),
+                        topLeft = Offset(xOffset, yOffset),
+                        cornerRadius = CornerRadius(cornerRadius.toPx(), cornerRadius.toPx())
                     )
                 }
-
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = "${filteredData.values.sum()}",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = "Total activities",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                    )
-                }
             }
         }
     }
 }
 
-/**
- * Maps an activity count to a color based on intensity
- */
-private fun getColorForActivity(count: Int, maxCount: Int): Color {
-    // Always show a color for non-zero values
-    return when {
-        count == 0 -> Color(0xFFEBEDF0) // Light gray for no activity
-        maxCount <= 4 -> {
-            // For small maximum values, use discrete color steps
-            when (count) {
-                1 -> Color(0xFF9BE9A8) // Light green
-                2 -> Color(0xFF40C463) // Medium green
-                3 -> Color(0xFF30A14E) // Darker green
-                else -> Color(0xFF216E39) // Darkest green
-            }
-        }
-        else -> {
-            // For larger maximum values, use proportional color scaling
-            when {
-                count < maxCount / 4 + 1 -> Color(0xFF9BE9A8) // Light green
-                count < maxCount / 2 + 1 -> Color(0xFF40C463) // Medium green
-                count < 3 * maxCount / 4 + 1 -> Color(0xFF30A14E) // Darker green
-                else -> Color(0xFF216E39) // Darkest green
-            }
-        }
-    }
-}
+
 
 /**
- * Parse the submission calendar JSON string to a map of timestamps to activity counts
+ * Preview the heatmap with sample data
  */
-fun parseSubmissionCalendar(submissionCalendar: String): Map<String, Int> {
-    return try {
-        val jsonObject = Json.decodeFromString<JsonObject>(submissionCalendar)
-        val result = jsonObject.mapKeys { it.key }
-            .mapValues { entry -> entry.value.jsonPrimitive.content.toInt() }
-
-        // Debug log
-        Log.d("ActivityHeatmap", "Parsed ${result.size} entries from submission calendar")
-        // Log a few samples
-        result.entries.take(5).forEach {
-            Log.d("ActivityHeatmap", "Sample entry: ${Date(it.key.toLong() * 1000)} => ${it.value}")
-        }
-
-        result
-    } catch (e: Exception) {
-        Log.e("ActivityHeatmap", "Error parsing submission calendar", e)
-        emptyMap()
-    }
-}
-
-/**
- * Preview for the ActivityHeatmap using sample data from the API
- */
-@Preview(showBackground = true)
+@CompletePreviews
 @Composable
-fun ActivityHeatmapPreview() {
-    // Sample submission calendar data from the API
-    val sampleCalendarString = "{\"1735689600\": 3, \"1735862400\": 6, \"1735948800\": 8, \"1736208000\": 3, \"1736294400\": 1, \"1736380800\": 8, \"1736467200\": 4, \"1736553600\": 16, \"1736640000\": 8, \"1736726400\": 10, \"1736812800\": 2, \"1736899200\": 2, \"1736985600\": 5, \"1737072000\": 1, \"1737158400\": 7, \"1737244800\": 3, \"1737331200\": 3, \"1737417600\": 3, \"1737504000\": 2, \"1738368000\": 4, \"1738454400\": 12, \"1738800000\": 1, \"1739059200\": 1, \"1739145600\": 4, \"1739491200\": 2, \"1739750400\": 7, \"1739836800\": 1, \"1740009600\": 1, \"1740355200\": 3, \"1740441600\": 2, \"1740614400\": 6, \"1740700800\": 2, \"1740787200\": 7, \"1741046400\": 1, \"1741219200\": 1, \"1742774400\": 10, \"1743811200\": 1, \"1744761600\": 2, \"1714176000\": 5, \"1714348800\": 1, \"1714521600\": 2, \"1714608000\": 2, \"1714694400\": 3, \"1714780800\": 1, \"1714867200\": 9, \"1714953600\": 1, \"1715040000\": 2, \"1715126400\": 1, \"1715212800\": 3, \"1715299200\": 1, \"1715385600\": 1, \"1715472000\": 7, \"1715558400\": 2, \"1715644800\": 2, \"1715731200\": 1, \"1715817600\": 1, \"1715904000\": 1, \"1715990400\": 1, \"1716249600\": 1, \"1716336000\": 1, \"1716681600\": 2, \"1717113600\": 1, \"1717200000\": 1, \"1717632000\": 3, \"1718150400\": 1, \"1719187200\": 2, \"1720915200\": 1, \"1721606400\": 2, \"1723334400\": 1, \"1724889600\": 6, \"1730505600\": 6, \"1730592000\": 1, \"1730764800\": 3, \"1730937600\": 7, \"1731024000\": 4, \"1731628800\": 1, \"1731715200\": 3, \"1731974400\": 4, \"1732060800\": 1, \"1732147200\": 6, \"1732492800\": 2, \"1732665600\": 1, \"1732752000\": 5, \"1733011200\": 10, \"1733097600\": 3, \"1733184000\": 2, \"1733270400\": 3, \"1733356800\": 4, \"1733443200\": 6, \"1733616000\": 18, \"1733702400\": 7, \"1733788800\": 3, \"1733875200\": 9, \"1733961600\": 2, \"1734048000\": 18, \"1734134400\": 7, \"1734220800\": 1, \"1734566400\": 7, \"1734652800\": 1, \"1734739200\": 10, \"1734825600\": 13, \"1735171200\": 13, \"1735257600\": 6, \"1735430400\": 11, \"1735516800\": 4, \"1735603200\": 2}"
-    val activityData = parseSubmissionCalendar(sampleCalendarString)
-    
-    // Current timestamp from the API
-    val currentTimestamp = 1745748048.972641
-    
-    Box(
+fun GithubStyleHeatmapPreviewRewamp2() {
+    // Sample data provided by the user
+    val sampleCalendarString =
+        "{\"1735689600\": 3, \"1735862400\": 6, \"1735948800\": 8, \"1736208000\": 3, \"1736294400\": 1, \"1736380800\": 8, \"1736467200\": 4, \"1736553600\": 16, \"1736640000\": 8, \"1736726400\": 10, \"1736812800\": 2, \"1736899200\": 2, \"1736985600\": 5, \"1737072000\": 1, \"1737158400\": 7, \"1737244800\": 3, \"1737331200\": 3, \"1737417600\": 3, \"1737504000\": 2, \"1738368000\": 4, \"1738454400\": 12, \"1738800000\": 1, \"1739059200\": 1, \"1739145600\": 4, \"1739491200\": 2, \"1739750400\": 7, \"1739836800\": 1, \"1740009600\": 1, \"1740355200\": 3, \"1740441600\": 2, \"1740614400\": 6, \"1740700800\": 2, \"1740787200\": 7, \"1741046400\": 1, \"1741219200\": 1, \"1742774400\": 10, \"1743811200\": 1, \"1744761600\": 2, \"1714176000\": 5, \"1714348800\": 1, \"1714521600\": 2, \"1714608000\": 2, \"1714694400\": 3, \"1714780800\": 1, \"1714867200\": 9, \"1714953600\": 1, \"1715040000\": 2, \"1715126400\": 1, \"1715212800\": 3, \"1715299200\": 1, \"1715385600\": 1, \"1715472000\": 7, \"1715558400\": 2, \"1715644800\": 2, \"1715731200\": 1, \"1715817600\": 1, \"1715904000\": 1, \"1715990400\": 1, \"1716249600\": 1, \"1716336000\": 1, \"1716681600\": 2, \"1717113600\": 1, \"1717200000\": 1, \"1717632000\": 3, \"1718150400\": 1, \"1719187200\": 2, \"1720915200\": 1, \"1721606400\": 2, \"1723334400\": 1, \"1724889600\": 6, \"1730505600\": 6, \"1730592000\": 1, \"1730764800\": 3, \"1730937600\": 7, \"1731024000\": 4, \"1731628800\": 1, \"1731715200\": 3, \"1731974400\": 4, \"1732060800\": 1, \"1732147200\": 6, \"1732492800\": 2, \"1732665600\": 1, \"1732752000\": 5, \"1733011200\": 10, \"1733097600\": 3, \"1733184000\": 2, \"1733270400\": 3, \"1733356800\": 4, \"1733443200\": 6, \"1733616000\": 18, \"1733702400\": 7, \"1733788800\": 3, \"1733875200\": 9, \"1733961600\": 2, \"1734048000\": 18, \"1734134400\": 7, \"1734220800\": 1, \"1734566400\": 7, \"1734652800\": 1, \"1734739200\": 10, \"1734825600\": 13, \"1735171200\": 13, \"1735257600\": 6, \"1735430400\": 11, \"1735516800\": 4, \"1735603200\": 2}"
+    val sampleCalenderString2 =
+        "{\"1735689600\": 1, \"1735776000\": 4, \"1735862400\": 1, \"1735948800\": 8, \"1736035200\": 3, \"1736121600\": 1, \"1736208000\": 1, \"1736294400\": 4, \"1736380800\": 1, \"1736467200\": 1, \"1736553600\": 1, \"1736640000\": 1, \"1736726400\": 1, \"1736812800\": 1, \"1736899200\": 1, \"1736985600\": 3, \"1737072000\": 2, \"1737158400\": 5, \"1737244800\": 1, \"1737331200\": 5, \"1737417600\": 1, \"1737504000\": 1, \"1737590400\": 1, \"1737676800\": 2, \"1737763200\": 2, \"1737936000\": 1, \"1738022400\": 9, \"1738108800\": 3, \"1738195200\": 1, \"1738281600\": 6, \"1738368000\": 3, \"1738454400\": 3, \"1738540800\": 5, \"1738627200\": 11, \"1738713600\": 9, \"1738800000\": 5, \"1738886400\": 1, \"1739059200\": 1, \"1739145600\": 1, \"1739232000\": 4, \"1739318400\": 6, \"1739404800\": 2, \"1739491200\": 1, \"1739577600\": 1, \"1739664000\": 1, \"1739750400\": 1, \"1739836800\": 1, \"1739923200\": 1, \"1740009600\": 2, \"1740096000\": 10, \"1740182400\": 1, \"1740268800\": 2, \"1740355200\": 1, \"1740441600\": 1, \"1740528000\": 3, \"1740614400\": 1, \"1740700800\": 1, \"1740787200\": 1, \"1740873600\": 1, \"1740960000\": 1, \"1741046400\": 1, \"1741132800\": 1, \"1741219200\": 1, \"1741305600\": 1, \"1741392000\": 1, \"1741478400\": 1, \"1741564800\": 1, \"1741651200\": 3, \"1741737600\": 1, \"1741824000\": 1, \"1741910400\": 2, \"1742083200\": 1, \"1742169600\": 1, \"1742256000\": 1, \"1742342400\": 1, \"1742428800\": 1, \"1742515200\": 2, \"1742601600\": 1, \"1742688000\": 1, \"1742774400\": 1, \"1742860800\": 5, \"1742947200\": 2, \"1743033600\": 1, \"1743120000\": 1, \"1743206400\": 7, \"1743292800\": 3, \"1743379200\": 1, \"1743465600\": 2, \"1743552000\": 3, \"1743638400\": 15, \"1743724800\": 1, \"1743811200\": 1, \"1743897600\": 1, \"1743984000\": 5, \"1744070400\": 1, \"1744156800\": 3, \"1744243200\": 13, \"1744329600\": 1, \"1744416000\": 1, \"1744502400\": 5, \"1744588800\": 3, \"1744675200\": 7, \"1744761600\": 6, \"1744848000\": 1, \"1744934400\": 1, \"1745020800\": 1, \"1745107200\": 1, \"1745193600\": 1, \"1745280000\": 3, \"1745366400\": 5, \"1745452800\": 2, \"1745539200\": 1, \"1745625600\": 1, \"1745712000\": 3, \"1745798400\": 1, \"1714348800\": 1, \"1714435200\": 1, \"1714521600\": 3, \"1714608000\": 3, \"1714694400\": 1, \"1714780800\": 1, \"1714867200\": 4, \"1714953600\": 1, \"1715040000\": 1, \"1715126400\": 1, \"1715212800\": 1, \"1715299200\": 2, \"1715385600\": 6, \"1715472000\": 4, \"1715558400\": 2, \"1715644800\": 1, \"1715731200\": 1, \"1715817600\": 1, \"1715904000\": 2, \"1715990400\": 1, \"1716076800\": 1, \"1716163200\": 1, \"1716249600\": 1, \"1716336000\": 1, \"1716422400\": 3, \"1716595200\": 7, \"1716681600\": 8, \"1716768000\": 7, \"1716854400\": 1, \"1717027200\": 1, \"1717113600\": 1, \"1717200000\": 1, \"1717286400\": 8, \"1717372800\": 1, \"1717545600\": 3, \"1717632000\": 2, \"1717718400\": 3, \"1717804800\": 5, \"1717891200\": 9, \"1717977600\": 2, \"1718064000\": 2, \"1718236800\": 6, \"1718323200\": 1, \"1718409600\": 2, \"1718496000\": 11, \"1718582400\": 15, \"1718668800\": 5, \"1718755200\": 11, \"1718841600\": 1, \"1718928000\": 1, \"1719014400\": 4, \"1719100800\": 11, \"1719187200\": 1, \"1719273600\": 1, \"1719360000\": 11, \"1719446400\": 5, \"1719532800\": 1, \"1719619200\": 1, \"1719705600\": 4, \"1719792000\": 1, \"1719878400\": 1, \"1719964800\": 1, \"1720051200\": 3, \"1720137600\": 1, \"1720224000\": 4, \"1720310400\": 12, \"1720396800\": 1, \"1720483200\": 1, \"1720656000\": 1, \"1720742400\": 1, \"1720828800\": 6, \"1720915200\": 9, \"1721001600\": 1, \"1721088000\": 2, \"1721174400\": 9, \"1721260800\": 3, \"1721347200\": 8, \"1721520000\": 1, \"1721606400\": 6, \"1721692800\": 20, \"1721779200\": 4, \"1721865600\": 3, \"1721952000\": 1, \"1722038400\": 7, \"1722124800\": 9, \"1722211200\": 2, \"1722297600\": 1, \"1722384000\": 1, \"1722470400\": 1, \"1722556800\": 1, \"1722643200\": 1, \"1722729600\": 4, \"1722816000\": 1, \"1722902400\": 3, \"1723075200\": 5, \"1723161600\": 1, \"1723248000\": 1, \"1723334400\": 1, \"1723420800\": 1, \"1723507200\": 1, \"1723593600\": 2, \"1723680000\": 2, \"1723766400\": 3, \"1723852800\": 8, \"1723939200\": 6, \"1724025600\": 1, \"1724112000\": 3, \"1724198400\": 3, \"1724371200\": 1, \"1724457600\": 1, \"1724544000\": 3, \"1724630400\": 1, \"1724716800\": 2, \"1724803200\": 6, \"1724889600\": 1, \"1724976000\": 1, \"1725062400\": 3, \"1725148800\": 2, \"1725235200\": 1, \"1725321600\": 1, \"1725408000\": 1, \"1725494400\": 1, \"1725580800\": 1, \"1725667200\": 1, \"1725753600\": 1, \"1725840000\": 1, \"1725926400\": 1, \"1726012800\": 2, \"1726099200\": 1, \"1726185600\": 1, \"1726272000\": 1, \"1726358400\": 12, \"1726444800\": 1, \"1726531200\": 1, \"1726617600\": 4, \"1726704000\": 1, \"1726790400\": 1, \"1726876800\": 1, \"1726963200\": 1, \"1727049600\": 1, \"1727136000\": 3, \"1727222400\": 1, \"1727308800\": 1, \"1727395200\": 1, \"1727481600\": 1, \"1727568000\": 1, \"1727654400\": 2, \"1727740800\": 1, \"1727827200\": 1, \"1728086400\": 1, \"1728172800\": 1, \"1728259200\": 1, \"1728432000\": 1, \"1728518400\": 1, \"1728604800\": 1, \"1728691200\": 1, \"1728777600\": 1, \"1728950400\": 1, \"1729036800\": 1, \"1729209600\": 4, \"1729296000\": 1, \"1729468800\": 3, \"1729555200\": 6, \"1729641600\": 11, \"1729728000\": 1, \"1729814400\": 1, \"1729900800\": 1, \"1729987200\": 5, \"1730073600\": 2, \"1730160000\": 1, \"1730246400\": 1, \"1730332800\": 3, \"1730419200\": 1, \"1730505600\": 2, \"1730592000\": 7, \"1730678400\": 7, \"1730764800\": 1, \"1730851200\": 1, \"1730937600\": 1, \"1731024000\": 1, \"1731110400\": 5, \"1731196800\": 1, \"1731369600\": 1, \"1731456000\": 1, \"1731542400\": 1, \"1731628800\": 3, \"1731715200\": 1, \"1731801600\": 1, \"1731888000\": 1, \"1731974400\": 1, \"1732060800\": 1, \"1732147200\": 1, \"1732233600\": 1, \"1732320000\": 1, \"1732406400\": 7, \"1732492800\": 1, \"1732579200\": 5, \"1732665600\": 1, \"1732752000\": 1, \"1732838400\": 1, \"1732924800\": 1, \"1733011200\": 1, \"1733097600\": 3, \"1733184000\": 1, \"1733270400\": 1, \"1733443200\": 1, \"1733529600\": 1, \"1733616000\": 1, \"1733702400\": 1, \"1733788800\": 1, \"1733875200\": 1, \"1733961600\": 1, \"1734048000\": 1, \"1734134400\": 1, \"1734220800\": 1, \"1734307200\": 1, \"1734393600\": 5, \"1734480000\": 1, \"1734566400\": 2, \"1734652800\": 1, \"1734739200\": 1, \"1734825600\": 1, \"1734912000\": 1, \"1734998400\": 2, \"1735084800\": 1, \"1735171200\": 1, \"1735257600\": 1, \"1735430400\": 1, \"1735516800\": 2, \"1735603200\": 1}"
+    val rawActivityData = parseCalendarData(sampleCalenderString2)
+    // Convert the parsed calendar data into a list of DayModel objects
+    val dayModels = rawActivityData.map { (timestamp, contributions) ->
+        val instant = Instant.ofEpochSecond(timestamp.toLong())
+        val localDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            LocalDate.ofInstant(instant, ZoneOffset.UTC)
+        } else {
+            TODO("VERSION.SDK_INT < UPSIDE_DOWN_CAKE")
+        }
+
+        DayModel(
+            day = localDate.dayOfMonth,
+            month = localDate.month.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+            year = localDate.year,
+            contributions = contributions,
+            monthPosition = localDate.monthValue - 1,
+            dayName = localDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+        )
+    }.sortedWith(compareBy({ it.year }, { it.monthPosition }, { it.day }))
+    // Create ActivityData object with sorted dayModels
+    val activityData = ActivityData(dayModels)
+
+    val currentTimestamp = 1745875744.831664
+
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
+            .background(colorResource(R.color.bg_neutral)),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ActivityHeatmap(
-            activityData = activityData,
-            currentTimestamp = currentTimestamp,
-            modifier = Modifier.fillMaxWidth(0.9f)
-        )
-    }
-}
-
-/**
- * Composable to display user calendar data including heatmap and streak information
- */
-@Composable
-fun UserCalendarView(
-    userCalendar: UserCalendar,
-    currentTimestamp: Double,
-    modifier: Modifier = Modifier
-) {
-    val activityData = remember(userCalendar.submissionCalendar) {
-        parseSubmissionCalendar(userCalendar.submissionCalendar)
-    }
-    
-    Column(modifier = modifier.fillMaxWidth()) {
-        // Display streak information
-        Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
-            Row(
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            HeatmapRevamp(
+                activityData = activityData,
+                currentTimestamp = currentTimestamp,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        text = "${userCalendar.streak}",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = "Current Streak",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-                
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = "${userCalendar.totalActiveDays}",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = "Total Active Days",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-        }
-        
-        // Display heatmap
-        ActivityHeatmap(
-            activityData = activityData,
-            currentTimestamp = currentTimestamp,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-/**
- * Preview the full user calendar view with sample data
- */
-@Preview(showBackground = true)
-@Composable
-fun UserCalendarViewPreview() {
-    val sampleCalendarString = "{\"1735689600\": 3, \"1735862400\": 6, \"1735948800\": 8, \"1736208000\": 3, \"1736294400\": 1, \"1736380800\": 8, \"1736467200\": 4, \"1736553600\": 16, \"1736640000\": 8, \"1736726400\": 10, \"1736812800\": 2, \"1736899200\": 2, \"1736985600\": 5, \"1737072000\": 1, \"1737158400\": 7, \"1737244800\": 3, \"1737331200\": 3, \"1737417600\": 3, \"1737504000\": 2, \"1738368000\": 4, \"1738454400\": 12, \"1738800000\": 1, \"1739059200\": 1, \"1739145600\": 4, \"1739491200\": 2, \"1739750400\": 7, \"1739836800\": 1, \"1740009600\": 1, \"1740355200\": 3, \"1740441600\": 2, \"1740614400\": 6, \"1740700800\": 2, \"1740787200\": 7, \"1741046400\": 1, \"1741219200\": 1, \"1742774400\": 10, \"1743811200\": 1, \"1744761600\": 2, \"1714176000\": 5, \"1714348800\": 1, \"1714521600\": 2, \"1714608000\": 2, \"1714694400\": 3, \"1714780800\": 1, \"1714867200\": 9, \"1714953600\": 1, \"1715040000\": 2, \"1715126400\": 1, \"1715212800\": 3, \"1715299200\": 1, \"1715385600\": 1, \"1715472000\": 7, \"1715558400\": 2, \"1715644800\": 2, \"1715731200\": 1, \"1715817600\": 1, \"1715904000\": 1, \"1715990400\": 1, \"1716249600\": 1, \"1716336000\": 1, \"1716681600\": 2, \"1717113600\": 1, \"1717200000\": 1, \"1717632000\": 3, \"1718150400\": 1, \"1719187200\": 2, \"1720915200\": 1, \"1721606400\": 2, \"1723334400\": 1, \"1724889600\": 6, \"1730505600\": 6, \"1730592000\": 1, \"1730764800\": 3, \"1730937600\": 7, \"1731024000\": 4, \"1731628800\": 1, \"1731715200\": 3, \"1731974400\": 4, \"1732060800\": 1, \"1732147200\": 6, \"1732492800\": 2, \"1732665600\": 1, \"1732752000\": 5, \"1733011200\": 10, \"1733097600\": 3, \"1733184000\": 2, \"1733270400\": 3, \"1733356800\": 4, \"1733443200\": 6, \"1733616000\": 18, \"1733702400\": 7, \"1733788800\": 3, \"1733875200\": 9, \"1733961600\": 2, \"1734048000\": 18, \"1734134400\": 7, \"1734220800\": 1, \"1734566400\": 7, \"1734652800\": 1, \"1734739200\": 10, \"1734825600\": 13, \"1735171200\": 13, \"1735257600\": 6, \"1735430400\": 11, \"1735516800\": 4, \"1735603200\": 2}"
-    
-    val sampleUserCalendar = UserCalendar(
-        activeYears = listOf(2022, 2023, 2024, 2025),
-        streak = 18,
-        totalActiveDays = 106,
-        dccBadges = emptyList(),
-        submissionCalendar = sampleCalendarString
-    )
-    
-    val currentTimestamp = 1745748048.972641
-    
-    MaterialTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.Center
-        ) {
-            UserCalendarView(
-                userCalendar = sampleUserCalendar,
-                currentTimestamp = currentTimestamp,
-                modifier = Modifier.fillMaxWidth(0.9f)
+                    .padding(10.dp)
             )
         }
     }
+
 }
