@@ -5,10 +5,14 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,6 +40,7 @@ import com.devrachit.ken.utility.composeUtility.CompletePreviews
 import com.devrachit.ken.utility.composeUtility.sdp
 import coil.compose.AsyncImage
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SearchWidget(
     modifier: Modifier = Modifier,
@@ -43,7 +49,9 @@ fun SearchWidget(
     suggestions: Map<String, LeetCodeUserInfo> = emptyMap(),
     showSuggestions: Boolean = false,
     onSearchTextChange: (String) -> Unit = {},
-    onSuggestionClick: (String, LeetCodeUserInfo) -> Unit = { _, _ -> }
+    onSuggestionClick: (String, LeetCodeUserInfo) -> Unit = { _, _ -> },
+    enableNavigation: Boolean = false,
+    onNavigateToUserDetails: (String) -> Unit = {}
 ) {
     val focusRequester = remember { FocusRequester() }
 
@@ -55,16 +63,16 @@ fun SearchWidget(
     ) {
         Card(
             modifier = Modifier
-                .clip(RoundedCornerShape(8.sdp))
+                .clip(RoundedCornerShape(14.sdp))
                 .background(colorResource(R.color.card_elevated))
                 .border(
                     border = BorderStroke(1.dp, Color.Gray.copy(alpha = 0.3f)),
-                    shape = RoundedCornerShape(8.sdp)
+                    shape = RoundedCornerShape(14.sdp)
                 )
                 .fillMaxWidth()
                 .height(56.sdp)
-                .shadow(8.sdp, RoundedCornerShape(8.sdp)),
-            shape = RoundedCornerShape(8.sdp),
+                .shadow(8.sdp, RoundedCornerShape(14.sdp)),
+            shape = RoundedCornerShape(14.sdp),
             elevation = CardDefaults.cardElevation(8.sdp),
             colors = CardDefaults.cardColors(
                 containerColor = colorResource(id = R.color.white)
@@ -82,9 +90,9 @@ fun SearchWidget(
                         .background(colorResource(R.color.card_elevated))
                         .border(
                             border = BorderStroke(1.dp, Color.Gray.copy(alpha = 0.3f)),
-                            shape = RoundedCornerShape(8.sdp)
+                            shape = RoundedCornerShape(14.sdp)
                         ),
-                    shape = RoundedCornerShape(8.sdp),
+                    shape = RoundedCornerShape(14.sdp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorResource(id = R.color.card_elevated_twice),
                     ),
@@ -112,7 +120,18 @@ fun SearchWidget(
                         color = colorResource(id = R.color.white),
                         fontSize = 16.sp
                     ),
-                    cursorBrush = SolidColor(colorResource(id = R.color.heatmap2)),
+                    cursorBrush = SolidColor(colorResource(id = R.color.white)),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions (
+                        onSearch = {
+                            // Trigger search when user presses search key
+                            if (searchText.isNotBlank() && enableNavigation && suggestions.isNotEmpty()) {
+                                val firstSuggestion = suggestions.values.first()
+                                onNavigateToUserDetails(firstSuggestion.username ?: searchText)
+                            }
+                        }
+                    ),
                     decorationBox = { innerTextField ->
                         if (searchText.isEmpty()) {
                             Text(
@@ -133,7 +152,7 @@ fun SearchWidget(
                         onClick = { onSearchTextChange("") },
                         modifier = Modifier
                             .size(48.sdp)
-                            .padding(8.sdp)
+                            .align(Alignment.CenterVertically)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_cross),
@@ -175,7 +194,19 @@ fun SearchWidget(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onSuggestionClick(key, userInfo) }
+                                .combinedClickable(
+                                    onClick = {
+//                                        onSuggestionClick(key, userInfo)
+                                        if (enableNavigation) {
+                                            onNavigateToUserDetails(userInfo.username ?: key)
+                                        }
+                                              },
+                                    onLongClick = {
+                                        if (enableNavigation) {
+                                            onNavigateToUserDetails(userInfo.username ?: key)
+                                        }
+                                    }
+                                )
                                 .padding(12.sdp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {

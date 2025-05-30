@@ -36,6 +36,7 @@ fun DashboardContent(
     username: String,
     uiState: States,
     logout: () -> Unit,
+    appNavController: NavHostController? = null
 ) {
     KenTheme {
         Scaffold(
@@ -48,7 +49,12 @@ fun DashboardContent(
                     .padding(paddingValues = innerPadding)
                     .background(colorResource(id = R.color.card_elevated))
             ) {
-                DrawerLayoutContent(logout = logout,username = username, uiState = uiState)
+                DrawerLayoutContent(
+                    logout = logout, 
+                    username = username, 
+                    uiState = uiState,
+                    appNavController = appNavController
+                )
             }
         }
     }
@@ -64,6 +70,7 @@ fun MainContent(
     draggableState: DraggableState,
     onMenuClick: () -> Job,
     navController: NavHostController,
+    appNavController: NavHostController? = null
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -73,6 +80,7 @@ fun MainContent(
         onClick = onMenuClick,
         drawerProgress = drawerProgress,
         navController = navController,
+        appNavController = appNavController,
         modifier = Modifier
             .fillMaxSize()
             .graphicsLayer {

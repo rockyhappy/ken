@@ -46,9 +46,10 @@ fun CompareScreen(
     loadingStates: LoadingStates,
     onFirstLoad: () -> Unit = {},
     onSearchTextChange: (String) -> Unit = {},
-    onSuggestionClick: (String, com.devrachit.ken.domain.models.LeetCodeUserInfo) -> Unit = { _, _ -> }
+    onSuggestionClick: (String, com.devrachit.ken.domain.models.LeetCodeUserInfo) -> Unit = { _, _ -> },
+    onNavigateToUserDetails: (String) -> Unit = {}
 ) {
-    val (hasInitiallyLoaded, setHasInitiallyLoaded) = rememberSaveable { mutableStateOf(false) }
+    val (hasInitiallyLoaded, setHasInitiallyLoaded) = remember { mutableStateOf(false) }
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState.isLoading,
@@ -72,7 +73,7 @@ fun CompareScreen(
                 .pullRefresh(pullRefreshState)
                 .background(color = colorResource(R.color.bg_neutral))
                 .verticalScroll(rememberScrollState())
-                .padding(top = 80.sdp), // Add top padding to account for floating search widget
+                .padding(top = 60.sdp), // Add top padding to account for floating search widget
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -92,7 +93,7 @@ fun CompareScreen(
         SearchWidget(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.sdp, vertical = 8.sdp),
+                .padding(start = 16.sdp, end= 16.sdp, top= 18.sdp),
             placeholder = "Search users to compare...",
             searchText = uiState.searchQuery,
             suggestions = uiState.searchResults,
@@ -102,6 +103,10 @@ fun CompareScreen(
             },
             onSuggestionClick = { username, userInfo ->
                 onSuggestionClick.invoke(username, userInfo)
+            },
+            enableNavigation = true,
+            onNavigateToUserDetails = { username ->
+                onNavigateToUserDetails.invoke(username)
             }
         )
 
