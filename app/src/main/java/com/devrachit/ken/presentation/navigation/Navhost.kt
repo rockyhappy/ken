@@ -60,7 +60,15 @@ fun NavGraph(
                 onSuggestionClick = { username, userInfo -> viewmodel.selectSearchResult(username, userInfo) },
                 onNavigateToUserDetails = { username -> 
                     appNavController?.navigate(Screen.UserDetails.createRoute(username))
-                }
+                },
+                onPlatformSearch = { 
+                    val currentQuery = viewmodel.userStatesValues.value.searchQuery
+                    viewmodel.searchPlatformUser(currentQuery)
+                },
+                onHidePlatformResult = { 
+                    viewmodel.hidePlatformResult()
+                },
+                onRemoveUser = { username -> viewmodel.deleteUser(username) }
             )
         }
         

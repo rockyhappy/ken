@@ -15,8 +15,8 @@ android {
         applicationId = "com.devrachit.ken"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 3
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -35,8 +35,7 @@ android {
     productFlavors {
         create("dev") {
             dimension = "version"
-            applicationIdSuffix = ".dev"
-            versionNameSuffix = "-dev"
+
 
         }
         create("staging") {

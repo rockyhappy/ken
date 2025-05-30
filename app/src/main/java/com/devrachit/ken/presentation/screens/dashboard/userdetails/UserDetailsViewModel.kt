@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devrachit.ken.domain.models.toQuestionProgressUiState
+import com.devrachit.ken.domain.usecases.getUserInfoUsecase.DeleteUserUsecase
 import com.devrachit.ken.domain.usecases.getContestRankingHistogram.GetContestRankingHistogramUseCase
 import com.devrachit.ken.domain.usecases.getCurrentTime.GetCurrentTime
 import com.devrachit.ken.domain.usecases.getUserBadges.GetUserBadgesUseCase
@@ -36,7 +37,8 @@ class UserDetailsViewModel @Inject constructor(
     private val getUserRecentSubmissionUseCase: GetUserRecentSubmissionUseCase,
     private val getUserBadgesUseCase: GetUserBadgesUseCase,
     private val getUserContestRankingUseCase: GetUserContestRankingUseCase,
-    private val getContestRankingHistogramUseCase: GetContestRankingHistogramUseCase
+    private val getContestRankingHistogramUseCase: GetContestRankingHistogramUseCase,
+    private val deleteUserUsecase: DeleteUserUsecase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UserDetailsUiStates())
@@ -316,6 +318,24 @@ class UserDetailsViewModel @Inject constructor(
                     _loadingState.value.contestRankingHistogramLoading = false
                     updateLoadingState()
                     fetchContestRankingHistogram()
+                }
+            }
+        }
+    }
+
+    fun deleteUser(username: String) {
+        viewModelScope.launch {
+            deleteUserUsecase(username).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        // Handle loading state if needed
+                    }
+                    is Resource.Success -> {
+                        // User deleted successfully - handle success
+                    }
+                    is Resource.Error -> {
+                        // Handle error
+                    }
                 }
             }
         }

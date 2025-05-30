@@ -20,6 +20,7 @@ interface LeetcodeLocalRepository {
     suspend fun getLastFetchTime(username: String): Long?
     suspend fun clearCache()
     suspend fun clearUserCache(username: String)
+    suspend fun deleteUser(username: String)
     suspend fun cleanExpiredCache(expiryTimeMillis: Long)
     suspend fun getAllUsers() : List<LeetCodeUserEntity>
 

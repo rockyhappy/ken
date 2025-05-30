@@ -34,7 +34,7 @@ import com.devrachit.ken.R
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.HeatmapCard
 import com.devrachit.ken.presentation.screens.dashboard.compare.components.CompareList
 import com.devrachit.ken.presentation.screens.dashboard.compare.components.CompareSinglePersonWidget
-import com.devrachit.ken.presentation.screens.dashboard.Widgets.SearchWidget
+import com.devrachit.ken.presentation.screens.dashboard.Widgets.EnhancedSearchWidget
 import com.devrachit.ken.ui.theme.TextStyleInter20Lh24Fw700
 import com.devrachit.ken.utility.composeUtility.HomeScreenShimmer
 import com.devrachit.ken.utility.composeUtility.sdp
@@ -47,7 +47,10 @@ fun CompareScreen(
     onFirstLoad: () -> Unit = {},
     onSearchTextChange: (String) -> Unit = {},
     onSuggestionClick: (String, com.devrachit.ken.domain.models.LeetCodeUserInfo) -> Unit = { _, _ -> },
-    onNavigateToUserDetails: (String) -> Unit = {}
+    onNavigateToUserDetails: (String) -> Unit = {},
+    onPlatformSearch: () -> Unit = {},
+    onHidePlatformResult: () -> Unit = {},
+    onRemoveUser: (String) -> Unit = {}
 ) {
     val (hasInitiallyLoaded, setHasInitiallyLoaded) = remember { mutableStateOf(false) }
 
@@ -81,7 +84,8 @@ fun CompareScreen(
                 uiState.currentTimestamp != null -> {
                     CompareList(
                         modifier = Modifier.padding(top = 8.sdp),
-                        uiState = uiState
+                        uiState = uiState,
+                        onRemoveUser = onRemoveUser
                     )
                 }
 
@@ -90,23 +94,32 @@ fun CompareScreen(
 
         }
 
-        SearchWidget(
+        EnhancedSearchWidget(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.sdp, end= 16.sdp, top= 18.sdp),
             placeholder = "Search users to compare...",
             searchText = uiState.searchQuery,
-            suggestions = uiState.searchResults,
+            localResults = uiState.searchResults,
             showSuggestions = uiState.showSearchSuggestions,
+            platformResult = uiState.platformSearchResult,
+            platformError = uiState.platformSearchError,
+            isPlatformSearching = uiState.isPlatformSearching,
+            showPlatformResult = uiState.showPlatformResult,
             onSearchTextChange = { newText ->
                 onSearchTextChange.invoke(newText)
             },
-            onSuggestionClick = { username, userInfo ->
+            onLocalResultClick = { username, userInfo ->
                 onSuggestionClick.invoke(username, userInfo)
             },
-            enableNavigation = true,
+            onPlatformSearch = {
+                onPlatformSearch.invoke()
+            },
             onNavigateToUserDetails = { username ->
                 onNavigateToUserDetails.invoke(username)
+            },
+            onHidePlatformResult = {
+                onHidePlatformResult.invoke()
             }
         )
 

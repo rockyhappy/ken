@@ -9,18 +9,24 @@ import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetAllUsersUsecase
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetAllUserQuestionStatusesUsecase
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetAllUserCalendarsUsecase
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
+import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoNoCacheUseCase
+import com.devrachit.ken.domain.usecases.getUserInfoUsecase.DeleteUserUsecase
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
 import com.devrachit.ken.utility.NetworkUtility.Resource
+import com.devrachit.ken.utility.constants.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -29,10 +35,12 @@ class CompareViewModel @Inject constructor(
     private val dataStoreRepository: DataStoreRepository,
     private val getUserQuestionStatusUseCase: GetUserQuestionStatusUseCase,
     private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val getUserInfoNoCacheUseCase: GetUserInfoNoCacheUseCase,
     private val getAllUsersUsecase: GetAllUsersUsecase,
     private val getAllUserQuestionStatusesUsecase: GetAllUserQuestionStatusesUsecase,
     private val getAllUserCalendarsUsecase: GetAllUserCalendarsUsecase,
     private val getCurrentTime: GetCurrentTime,
+    private val deleteUserUsecase: DeleteUserUsecase,
 ): ViewModel(){
 
     private val _userStatesValues =MutableStateFlow(CompareUiStates())
@@ -258,7 +266,112 @@ class CompareViewModel @Inject constructor(
             searchQuery = "",
             searchResults = emptyMap(),
             showSearchSuggestions = false,
-            isSearching = false
+            isSearching = false,
+            platformSearchResult = null,
+            platformSearchError = null,
+            showPlatformResult = false
         )
+    }
+
+    fun fetchUserInfoNoCache(username: String, callback: (Resource<LeetCodeUserInfo>) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getUserInfoNoCacheUseCase(username).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        // Handle loading state if needed
+                    }
+                    is Resource.Success -> {
+                        callback(result)
+                    }
+                    is Resource.Error -> {
+                        if (result.message == Constants.NETWORK_UNAVAILABLE_ERROR) {
+                            // Handle network unavailable error
+                            callback(Resource.Error("Network is not available. Please check your connection."))
+                        } else {
+                            callback(result)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun searchPlatformUser(username: String) {
+        if (username.isBlank()) return
+        
+        viewModelScope.launch {
+            _userStatesValues.value = _userStatesValues.value.copy(
+                isPlatformSearching = true,
+                platformSearchError = null,
+                platformSearchResult = null,
+                showPlatformResult = false
+            )
+            
+            launch(Dispatchers.IO) {
+                getUserInfoNoCacheUseCase(username.trim()).collectLatest { result ->
+                    when (result) {
+                        is Resource.Loading -> {
+                            withContext(Dispatchers.Main) {
+                                _userStatesValues.value = _userStatesValues.value.copy(
+                                    isPlatformSearching = true
+                                )
+                            }
+                        }
+                        is Resource.Success -> {
+                            withContext(Dispatchers.Main) {
+                                _userStatesValues.value = _userStatesValues.value.copy(
+                                    isPlatformSearching = false,
+                                    platformSearchResult = result.data,
+                                    platformSearchError = null,
+                                    showPlatformResult = true
+                                )
+                            }
+                        }
+                        is Resource.Error -> {
+                            val errorMessage = when (result.message) {
+                                Constants.NETWORK_UNAVAILABLE_ERROR -> 
+                                    "Network is not available. Please check your connection."
+                                else -> "User not found on the platform"
+                            }
+                            
+                            withContext(Dispatchers.Main) {
+                                _userStatesValues.value = _userStatesValues.value.copy(
+                                    isPlatformSearching = false,
+                                    platformSearchResult = null,
+                                    platformSearchError = errorMessage,
+                                    showPlatformResult = true
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun hidePlatformResult() {
+        _userStatesValues.value = _userStatesValues.value.copy(
+            showPlatformResult = false,
+            platformSearchResult = null,
+            platformSearchError = null
+        )
+    }
+
+    fun deleteUser(username: String) {
+        viewModelScope.launch {
+            deleteUserUsecase(username).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        // Handle loading state if needed
+                    }
+                    is Resource.Success -> {
+                        // Handle success, e.g., update UI or show a message
+                    }
+                    is Resource.Error -> {
+                        // Handle error
+                    }
+                }
+            }
+        }
     }
 }
