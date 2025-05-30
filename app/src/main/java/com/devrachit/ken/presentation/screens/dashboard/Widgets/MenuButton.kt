@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -30,6 +31,31 @@ fun MenuButton(onClick: () -> Job, drawerProgress: Float = 0f) {
     
     Icon(
         imageVector = Icons.Default.Menu,
+        contentDescription = "Menu",
+        tint = Color.White,
+        modifier = Modifier
+            .padding(top = 29.sdp, start = 23.dp)
+            .offset(y = yOffset.dp)
+            .alpha(alpha)
+            .border(
+                border = BorderStroke(2.sdp, Color.DarkGray),
+                shape = RoundedCornerShape(5.sdp)
+            )
+            .size(32.sdp)
+            .clickable(onClick = { onClick.invoke() })
+            .padding(4.sdp)
+            .background(colorResource(R.color.bg_neutral))
+    )
+}
+
+@Composable
+fun BackButton(onClick: () -> Unit, drawerProgress: Float = 0f) {
+
+    val yOffset = lerp(0f, -100f, drawerProgress)
+    val alpha = lerp(1f, 0f, drawerProgress)
+
+    Icon(
+        imageVector = Icons.Default.ArrowBack,
         contentDescription = "Menu",
         tint = Color.White,
         modifier = Modifier

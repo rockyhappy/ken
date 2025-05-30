@@ -13,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.devrachit.ken.presentation.navigation.navigateToTab
 import com.devrachit.ken.presentation.screens.dashboard.ActivityContent.HomeScreenDrawer
@@ -22,7 +23,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun DrawerLayoutContent(username: String, uiState: States, logout: () -> Unit){
+fun DrawerLayoutContent(
+    username: String, 
+    uiState: States, 
+    logout: () -> Unit,
+    appNavController: NavHostController? = null
+) {
     val coroutineScope = rememberCoroutineScope()
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp
@@ -122,6 +128,7 @@ fun DrawerLayoutContent(username: String, uiState: States, logout: () -> Unit){
         drawerWidth = drawerWidth,
         draggableState = draggableState,
         onMenuClick = { toggleDrawer() },
-        navController = navController
+        navController = navController,
+        appNavController = appNavController
     )
 }

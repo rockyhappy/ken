@@ -1,0 +1,323 @@
+package com.devrachit.ken.presentation.screens.dashboard.userdetails
+
+import android.util.Log
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.devrachit.ken.domain.models.toQuestionProgressUiState
+import com.devrachit.ken.domain.usecases.getContestRankingHistogram.GetContestRankingHistogramUseCase
+import com.devrachit.ken.domain.usecases.getCurrentTime.GetCurrentTime
+import com.devrachit.ken.domain.usecases.getUserBadges.GetUserBadgesUseCase
+import com.devrachit.ken.domain.usecases.getUserContestRanking.GetUserContestRankingUseCase
+import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
+import com.devrachit.ken.domain.usecases.getUserProfileCalender.GetUserProfileCalenderUseCase
+import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
+import com.devrachit.ken.domain.usecases.getUserRecentSubmission.GetUserRecentSubmissionUseCase
+import com.devrachit.ken.utility.NetworkUtility.Resource
+import com.devrachit.ken.utility.constants.Constants.Companion.USERCONTESTPARTICIPATIONERROR
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
+
+@HiltViewModel
+class UserDetailsViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+    private val getUserQuestionStatusUseCase: GetUserQuestionStatusUseCase,
+    private val getCurrentTime: GetCurrentTime,
+    private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val getUserProfileCalenderUseCase: GetUserProfileCalenderUseCase,
+    private val getUserRecentSubmissionUseCase: GetUserRecentSubmissionUseCase,
+    private val getUserBadgesUseCase: GetUserBadgesUseCase,
+    private val getUserContestRankingUseCase: GetUserContestRankingUseCase,
+    private val getContestRankingHistogramUseCase: GetContestRankingHistogramUseCase
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(UserDetailsUiStates())
+    val uiState: StateFlow<UserDetailsUiStates> = _uiState.asStateFlow()
+
+    private val _loadingState = MutableStateFlow(UserDetailsLoadingStates())
+    val loadingState: StateFlow<UserDetailsLoadingStates> = _loadingState.asStateFlow()
+
+    private val username: String = savedStateHandle.get<String>("username") ?: ""
+
+    init {
+        _uiState.value = _uiState.value.copy(username = username)
+        if (username.isNotEmpty()) {
+            loadUserDetails()
+        }
+    }
+
+    private suspend fun updateLoadingState() {
+        _uiState.value =
+            _uiState.value.copy(
+                isLoading = _loadingState.value.questionStatusLoading ||
+                        _loadingState.value.currentTimeLoading ||
+                        _loadingState.value.calendarLoading ||
+                        _loadingState.value.submissionsLoading ||
+                        _loadingState.value.badgesLoading ||
+                        _loadingState.value.contestRankingLoading ||
+                        _loadingState.value.contestRankingHistogramLoading
+            )
+    }
+
+    fun loadUserDetails() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            _loadingState.value.pullToRefreshLoading = true
+
+            if (username.isNotEmpty()) {
+                coroutineScope {
+                    launch(Dispatchers.IO) { fetchUserInfo(username) }
+                    launch(Dispatchers.IO) { fetchUserProfileCalender(username) }
+                    launch(Dispatchers.IO) { fetchCurrentTime() }
+                    launch(Dispatchers.IO) { fetchUserQuestionStatus(username) }
+                    launch(Dispatchers.IO) { fetchUserRecentSubmission(username, 15) }
+                    launch(Dispatchers.IO) { fetchUserBadges(username) }
+                    launch(Dispatchers.IO) { fetchUserContestRanking(username) }
+                    launch(Dispatchers.IO) { fetchContestRankingHistogram() }
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchUserQuestionStatus(username: String) {
+        _loadingState.value.questionStatusLoading = true
+        updateLoadingState()
+
+        getUserQuestionStatusUseCase(username, forceRefresh = true).collectLatest {
+            when (it) {
+                is Resource.Loading -> {
+                    _loadingState.value.questionStatusLoading = true
+                    updateLoadingState()
+                }
+
+                is Resource.Success -> {
+                    val data = it.data
+                    if (data != null) {
+                        val homeQuestionProgress = data.toQuestionProgressUiState()
+                        _uiState.value = _uiState.value.copy(
+                            questionProgress = UserDetailsQuestionProgressUiState(
+                                solved = homeQuestionProgress.solved,
+                                attempting = homeQuestionProgress.attempting,
+                                total = homeQuestionProgress.total,
+                                easyTotalCount = homeQuestionProgress.easyTotalCount,
+                                easySolvedCount = homeQuestionProgress.easySolvedCount,
+                                mediumTotalCount = homeQuestionProgress.mediumTotalCount,
+                                mediumSolvedCount = homeQuestionProgress.mediumSolvedCount,
+                                hardTotalCount = homeQuestionProgress.hardTotalCount,
+                                hardSolvedCount = homeQuestionProgress.hardSolvedCount
+                            )
+                        )
+                    }
+                    _loadingState.value.questionStatusLoading = false
+                    updateLoadingState()
+                }
+
+                is Resource.Error -> {
+                    _loadingState.value.questionStatusLoading = false
+                    updateLoadingState()
+                    fetchUserQuestionStatus(username)
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchCurrentTime() {
+        _loadingState.value.currentTimeLoading = true
+        updateLoadingState()
+
+        getCurrentTime().collectLatest {
+            when (it) {
+                is Resource.Loading -> {
+                    _loadingState.value.currentTimeLoading = true
+                    updateLoadingState()
+                }
+
+                is Resource.Success -> {
+                    _uiState.value = _uiState.value.copy(
+                        currentTimestamp = it.data?.data?.currentTimestamp
+                    )
+                    _loadingState.value.currentTimeLoading = false
+                    updateLoadingState()
+                }
+
+                is Resource.Error -> {
+                    _loadingState.value.currentTimeLoading = false
+                    updateLoadingState()
+                    fetchCurrentTime()
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchUserProfileCalender(username: String) {
+        _loadingState.value.calendarLoading = true
+        updateLoadingState()
+
+        getUserProfileCalenderUseCase(username, forceRefresh = true).collectLatest {
+            when (it) {
+                is Resource.Loading -> {
+                    _loadingState.value.calendarLoading = true
+                    updateLoadingState()
+                }
+
+                is Resource.Success -> {
+                    _uiState.value = _uiState.value.copy(
+                        userProfileCalender = it.data
+                    )
+                    _loadingState.value.calendarLoading = false
+                    updateLoadingState()
+                }
+
+                is Resource.Error -> {
+                    _loadingState.value.calendarLoading = false
+                    updateLoadingState()
+                    fetchUserProfileCalender(username)
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchUserInfo(username: String) {
+        getUserInfoUseCase(username, forceRefresh = true).collectLatest {
+            when (it) {
+                is Resource.Loading -> {
+                    // Loading state handled by overall loading
+                }
+
+                is Resource.Success -> {
+                    _uiState.value = _uiState.value.copy(
+                        userProfile = it.data
+                    )
+                }
+
+                is Resource.Error -> {
+                    // Error handling - could retry or show error state
+                    fetchUserInfo(username)
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchUserRecentSubmission(username: String, limit: Int? = 15) {
+        _loadingState.value.submissionsLoading = true
+        updateLoadingState()
+
+        getUserRecentSubmissionUseCase(
+            username = username,
+            limit = limit,
+            forceRefresh = true
+        ).collectLatest {
+            when (it) {
+                is Resource.Loading -> {
+                    _loadingState.value.submissionsLoading = true
+                    updateLoadingState()
+                }
+
+                is Resource.Success -> {
+                    _uiState.value = _uiState.value.copy(
+                        recentSubmissions = it.data
+                    )
+                    _loadingState.value.submissionsLoading = false
+                    updateLoadingState()
+                }
+
+                is Resource.Error -> {
+                    _loadingState.value.submissionsLoading = false
+                    updateLoadingState()
+                    fetchUserRecentSubmission(username, limit)
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchUserBadges(username: String) {
+        _loadingState.value.badgesLoading = true
+        updateLoadingState()
+
+        getUserBadgesUseCase(username, forceRefresh = true).collectLatest {
+            when (it) {
+                is Resource.Loading -> {
+                    _loadingState.value.badgesLoading = true
+                    updateLoadingState()
+                }
+
+                is Resource.Success -> {
+                    _uiState.value = _uiState.value.copy(userBadgesResponse = it.data)
+                    _loadingState.value.badgesLoading = false
+                    updateLoadingState()
+                }
+
+                is Resource.Error -> {
+                    Log.d("TAG", "fetchUserBadges: ${it.message}")
+                    _loadingState.value.badgesLoading = false
+                    updateLoadingState()
+                    fetchUserBadges(username)
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchUserContestRanking(username: String) {
+        _loadingState.value.contestRankingLoading = true
+        updateLoadingState()
+
+        getUserContestRankingUseCase(username = username, forceRefresh = true).collectLatest {
+            when (it) {
+                is Resource.Loading -> {
+                    _loadingState.value.contestRankingLoading = true
+                    updateLoadingState()
+                }
+
+                is Resource.Success -> {
+                    Log.d("TAGUserCheck", "fetchUserContestRanking: ${it.data}")
+                    _uiState.value = _uiState.value.copy(userContestRankingResponse = it.data)
+                    _loadingState.value.contestRankingLoading = false
+                    updateLoadingState()
+                }
+
+                is Resource.Error -> {
+                    _loadingState.value.contestRankingLoading = false
+                    updateLoadingState()
+                    if (it.message != USERCONTESTPARTICIPATIONERROR)
+                        fetchUserContestRanking(username)
+                    else
+                        _uiState.value.userParticipationInAnyContest = false
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchContestRankingHistogram() {
+        _loadingState.value.contestRankingHistogramLoading = true
+        updateLoadingState()
+
+        getContestRankingHistogramUseCase().collectLatest {
+            when (it) {
+                is Resource.Loading -> {
+                    _loadingState.value.contestRankingHistogramLoading = true
+                    updateLoadingState()
+                }
+
+                is Resource.Success -> {
+                    _uiState.value = _uiState.value.copy(contestRatingHistogramResponse = it.data)
+                    _loadingState.value.contestRankingHistogramLoading = false
+                    updateLoadingState()
+                }
+
+                is Resource.Error -> {
+                    _loadingState.value.contestRankingHistogramLoading = false
+                    updateLoadingState()
+                    fetchContestRankingHistogram()
+                }
+            }
+        }
+    }
+}

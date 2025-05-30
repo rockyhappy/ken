@@ -57,7 +57,8 @@ fun ScreenContents(
     modifier: Modifier = Modifier,
     onClick: () -> Job,
     drawerProgress: Float = 0f,
-    navController: NavHostController
+    navController: NavHostController,
+    appNavController: NavHostController? = null
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
@@ -106,7 +107,7 @@ fun ScreenContents(
                 drawerProgress = drawerProgress
             )
             Box {
-                NavGraph(navController = navController)
+                NavGraph(navController = navController, appNavController = appNavController)
 
                 Row(
                     modifier = Modifier

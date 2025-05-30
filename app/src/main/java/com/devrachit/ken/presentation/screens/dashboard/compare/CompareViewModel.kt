@@ -19,6 +19,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,6 +41,7 @@ class CompareViewModel @Inject constructor(
     private val _loadingStatesValues = MutableStateFlow(LoadingStates())
     val loadingStatesValues :StateFlow<LoadingStates> = _loadingStatesValues.asStateFlow()
 
+    private var searchJob: Job? = null
 
     fun loadAllUsersInfo(){
         viewModelScope.launch {
@@ -163,4 +167,98 @@ class CompareViewModel @Inject constructor(
         }
     }
 
+    fun updateSearchQuery(query: String) {
+        _userStatesValues.value = _userStatesValues.value.copy(
+            searchQuery = query,
+            showSearchSuggestions = query.isNotEmpty()
+        )
+        
+        // Cancel previous search job
+        searchJob?.cancel()
+        
+        if (query.isEmpty()) {
+            _userStatesValues.value = _userStatesValues.value.copy(
+                searchResults = emptyMap(),
+                showSearchSuggestions = false,
+                isSearching = false
+            )
+            return
+        }
+        
+        // Start new search with debouncing
+        searchJob = viewModelScope.launch {
+            delay(300) // Debounce for 300ms
+            performSearch(query)
+        }
+    }
+    
+    private suspend fun performSearch(query: String) {
+        _userStatesValues.value = _userStatesValues.value.copy(isSearching = true)
+        
+        withContext(Dispatchers.Default) {
+            try {
+                val friendsDetails = _userStatesValues.value.friendsDetails
+                if (friendsDetails.isNullOrEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        _userStatesValues.value = _userStatesValues.value.copy(
+                            searchResults = emptyMap(),
+                            isSearching = false
+                        )
+                    }
+                    return@withContext
+                }
+                
+                val searchQuery = query.lowercase().trim()
+                val filteredResults = friendsDetails.filter { (username, userInfo) ->
+                    // Search in username
+                    val usernameMatch = userInfo.username?.lowercase()?.contains(searchQuery) == true
+                    // Search in real name
+                    val realNameMatch = userInfo.profile?.realName?.lowercase()?.contains(searchQuery) == true
+                    // Search in company
+                    val companyMatch = userInfo.profile?.company?.lowercase()?.contains(searchQuery) == true
+                    
+                    usernameMatch || realNameMatch || companyMatch
+                }.toList().take(10).toMap() // Limit to 10 suggestions
+                
+                withContext(Dispatchers.Main) {
+                    _userStatesValues.value = _userStatesValues.value.copy(
+                        searchResults = filteredResults,
+                        isSearching = false
+                    )
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    _userStatesValues.value = _userStatesValues.value.copy(
+                        searchResults = emptyMap(),
+                        isSearching = false
+                    )
+                }
+            }
+        }
+    }
+    
+    fun selectSearchResult(username: String, userInfo: LeetCodeUserInfo) {
+        val displayName = userInfo.profile?.realName?.takeIf { it.isNotBlank() } 
+            ?: userInfo.username 
+            ?: "Unknown User"
+            
+        _userStatesValues.value = _userStatesValues.value.copy(
+            searchQuery = displayName,
+            showSearchSuggestions = false,
+            searchResults = emptyMap()
+        )
+        
+        // Here you can add logic to handle the selected user
+        // For example, add to comparison list, navigate to profile, etc.
+    }
+    
+    fun clearSearch() {
+        searchJob?.cancel()
+        _userStatesValues.value = _userStatesValues.value.copy(
+            searchQuery = "",
+            searchResults = emptyMap(),
+            showSearchSuggestions = false,
+            isSearching = false
+        )
+    }
 }
