@@ -13,7 +13,12 @@ data class CompareUiStates(
     val searchQuery: String = "",
     val searchResults: Map<String, LeetCodeUserInfo> = emptyMap(),
     val showSearchSuggestions: Boolean = false,
-    val isSearching: Boolean = false
+    val isSearching: Boolean = false,
+    // Platform search states
+    val platformSearchResult: LeetCodeUserInfo? = null,
+    val isPlatformSearching: Boolean = false,
+    val platformSearchError: String? = null,
+    val showPlatformResult: Boolean = false
 )
 
 data class LoadingStates(
