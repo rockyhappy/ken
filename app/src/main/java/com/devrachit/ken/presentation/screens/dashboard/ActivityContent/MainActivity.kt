@@ -77,7 +77,11 @@ class MainActivity : ComponentActivity() {
                     UserDetailsScreen(
                         uiState = uiState.value,
                         onRefresh = { userDetailsViewModel.loadUserDetails() },
-                        onBackPress = { navController.popBackStack() }
+                        onBackPress = { navController.popBackStack() },
+                        onDeleteUser = { username -> 
+                            userDetailsViewModel.deleteUser(username)
+                            navController.popBackStack()
+                        }
                     )
                 }
             }

@@ -13,6 +13,7 @@ import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetAllUserQuestionSt
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetAllUserCalendarsUsecase
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoNoCacheUseCase
+import com.devrachit.ken.domain.usecases.getUserInfoUsecase.DeleteUserUsecase
 import com.devrachit.ken.domain.usecases.getUserProfileCalender.GetUserProfileCalenderUseCase
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
 import com.devrachit.ken.domain.usecases.getUserRecentSubmission.GetUserRecentSubmissionUseCase
@@ -191,5 +192,12 @@ object UseCaseModule {
         networkManager: NetworkManager
     ): GetUserInfoNoCacheUseCase {
         return GetUserInfoNoCacheUseCase(remoteRepository, networkManager)
+    }
+
+    @Provides
+    fun provideDeleteUserUseCase(
+        localRepository: LeetcodeLocalRepository
+    ): DeleteUserUsecase {
+        return DeleteUserUsecase(localRepository)
     }
 }

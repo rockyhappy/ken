@@ -67,7 +67,8 @@ fun NavGraph(
                 },
                 onHidePlatformResult = { 
                     viewmodel.hidePlatformResult()
-                }
+                },
+                onRemoveUser = { username -> viewmodel.deleteUser(username) }
             )
         }
         

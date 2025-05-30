@@ -21,9 +21,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -77,7 +83,10 @@ fun CompareSinglePersonWidget(
     calenderDetails: String,
     activeYears: List<Int>,
     activeDays: Int,
-    streak: Int
+    streak: Int,
+    onViewProfile: (String) -> Unit = {},
+    onCompareWith: (String) -> Unit = {},
+    onRemoveUser: (String) -> Unit = {}
 ) {
     val rawActivityData = parseCalendarData(calenderDetails)
     val dayModels = rawActivityData.map { (timestamp, contributions) ->
@@ -100,6 +109,10 @@ fun CompareSinglePersonWidget(
         )
     }.sortedWith(compareBy({ it.year }, { it.monthPosition }, { it.day }))
     val activityData = ActivityData(dayModels)
+    
+    // State for dropdown menu
+    val expanded = remember { mutableStateOf(false) }
+    
     Column(
         modifier = modifier
             .background(colorResource(R.color.bg_neutral))
@@ -161,12 +174,44 @@ fun CompareSinglePersonWidget(
                 tint = Color.White,
                 modifier = Modifier
                     .size(32.sdp)
-                    .clickable(onClick = {  })
+                    .clickable { expanded.value = true }
                     .padding(4.sdp)
                     .align(Alignment.Top)
                     .background(colorResource(R.color.bg_neutral))
             )
         }
+        
+        // Dropdown menu
+        DropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = { expanded.value = false },
+            modifier = Modifier
+                .background(colorResource(R.color.bg_neutral))
+                .clip(RoundedCornerShape(8.dp))
+        ) {
+            DropdownMenuItem(
+                text = { Text("View Profile", color = Color.White) },
+                onClick = {
+                    onViewProfile(username)
+                    expanded.value = false
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Compare with", color = Color.White) },
+                onClick = {
+                    onCompareWith(username)
+                    expanded.value = false
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Remove", color = Color.White) },
+                onClick = {
+                    onRemoveUser(username)
+                    expanded.value = false
+                }
+            )
+        }
+        
         Row(
             modifier = Modifier
                 .padding(top = 20.sdp)

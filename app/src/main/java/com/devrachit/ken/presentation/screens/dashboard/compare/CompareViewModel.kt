@@ -10,20 +10,23 @@ import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetAllUserQuestionSt
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetAllUserCalendarsUsecase
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoNoCacheUseCase
+import com.devrachit.ken.domain.usecases.getUserInfoUsecase.DeleteUserUsecase
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import com.devrachit.ken.utility.constants.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -37,6 +40,7 @@ class CompareViewModel @Inject constructor(
     private val getAllUserQuestionStatusesUsecase: GetAllUserQuestionStatusesUsecase,
     private val getAllUserCalendarsUsecase: GetAllUserCalendarsUsecase,
     private val getCurrentTime: GetCurrentTime,
+    private val deleteUserUsecase: DeleteUserUsecase,
 ): ViewModel(){
 
     private val _userStatesValues =MutableStateFlow(CompareUiStates())
@@ -351,5 +355,23 @@ class CompareViewModel @Inject constructor(
             platformSearchResult = null,
             platformSearchError = null
         )
+    }
+
+    fun deleteUser(username: String) {
+        viewModelScope.launch {
+            deleteUserUsecase(username).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        // Handle loading state if needed
+                    }
+                    is Resource.Success -> {
+                        // Handle success, e.g., update UI or show a message
+                    }
+                    is Resource.Error -> {
+                        // Handle error
+                    }
+                }
+            }
+        }
     }
 }

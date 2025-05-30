@@ -49,7 +49,8 @@ fun CompareScreen(
     onSuggestionClick: (String, com.devrachit.ken.domain.models.LeetCodeUserInfo) -> Unit = { _, _ -> },
     onNavigateToUserDetails: (String) -> Unit = {},
     onPlatformSearch: () -> Unit = {},
-    onHidePlatformResult: () -> Unit = {}
+    onHidePlatformResult: () -> Unit = {},
+    onRemoveUser: (String) -> Unit = {}
 ) {
     val (hasInitiallyLoaded, setHasInitiallyLoaded) = remember { mutableStateOf(false) }
 
@@ -83,7 +84,8 @@ fun CompareScreen(
                 uiState.currentTimestamp != null -> {
                     CompareList(
                         modifier = Modifier.padding(top = 8.sdp),
-                        uiState = uiState
+                        uiState = uiState,
+                        onRemoveUser = onRemoveUser
                     )
                 }
 
