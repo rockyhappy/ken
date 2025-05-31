@@ -215,8 +215,8 @@ fun CompareSinglePersonWidget(
                         },
                         text = { Text("View Profile", color = Color.White) },
                         onClick = {
-                            onViewProfile(username)
                             expanded.value = false
+                            onViewProfile(username)
                         }
                     )
                     Divider(

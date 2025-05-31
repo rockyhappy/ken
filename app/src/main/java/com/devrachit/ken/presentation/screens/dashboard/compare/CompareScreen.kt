@@ -88,7 +88,11 @@ fun CompareScreen(
                         modifier = Modifier.padding(top = 8.sdp),
                         uiState = uiState,
                         onRemoveUser = onRemoveUser,
-                        onRefreshUser = onRefreshUser
+                        onRefreshUser = onRefreshUser,
+                        onViewProfile = onNavigateToUserDetails,
+                        onCompareWith = { username ->
+                            // TODO: Implement compare with functionality if needed
+                        }
                     )
                 }
 
