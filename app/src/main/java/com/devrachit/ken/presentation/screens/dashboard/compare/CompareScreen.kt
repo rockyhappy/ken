@@ -45,12 +45,14 @@ fun CompareScreen(
     uiState: CompareUiStates,
     loadingStates: LoadingStates,
     onFirstLoad: () -> Unit = {},
+    onRefreshAllData: () -> Unit = {},
     onSearchTextChange: (String) -> Unit = {},
     onSuggestionClick: (String, com.devrachit.ken.domain.models.LeetCodeUserInfo) -> Unit = { _, _ -> },
     onNavigateToUserDetails: (String) -> Unit = {},
     onPlatformSearch: () -> Unit = {},
     onHidePlatformResult: () -> Unit = {},
-    onRemoveUser: (String) -> Unit = {}
+    onRemoveUser: (String) -> Unit = {},
+    onRefreshUser: (String) -> Unit = {}
 ) {
     val (hasInitiallyLoaded, setHasInitiallyLoaded) = remember { mutableStateOf(false) }
 
@@ -85,7 +87,12 @@ fun CompareScreen(
                     CompareList(
                         modifier = Modifier.padding(top = 8.sdp),
                         uiState = uiState,
-                        onRemoveUser = onRemoveUser
+                        onRemoveUser = onRemoveUser,
+                        onRefreshUser = onRefreshUser,
+                        onViewProfile = onNavigateToUserDetails,
+                        onCompareWith = { username ->
+                            // TODO: Implement compare with functionality if needed
+                        }
                     )
                 }
 
