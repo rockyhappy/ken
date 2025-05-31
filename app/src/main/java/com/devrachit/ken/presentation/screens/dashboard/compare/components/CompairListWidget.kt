@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -88,7 +89,8 @@ fun CompareSinglePersonWidget(
     streak: Int,
     onViewProfile: (String) -> Unit = {},
     onCompareWith: (String) -> Unit = {},
-    onRemoveUser: (String) -> Unit = {}
+    onRemoveUser: (String) -> Unit = {},
+    onRefreshUser: (String) -> Unit = {}
 ) {
     val rawActivityData = parseCalendarData(calenderDetails)
     val dayModels = rawActivityData.map { (timestamp, contributions) ->
@@ -195,7 +197,7 @@ fun CompareSinglePersonWidget(
                         .border(
                             border = BorderStroke(
                                 width = 2.sdp,
-                                color = colorResource(R.color.card_elevated)
+                                color = colorResource(R.color.white).copy(alpha=0.3f)
                             ),
                             shape = RoundedCornerShape(36.sdp),
                         )
@@ -218,7 +220,7 @@ fun CompareSinglePersonWidget(
                         }
                     )
                     Divider(
-                        color = colorResource(R.color.white).copy(alpha = 0.2f)
+                        color = colorResource(R.color.white).copy(alpha = 0.1f)
                     )
                     DropdownMenuItem(
                         leadingIcon = {
@@ -236,7 +238,7 @@ fun CompareSinglePersonWidget(
                         }
                     )
                     Divider(
-                        color = colorResource(R.color.white).copy(alpha = 0.2f)
+                        color = colorResource(R.color.white).copy(alpha = 0.1f)
                     )
                     DropdownMenuItem(
                         leadingIcon = {
@@ -250,6 +252,24 @@ fun CompareSinglePersonWidget(
                         text = { Text("Remove", color = Color.White) },
                         onClick = {
                             onRemoveUser(username)
+                            expanded.value = false
+                        }
+                    )
+                    Divider(
+                        color = colorResource(R.color.white).copy(alpha = 0.1f)
+                    )
+                    DropdownMenuItem(
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.Refresh,
+                                contentDescription = "Refresh",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.sdp)
+                            )
+                        },
+                        text = { Text("Refresh", color = Color.White) },
+                        onClick = {
+                            onRefreshUser(username)
                             expanded.value = false
                         }
                     )

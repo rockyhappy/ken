@@ -37,7 +37,8 @@ fun CompareList(
     uiState: CompareUiStates,
     onViewProfile: (String) -> Unit = {},
     onCompareWith: (String) -> Unit = {},
-    onRemoveUser: (String) -> Unit = {}
+    onRemoveUser: (String) -> Unit = {},
+    onRefreshUser: (String) -> Unit = {}
 ){
     Column(
         modifier = modifier
@@ -105,7 +106,8 @@ fun CompareList(
                         modifier = Modifier.padding(horizontal = 8.sdp),
                         onViewProfile = onViewProfile,
                         onCompareWith = onCompareWith,
-                        onRemoveUser = onRemoveUser
+                        onRemoveUser = onRemoveUser,
+                        onRefreshUser = onRefreshUser
                     )
                 }
             }

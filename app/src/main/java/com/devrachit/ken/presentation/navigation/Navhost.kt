@@ -56,6 +56,7 @@ fun NavGraph(
                 uiState = viewmodel.userStatesValues.collectAsStateWithLifecycle().value,
                 loadingStates = viewmodel.loadingStatesValues.collectAsStateWithLifecycle().value,
                 onFirstLoad = { viewmodel.loadAllUsersInfo() },
+                onRefreshAllData = { viewmodel.refreshAllData() },
                 onSearchTextChange = { query -> viewmodel.updateSearchQuery(query) },
                 onSuggestionClick = { username, userInfo -> viewmodel.selectSearchResult(username, userInfo) },
                 onNavigateToUserDetails = { username -> 
@@ -68,7 +69,8 @@ fun NavGraph(
                 onHidePlatformResult = { 
                     viewmodel.hidePlatformResult()
                 },
-                onRemoveUser = { username -> viewmodel.deleteUser(username) }
+                onRemoveUser = { username -> viewmodel.deleteUser(username) },
+                onRefreshUser = { username -> viewmodel.refreshSingleUser(username) }
             )
         }
         
