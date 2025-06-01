@@ -90,7 +90,7 @@ private fun QuestionGraphCard(
                 shape = RoundedCornerShape(36.sdp),
             )
         ,
-        shape = RoundedCornerShape(12.sdp),
+        shape = RoundedCornerShape(36.sdp),
         colors = CardDefaults.cardColors(
             containerColor = colorResource(R.color.bg_neutral)
         ),
@@ -195,10 +195,19 @@ private fun BarChartComposable(
                 this.color = color
                 valueTextColor = Color.WHITE
                 valueTextSize = 9f
+                // Add subtle styling for better appearance
+                barBorderWidth = 1f
+                barBorderColor = Color.WHITE
+                setDrawValues(true)
             }
             
-            val barData = BarData(listOf<IBarDataSet>(dataSet))
+            val barData = BarData(listOf<IBarDataSet>(dataSet)).apply {
+                // Slightly wider bars for better visual presence
+                barWidth = 0.7f
+            }
             chart.data = barData
+            
+            chart.setExtraOffsets(10f, 10f, 10f, 10f)
             chart.invalidate()
         }
     )

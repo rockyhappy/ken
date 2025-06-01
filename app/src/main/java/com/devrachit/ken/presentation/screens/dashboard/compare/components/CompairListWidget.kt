@@ -42,6 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.foundation.Image
 import com.devrachit.ken.R
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
@@ -192,17 +193,18 @@ fun CompareSinglePersonWidget(
                 DropdownMenu(
                     expanded = expanded.value,
                     onDismissRequest = { expanded.value = false },
+                    offset = DpOffset(x = (-16).dp, y = 4.dp),
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(12.sdp))
+                        .background(colorResource(R.color.bg_neutral))
                         .border(
+                            shape = RoundedCornerShape(12.sdp),
                             border = BorderStroke(
                                 width = 2.sdp,
                                 color = colorResource(R.color.white).copy(alpha=0.3f)
                             ),
-                            shape = RoundedCornerShape(36.sdp),
                         )
-                        .background(colorResource(R.color.bg_neutral))
-                        .padding(horizontal = 16.sdp, vertical = 8.sdp)
+                        .padding(horizontal =12.sdp, vertical = 8.sdp)
                 ) {
                     DropdownMenuItem(
                         leadingIcon = {
