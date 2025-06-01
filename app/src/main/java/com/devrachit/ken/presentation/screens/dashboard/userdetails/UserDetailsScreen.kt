@@ -64,7 +64,8 @@ import com.devrachit.ken.presentation.screens.dashboard.Widgets.DashboardHeaderD
 fun UserDetailsScreen(
     uiState: UserDetailsUiStates,
     onRefresh: () -> Unit,
-    onBackPress: () -> Unit
+    onBackPress: () -> Unit,
+    onDeleteUser: (String) -> Unit = {}
 ) {
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState.isLoading,
@@ -154,6 +155,18 @@ fun UserDetailsScreen(
                                 modifier = Modifier.padding(top = 4.sdp)
                             )
                         }
+                    }
+
+                    // Delete icon
+                    IconButton(
+                        onClick = { onDeleteUser(uiState.username ?: "") },
+                        modifier = Modifier.padding(end = 4.sdp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_delete_outline),
+                            contentDescription = "Delete user",
+                            tint = Color.White
+                        )
                     }
                 }
             }

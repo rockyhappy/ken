@@ -35,6 +35,10 @@ import com.devrachit.ken.utility.composeUtility.sdp
 fun CompareList(
     modifier : Modifier = Modifier,
     uiState: CompareUiStates,
+    onViewProfile: (String) -> Unit = {},
+    onCompareWith: (String) -> Unit = {},
+    onRemoveUser: (String) -> Unit = {},
+    onRefreshUser: (String) -> Unit = {}
 ){
     Column(
         modifier = modifier
@@ -99,7 +103,11 @@ fun CompareList(
                         activeYears = userCalendar?.activeYears ?: emptyList(),
                         activeDays = userCalendar?.totalActiveDays ?: 0,
                         streak = userCalendar?.streak ?: 0,
-                        modifier = Modifier.padding(horizontal = 8.sdp)
+                        modifier = Modifier.padding(horizontal = 8.sdp),
+                        onViewProfile = onViewProfile,
+                        onCompareWith = onCompareWith,
+                        onRemoveUser = onRemoveUser,
+                        onRefreshUser = onRefreshUser
                     )
                 }
             }

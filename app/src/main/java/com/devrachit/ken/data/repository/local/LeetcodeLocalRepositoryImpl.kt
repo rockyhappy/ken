@@ -69,6 +69,15 @@ class LeetcodeLocalRepositoryImpl @Inject constructor(
         userDao.deleteUser(username)
     }
     
+    override suspend fun deleteUser(username: String) {
+        userDao.deleteUser(username)
+        userDao.deleteUserQuestionStatus(username)
+        userProfileCalenderDao.deleteUserCalendar(username)
+        userRecentSubmissionDao.deleteUserRecentSubmission(username)
+        userContestRatingDao.deleteUserContestRanking(username)
+        userBadgesDao.deleteUserBadges(username)
+    }
+    
     override suspend fun cleanExpiredCache(expiryTimeMillis: Long) {
         val expiredEntries = userDao.getExpiredCacheEntries(expiryTimeMillis)
         expiredEntries.forEach { 

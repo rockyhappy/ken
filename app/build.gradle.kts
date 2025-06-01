@@ -15,8 +15,8 @@ android {
         applicationId = "com.devrachit.ken"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 3
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -35,8 +35,7 @@ android {
     productFlavors {
         create("dev") {
             dimension = "version"
-            applicationIdSuffix = ".dev"
-            versionNameSuffix = "-dev"
+
 
         }
         create("staging") {
@@ -157,6 +156,9 @@ dependencies {
 
     // TODO: Remove these chucker dependencies
 //    implementation("androidx.compose.material3:material3:1.2.0")
-    debugImplementation("com.github.chuckerteam.chucker:library:4.0.0") // For Debug
+    debugImplementation("com.github.chuckerteam.chucker:library:4.0.0") // For Debug  
     releaseImplementation("com.github.chuckerteam.chucker:library-no-op:4.0.0") // No-op in release
+    
+    // MPAndroidChart for graphs
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

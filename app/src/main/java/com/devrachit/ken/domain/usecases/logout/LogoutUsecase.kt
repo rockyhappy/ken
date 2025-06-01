@@ -24,12 +24,12 @@ class LogoutUseCase @Inject constructor(
             // We could use coroutineScope with multiple launches for parallel execution
             // but for logout it's safer to clear everything sequentially
             // to ensure complete cleanup before confirming success
-//            localRepository.clearCache()
-//            localRepository.deleteAllUserQuestionStatus()
-//            localRepository.deleteAllRecentSubmissions()
-//            localRepository.deleteAllUserProfileCalender()
-//            localRepository.deleteAllUserBadges()
-//            localRepository.deleteAllUserContestRankings()
+            localRepository.clearCache()
+            localRepository.deleteAllUserQuestionStatus()
+            localRepository.deleteAllRecentSubmissions()
+            localRepository.deleteAllUserProfileCalender()
+            localRepository.deleteAllUserBadges()
+            localRepository.deleteAllUserContestRankings()
             dataStoteRepository.clearPrimaryUsername()
             emit(Resource.Success(true))
         }

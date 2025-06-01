@@ -1,26 +1,40 @@
 package com.devrachit.ken.presentation.screens.dashboard.compare
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devrachit.ken.data.local.datastore.DataStoreRepository
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
+import com.devrachit.ken.domain.models.toQuestionProgressUiState
 import com.devrachit.ken.domain.usecases.getCurrentTime.GetCurrentTime
+import com.devrachit.ken.domain.usecases.getUserBadges.GetUserBadgesUseCase
+import com.devrachit.ken.domain.usecases.getUserContestRanking.GetUserContestRankingUseCase
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetAllUsersUsecase
-import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetAllUserQuestionStatusesUsecase
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetAllUserCalendarsUsecase
+import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetAllUserQuestionStatusesUsecase
+import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoNoCacheUseCase
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
+import com.devrachit.ken.domain.usecases.getUserInfoUsecase.DeleteUserUsecase
+import com.devrachit.ken.domain.usecases.getUserProfileCalender.GetUserProfileCalenderUseCase
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
+import com.devrachit.ken.domain.usecases.getUserRecentSubmission.GetUserRecentSubmissionUseCase
+import com.devrachit.ken.presentation.screens.dashboard.compare.QuestionGraphData
 import com.devrachit.ken.utility.NetworkUtility.Resource
+import com.devrachit.ken.utility.constants.Constants
+import com.devrachit.ken.utility.constants.Constants.Companion.USERCONTESTPARTICIPATIONERROR
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -29,11 +43,18 @@ class CompareViewModel @Inject constructor(
     private val dataStoreRepository: DataStoreRepository,
     private val getUserQuestionStatusUseCase: GetUserQuestionStatusUseCase,
     private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val getUserInfoNoCacheUseCase: GetUserInfoNoCacheUseCase,
     private val getAllUsersUsecase: GetAllUsersUsecase,
     private val getAllUserQuestionStatusesUsecase: GetAllUserQuestionStatusesUsecase,
     private val getAllUserCalendarsUsecase: GetAllUserCalendarsUsecase,
     private val getCurrentTime: GetCurrentTime,
-): ViewModel(){
+    private val deleteUserUsecase: DeleteUserUsecase,
+    private val getUserProfileCalenderUseCase: GetUserProfileCalenderUseCase,
+    private val getUserRecentSubmissionUseCase: GetUserRecentSubmissionUseCase,
+    private val getUserBadgesUseCase: GetUserBadgesUseCase,
+    private val getUserContestRankingUseCase: GetUserContestRankingUseCase,
+
+    ): ViewModel(){
 
     private val _userStatesValues =MutableStateFlow(CompareUiStates())
     val userStatesValues :StateFlow<CompareUiStates> = _userStatesValues.asStateFlow()
@@ -52,6 +73,19 @@ class CompareViewModel @Inject constructor(
                 launch(Dispatchers.IO){fetchCurrentTime()}
             }
 
+        }
+    }
+
+    // Add a function for explicit refresh (pull-to-refresh)
+    fun refreshAllData() {
+        viewModelScope.launch {
+            coroutineScope {
+                // Reload cached data to show immediately
+                launch(Dispatchers.IO){getAllUsersInfo()}
+                launch(Dispatchers.IO){getAllUserQuestionStatuses()}
+                launch(Dispatchers.IO){getAllUserCalendars()}
+                launch(Dispatchers.IO){fetchCurrentTime()}
+            }
         }
     }
 
@@ -173,7 +207,7 @@ class CompareViewModel @Inject constructor(
             showSearchSuggestions = query.isNotEmpty()
         )
         
-        // Cancel previous search job
+
         searchJob?.cancel()
         
         if (query.isEmpty()) {
@@ -258,7 +292,361 @@ class CompareViewModel @Inject constructor(
             searchQuery = "",
             searchResults = emptyMap(),
             showSearchSuggestions = false,
-            isSearching = false
+            isSearching = false,
+            platformSearchResult = null,
+            platformSearchError = null,
+            showPlatformResult = false
         )
     }
+
+    fun fetchUserInfoNoCache(username: String, callback: (Resource<LeetCodeUserInfo>) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getUserInfoNoCacheUseCase(username).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        // Handle loading state if needed
+                    }
+                    is Resource.Success -> {
+                        callback(result)
+                    }
+                    is Resource.Error -> {
+                        if (result.message == Constants.NETWORK_UNAVAILABLE_ERROR) {
+                            // Handle network unavailable error
+                            callback(Resource.Error("Network is not available. Please check your connection."))
+                        } else {
+                            callback(result)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun searchPlatformUser(username: String) {
+        if (username.isBlank()) return
+        
+        viewModelScope.launch {
+            _userStatesValues.value = _userStatesValues.value.copy(
+                isPlatformSearching = true,
+                platformSearchError = null,
+                platformSearchResult = null,
+                showPlatformResult = false
+            )
+            
+            launch(Dispatchers.IO) {
+                getUserInfoNoCacheUseCase(username.trim()).collectLatest { result ->
+                    when (result) {
+                        is Resource.Loading -> {
+                            withContext(Dispatchers.Main) {
+                                _userStatesValues.value = _userStatesValues.value.copy(
+                                    isPlatformSearching = true
+                                )
+                            }
+                        }
+                        is Resource.Success -> {
+                            withContext(Dispatchers.Main) {
+                                _userStatesValues.value = _userStatesValues.value.copy(
+                                    isPlatformSearching = false,
+                                    platformSearchResult = result.data,
+                                    platformSearchError = null,
+                                    showPlatformResult = true
+                                )
+                            }
+                        }
+                        is Resource.Error -> {
+                            val errorMessage = when (result.message) {
+                                Constants.NETWORK_UNAVAILABLE_ERROR -> 
+                                    "Network is not available. Please check your connection."
+                                else -> "User not found on the platform"
+                            }
+                            
+                            withContext(Dispatchers.Main) {
+                                _userStatesValues.value = _userStatesValues.value.copy(
+                                    isPlatformSearching = false,
+                                    platformSearchResult = null,
+                                    platformSearchError = errorMessage,
+                                    showPlatformResult = true
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun hidePlatformResult() {
+        _userStatesValues.value = _userStatesValues.value.copy(
+            showPlatformResult = false,
+            platformSearchResult = null,
+            platformSearchError = null
+        )
+    }
+
+    fun deleteUser(username: String) {
+        viewModelScope.launch {
+            deleteUserUsecase(username).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        // Handle loading state if needed
+                    }
+                    is Resource.Success -> {
+                        // Remove user from all UI state maps immediately
+                        val currentFriendsDetails = _userStatesValues.value.friendsDetails?.toMutableMap()
+                        val currentQuestionProgress = _userStatesValues.value.friendsQuestionProgressInfo?.toMutableMap()
+                        val currentCalendarData = _userStatesValues.value.userProfileCalender?.toMutableMap()
+                        
+                        // Remove the user from all maps
+                        currentFriendsDetails?.remove(username)
+                        currentQuestionProgress?.remove(username)
+                        currentCalendarData?.remove(username)
+                        
+                        // Update UI state with the updated maps
+                        _userStatesValues.value = _userStatesValues.value.copy(
+                            friendsDetails = currentFriendsDetails,
+                            friendsQuestionProgressInfo = currentQuestionProgress,
+                            userProfileCalender = currentCalendarData
+                        )
+                    }
+                    is Resource.Error -> {
+                        // Handle error - you might want to show a toast or error message
+                    }
+                }
+            }
+        }
+    }
+
+    fun refreshSingleUser(username: String) {
+        viewModelScope.launch {
+            // First show loading state for this specific refresh
+            // Then refresh individual user data in background
+            launch(Dispatchers.IO) {
+                refreshSingleUserData(username)
+                // After refresh is complete, reload the cache data to update UI
+                refreshBulkUIData()
+            }
+        }
+    }
+
+    private suspend fun refreshSingleUserData(username: String) {
+        try {
+            coroutineScope {
+                launch { refreshUserQuestionStatus(username) }
+                launch { refreshUserProfileCalender(username) }
+                launch { refreshUserRecentSubmission(username) }
+                launch { refreshUserBadges(username) }
+                launch { refreshUserContestRanking(username) }
+            }
+        } catch (e: Exception) {
+            // Handle errors silently for background refresh
+        }
+    }
+    
+    private suspend fun refreshBulkUIData() {
+        try {
+            // These operations read from cache that was just updated by individual API calls
+            coroutineScope {
+                launch { 
+                    getAllUsersInfo() 
+                }
+                launch { 
+                    getAllUserQuestionStatuses() 
+                }
+                launch { 
+                    getAllUserCalendars() 
+                }
+            }
+        } catch (e: Exception) {
+            // Handle errors silently for background refresh
+        }
+    }
+    
+    private suspend fun refreshUserQuestionStatus(username: String) {
+        try {
+            getUserQuestionStatusUseCase(username, forceRefresh = true).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        // Data is automatically cached by the use case
+                        return@collect // Exit after first success
+                    }
+                    is Resource.Error -> {
+                        // Handle silently for background refresh and continue
+                        return@collect
+                    }
+                    is Resource.Loading -> {
+                        // Continue waiting
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // Handle silently
+        }
+    }
+    
+    private suspend fun refreshUserProfileCalender(username: String) {
+        try {
+            getUserProfileCalenderUseCase(username, forceRefresh = true).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        // Data is automatically cached by the use case
+                        return@collect // Exit after first success
+                    }
+                    is Resource.Error -> {
+                        // Handle silently for background refresh and continue
+                        return@collect
+                    }
+                    is Resource.Loading -> {
+                        // Continue waiting
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // Handle silently
+        }
+    }
+    
+    private suspend fun refreshUserRecentSubmission(username: String) {
+        try {
+            getUserRecentSubmissionUseCase(username, limit = 15, forceRefresh = true).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        // Data is automatically cached by the use case
+                        return@collect // Exit after first success
+                    }
+                    is Resource.Error -> {
+                        // Handle silently for background refresh and continue
+                        return@collect
+                    }
+                    is Resource.Loading -> {
+                        // Continue waiting
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // Handle silently
+        }
+    }
+    
+    private suspend fun refreshUserBadges(username: String) {
+        try {
+            getUserBadgesUseCase(username, forceRefresh = true).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        // Data is automatically cached by the use case
+                        return@collect // Exit after first success
+                    }
+                    is Resource.Error -> {
+                        // Handle silently for background refresh and continue
+                        return@collect
+                    }
+                    is Resource.Loading -> {
+                        // Continue waiting
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // Handle silently
+        }
+    }
+    
+    private suspend fun refreshUserContestRanking(username: String) {
+        try {
+            getUserContestRankingUseCase(username, forceRefresh = true).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        // Data is automatically cached by the use case
+                        return@collect // Exit after first success
+                    }
+                    is Resource.Error -> {
+                        // Handle silently for background refresh and continue
+                        return@collect
+                    }
+                    is Resource.Loading -> {
+                        // Continue waiting
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // Handle silently
+        }
+    }
+    
+    fun getEasyQuestionGraphData(): List<QuestionGraphData> {
+        val friendsQuestionProgress = _userStatesValues.value.friendsQuestionProgressInfo
+        val friendsDetails = _userStatesValues.value.friendsDetails
+        
+        if (friendsQuestionProgress.isNullOrEmpty() || friendsDetails.isNullOrEmpty()) {
+            return emptyList()
+        }
+        
+        return friendsQuestionProgress.mapNotNull { (username, progress) ->
+            val userInfo = friendsDetails[username]
+            val displayName = userInfo?.profile?.realName?.takeIf { it.isNotBlank() } 
+                ?: username.takeIf { it.isNotBlank() } 
+                ?: "Unknown"
+            
+            QuestionGraphData(
+                username = username,
+                displayName = displayName,
+                solvedCount = progress.easySolvedCount,
+                totalCount = progress.easyTotalCount,
+                percentage = if (progress.easyTotalCount > 0) {
+                    (progress.easySolvedCount.toFloat() / progress.easyTotalCount.toFloat()) * 100f
+                } else 0f
+            )
+        }.sortedByDescending { it.solvedCount }
+    }
+    
+    fun getMediumQuestionGraphData(): List<QuestionGraphData> {
+        val friendsQuestionProgress = _userStatesValues.value.friendsQuestionProgressInfo
+        val friendsDetails = _userStatesValues.value.friendsDetails
+        
+        if (friendsQuestionProgress.isNullOrEmpty() || friendsDetails.isNullOrEmpty()) {
+            return emptyList()
+        }
+        
+        return friendsQuestionProgress.mapNotNull { (username, progress) ->
+            val userInfo = friendsDetails[username]
+            val displayName = userInfo?.profile?.realName?.takeIf { it.isNotBlank() } 
+                ?: username.takeIf { it.isNotBlank() } 
+                ?: "Unknown"
+            
+            QuestionGraphData(
+                username = username,
+                displayName = displayName,
+                solvedCount = progress.mediumSolvedCount,
+                totalCount = progress.mediumTotalCount,
+                percentage = if (progress.mediumTotalCount > 0) {
+                    (progress.mediumSolvedCount.toFloat() / progress.mediumTotalCount.toFloat()) * 100f
+                } else 0f
+            )
+        }.sortedByDescending { it.solvedCount }
+    }
+    
+    fun getHardQuestionGraphData(): List<QuestionGraphData> {
+        val friendsQuestionProgress = _userStatesValues.value.friendsQuestionProgressInfo
+        val friendsDetails = _userStatesValues.value.friendsDetails
+        
+        if (friendsQuestionProgress.isNullOrEmpty() || friendsDetails.isNullOrEmpty()) {
+            return emptyList()
+        }
+        
+        return friendsQuestionProgress.mapNotNull { (username, progress) ->
+            val userInfo = friendsDetails[username]
+            val displayName = userInfo?.profile?.realName?.takeIf { it.isNotBlank() } 
+                ?: username.takeIf { it.isNotBlank() } 
+                ?: "Unknown"
+            
+            QuestionGraphData(
+                username = username,
+                displayName = displayName,
+                solvedCount = progress.hardSolvedCount,
+                totalCount = progress.hardTotalCount,
+                percentage = if (progress.hardTotalCount > 0) {
+                    (progress.hardSolvedCount.toFloat() / progress.hardTotalCount.toFloat()) * 100f
+                } else 0f
+            )
+        }.sortedByDescending { it.solvedCount }
+    }
+
 }
