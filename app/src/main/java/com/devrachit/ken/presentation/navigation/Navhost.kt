@@ -68,7 +68,11 @@ fun NavGraph(
                 onHidePlatformResult = { 
                     viewmodel.hidePlatformResult()
                 },
-                onRemoveUser = { username -> viewmodel.deleteUser(username) }
+                onRemoveUser = { username -> viewmodel.deleteUser(username) },
+                onRefreshUser = { username -> viewmodel.refreshSingleUser(username) },
+                getEasyGraphData = { viewmodel.getEasyQuestionGraphData() },
+                getMediumGraphData = { viewmodel.getMediumQuestionGraphData() },
+                getHardGraphData = { viewmodel.getHardQuestionGraphData() }
             )
         }
         

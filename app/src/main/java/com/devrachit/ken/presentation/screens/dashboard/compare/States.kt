@@ -27,3 +27,11 @@ data class LoadingStates(
     var isLoadingUserCalendars: Boolean = false,
     var currentTimeLoading: Boolean = false,
 )
+
+data class QuestionGraphData(
+    val username: String,
+    val displayName: String,
+    val solvedCount: Int,
+    val totalCount: Int,
+    val percentage: Float
+)
