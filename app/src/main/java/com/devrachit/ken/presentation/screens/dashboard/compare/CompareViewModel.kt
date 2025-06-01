@@ -18,6 +18,7 @@ import com.devrachit.ken.domain.usecases.getUserInfoUsecase.DeleteUserUsecase
 import com.devrachit.ken.domain.usecases.getUserProfileCalender.GetUserProfileCalenderUseCase
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
 import com.devrachit.ken.domain.usecases.getUserRecentSubmission.GetUserRecentSubmissionUseCase
+import com.devrachit.ken.presentation.screens.dashboard.compare.QuestionGraphData
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import com.devrachit.ken.utility.constants.Constants
 import com.devrachit.ken.utility.constants.Constants.Companion.USERCONTESTPARTICIPATIONERROR
@@ -568,6 +569,84 @@ class CompareViewModel @Inject constructor(
         } catch (e: Exception) {
             // Handle silently
         }
+    }
+    
+    fun getEasyQuestionGraphData(): List<QuestionGraphData> {
+        val friendsQuestionProgress = _userStatesValues.value.friendsQuestionProgressInfo
+        val friendsDetails = _userStatesValues.value.friendsDetails
+        
+        if (friendsQuestionProgress.isNullOrEmpty() || friendsDetails.isNullOrEmpty()) {
+            return emptyList()
+        }
+        
+        return friendsQuestionProgress.mapNotNull { (username, progress) ->
+            val userInfo = friendsDetails[username]
+            val displayName = userInfo?.profile?.realName?.takeIf { it.isNotBlank() } 
+                ?: username.takeIf { it.isNotBlank() } 
+                ?: "Unknown"
+            
+            QuestionGraphData(
+                username = username,
+                displayName = displayName,
+                solvedCount = progress.easySolvedCount,
+                totalCount = progress.easyTotalCount,
+                percentage = if (progress.easyTotalCount > 0) {
+                    (progress.easySolvedCount.toFloat() / progress.easyTotalCount.toFloat()) * 100f
+                } else 0f
+            )
+        }.sortedByDescending { it.solvedCount }
+    }
+    
+    fun getMediumQuestionGraphData(): List<QuestionGraphData> {
+        val friendsQuestionProgress = _userStatesValues.value.friendsQuestionProgressInfo
+        val friendsDetails = _userStatesValues.value.friendsDetails
+        
+        if (friendsQuestionProgress.isNullOrEmpty() || friendsDetails.isNullOrEmpty()) {
+            return emptyList()
+        }
+        
+        return friendsQuestionProgress.mapNotNull { (username, progress) ->
+            val userInfo = friendsDetails[username]
+            val displayName = userInfo?.profile?.realName?.takeIf { it.isNotBlank() } 
+                ?: username.takeIf { it.isNotBlank() } 
+                ?: "Unknown"
+            
+            QuestionGraphData(
+                username = username,
+                displayName = displayName,
+                solvedCount = progress.mediumSolvedCount,
+                totalCount = progress.mediumTotalCount,
+                percentage = if (progress.mediumTotalCount > 0) {
+                    (progress.mediumSolvedCount.toFloat() / progress.mediumTotalCount.toFloat()) * 100f
+                } else 0f
+            )
+        }.sortedByDescending { it.solvedCount }
+    }
+    
+    fun getHardQuestionGraphData(): List<QuestionGraphData> {
+        val friendsQuestionProgress = _userStatesValues.value.friendsQuestionProgressInfo
+        val friendsDetails = _userStatesValues.value.friendsDetails
+        
+        if (friendsQuestionProgress.isNullOrEmpty() || friendsDetails.isNullOrEmpty()) {
+            return emptyList()
+        }
+        
+        return friendsQuestionProgress.mapNotNull { (username, progress) ->
+            val userInfo = friendsDetails[username]
+            val displayName = userInfo?.profile?.realName?.takeIf { it.isNotBlank() } 
+                ?: username.takeIf { it.isNotBlank() } 
+                ?: "Unknown"
+            
+            QuestionGraphData(
+                username = username,
+                displayName = displayName,
+                solvedCount = progress.hardSolvedCount,
+                totalCount = progress.hardTotalCount,
+                percentage = if (progress.hardTotalCount > 0) {
+                    (progress.hardSolvedCount.toFloat() / progress.hardTotalCount.toFloat()) * 100f
+                } else 0f
+            )
+        }.sortedByDescending { it.solvedCount }
     }
 
 }
