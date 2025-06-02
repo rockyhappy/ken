@@ -61,6 +61,9 @@ fun NavGraph(
                 onNavigateToUserDetails = { username -> 
                     appNavController?.navigate(Screen.UserDetails.createRoute(username))
                 },
+                onNavigateToCompareUsers = { username ->
+                    appNavController?.navigate(Screen.CompareUsers.createRoute(username))
+                },
                 onPlatformSearch = { 
                     val currentQuery = viewmodel.userStatesValues.value.searchQuery
                     viewmodel.searchPlatformUser(currentQuery)

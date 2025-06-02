@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -21,6 +22,8 @@ import androidx.navigation.navArgument
 import com.devrachit.ken.presentation.screens.dashboard.ActivityContent.DashboardContent
 import com.devrachit.ken.presentation.screens.dashboard.ActivityContent.MainViewModel
 import com.devrachit.ken.presentation.screens.dashboard.ActivityContent.States
+import com.devrachit.ken.presentation.screens.dashboard.compareusers.CompareUsersScreen
+import com.devrachit.ken.presentation.screens.dashboard.compareusers.CompareUsersViewModel
 import com.devrachit.ken.presentation.screens.dashboard.userdetails.UserDetailsScreen
 import com.devrachit.ken.presentation.screens.dashboard.userdetails.UserDetailsViewModel
 
@@ -66,6 +69,52 @@ fun MainNavHost(
                     userDetailsViewModel.deleteUser(username)
                     navController.popBackStack()
                 }
+            )
+        }
+
+        mainAnimatedComposable(
+            route = Screen.CompareUsers.routeWithArgs,
+            arguments = listOf(
+                navArgument("username1") { type = NavType.StringType },
+                navArgument("username2") { 
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) { backStackEntry ->
+            val compareUsersViewModel: CompareUsersViewModel = hiltViewModel()
+            val uiState = compareUsersViewModel.uiState.collectAsStateWithLifecycle()
+            
+            val username1 = backStackEntry.arguments?.getString("username1")
+            val username2 = backStackEntry.arguments?.getString("username2")
+
+            // Get available users from the previous CompareViewModel if it exists
+            val availableUsers = remember {
+                // Try to get available users from some global state or pass them differently
+                // For now, we'll need to load them in the CompareUsersViewModel
+                emptyList<String>()
+            }
+
+            LaunchedEffect(Unit) {
+                compareUsersViewModel.loadAvailableUsers()
+            }
+
+            CompareUsersScreen(
+                uiState = uiState.value,
+                onInitialize = { u1, u2, users ->
+                    compareUsersViewModel.initializeComparison(u1, u2, users)
+                },
+                onUser1Selected = { username ->
+                    compareUsersViewModel.selectUser1(username)
+                },
+                onUser2Selected = { username ->
+                    compareUsersViewModel.selectUser2(username)
+                },
+                onBackPress = { navController.popBackStack() },
+                username1 = username1,
+                username2 = username2,
+                availableUsers = uiState.value.availableUsers
             )
         }
     }

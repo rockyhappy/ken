@@ -50,6 +50,7 @@ fun CompareScreen(
     onSearchTextChange: (String) -> Unit = {},
     onSuggestionClick: (String, com.devrachit.ken.domain.models.LeetCodeUserInfo) -> Unit = { _, _ -> },
     onNavigateToUserDetails: (String) -> Unit = {},
+    onNavigateToCompareUsers: (String) -> Unit = {},
     onPlatformSearch: () -> Unit = {},
     onHidePlatformResult: () -> Unit = {},
     onRemoveUser: (String) -> Unit = {},
@@ -95,7 +96,7 @@ fun CompareScreen(
                         onRefreshUser = onRefreshUser,
                         onViewProfile = onNavigateToUserDetails,
                         onCompareWith = { username ->
-                            // TODO: Implement compare with functionality if needed
+                            onNavigateToCompareUsers.invoke(username)
                         }
                     )
                     
