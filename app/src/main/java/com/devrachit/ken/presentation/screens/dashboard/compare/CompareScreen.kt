@@ -35,6 +35,7 @@ import com.devrachit.ken.presentation.screens.dashboard.Widgets.HeatmapCard
 import com.devrachit.ken.presentation.screens.dashboard.compare.components.CompareList
 import com.devrachit.ken.presentation.screens.dashboard.compare.components.CompareSinglePersonWidget
 import com.devrachit.ken.presentation.screens.dashboard.compare.components.QuestionProgressGraphs
+import com.devrachit.ken.presentation.screens.dashboard.compare.components.StreakActivityGraphs
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.EnhancedSearchWidget
 import com.devrachit.ken.ui.theme.TextStyleInter20Lh24Fw700
 import com.devrachit.ken.utility.composeUtility.HomeScreenShimmer
@@ -107,6 +108,15 @@ fun CompareScreen(
                             easyData = getEasyGraphData(),
                             mediumData = getMediumGraphData(),
                             hardData = getHardGraphData()
+                        )
+                    }
+                    
+                    // Streak Activity Graphs
+                    if (!uiState.isLoading && !uiState.userProfileCalender.isNullOrEmpty()) {
+                        StreakActivityGraphs(
+                            modifier = Modifier.padding(horizontal = 16.sdp, vertical = 16.sdp),
+                            userCalendarData = uiState.userProfileCalender ?: emptyMap(),
+                            userDetails = uiState.friendsDetails ?: emptyMap()
                         )
                     }
                 }

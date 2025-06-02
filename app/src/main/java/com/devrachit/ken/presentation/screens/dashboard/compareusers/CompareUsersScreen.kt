@@ -27,6 +27,7 @@ import com.devrachit.ken.presentation.screens.dashboard.Widgets.HeatmapCard
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.QuestionProgressCard
 import com.devrachit.ken.presentation.screens.dashboard.compareusers.components.ComparisonChart
 import com.devrachit.ken.presentation.screens.dashboard.compareusers.components.ComparisonProgressGraph
+import com.devrachit.ken.presentation.screens.dashboard.compareusers.components.StreakActivityGraph
 import com.devrachit.ken.presentation.screens.dashboard.compareusers.components.UserDropdownSelector
 import com.devrachit.ken.utility.composeUtility.HomeScreenShimmer
 import com.devrachit.ken.utility.composeUtility.sdp
@@ -217,6 +218,21 @@ fun CompareUsersScreen(
                         user2Data = uiState.user2Data,
                         user1Name = uiState.username1 ?: "User 1",
                         user2Name = uiState.username2 ?: "User 2"
+                    )
+                }
+
+                // Streak Activity Graph
+                ComparisonSection(
+                    title = "Streak & Activity Comparison",
+                    modifier = Modifier.padding(top = 20.sdp, start = 18.sdp, end = 18.sdp)
+                ) {
+                    StreakActivityGraph(
+                        user1Name = uiState.username1 ?: "User 1",
+                        user1Calendar = uiState.user1Data?.calendarData,
+                        user2Name = uiState.username2 ?: "User 2",
+                        user2Calendar = uiState.user2Data?.calendarData,
+                        color1 = colorResource(R.color.easy_filled_blue),
+                        color2 = colorResource(R.color.medium_filled_yellow)
                     )
                 }
 
