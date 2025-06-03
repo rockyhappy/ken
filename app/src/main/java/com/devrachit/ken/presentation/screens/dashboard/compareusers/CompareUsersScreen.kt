@@ -217,19 +217,20 @@ fun CompareUsersScreen(
                 }
 
                 // Streak Activity Graph
-                ComparisonSection(
-                    title = "Streak & Activity Comparison",
-                    modifier = Modifier.padding(top = 20.sdp, start = 18.sdp, end = 18.sdp)
-                ) {
+//                ComparisonSection(
+//                    title = "Streak & Activity Comparison",
+//                    modifier = Modifier.padding(top = 20.sdp, start = 18.sdp, end = 18.sdp)
+//                ) {
                     StreakActivityGraph(
                         user1Name = uiState.username1 ?: "User 1",
                         user1Calendar = uiState.user1Data?.calendarData,
                         user2Name = uiState.username2 ?: "User 2",
                         user2Calendar = uiState.user2Data?.calendarData,
                         color1 = colorResource(R.color.easy_filled_blue),
-                        color2 = colorResource(R.color.medium_filled_yellow)
+                        color2 = colorResource(R.color.medium_filled_yellow),
+                        modifier = Modifier.padding(horizontal = 18.sdp).fillMaxWidth()
                     )
-                }
+//                }
 
                 // Calendar Comparison (if Android 14+)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -237,9 +238,9 @@ fun CompareUsersScreen(
                         title = "Activity Calendar Comparison",
                         modifier = Modifier.padding(top = 20.sdp, start = 18.sdp, end = 18.sdp)
                     ) {
-                        Row(
+                        Column(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.sdp)
+
                         ) {
                             // User 1 Heatmap
                             Column(modifier = Modifier.weight(1f)) {

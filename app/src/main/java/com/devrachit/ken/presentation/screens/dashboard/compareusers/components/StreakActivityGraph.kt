@@ -1,5 +1,6 @@
 package com.devrachit.ken.presentation.screens.dashboard.compareusers.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -31,16 +32,23 @@ fun StreakActivityGraph(
     color1: Color = colorResource(R.color.easy_filled_blue),
     color2: Color = colorResource(R.color.medium_filled_yellow)
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = colorResource(R.color.bg_neutral)
-        ),
-        border = CardDefaults.outlinedCardBorder(),
-        shape = RoundedCornerShape(12.sdp)
-    ) {
+//    Card(
+//        modifier = modifier.fillMaxWidth(),
+//        colors = CardDefaults.cardColors(
+//            containerColor = colorResource(R.color.bg_neutral)
+//        ),
+//        border = CardDefaults.outlinedCardBorder(),
+//        shape = RoundedCornerShape(12.sdp)
+//    ) {
         Column(
-            modifier = Modifier.padding(16.sdp)
+            modifier = modifier
+                .border(
+                    border= BorderStroke(
+                        width = 2.sdp,
+                        color = colorResource(R.color.card_elevated)
+                    ),
+                    shape = RoundedCornerShape(36.sdp)
+                ).padding(16.sdp)
         ) {
             Text(
                 text = "Streak & Activity Comparison",
@@ -49,7 +57,7 @@ fun StreakActivityGraph(
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 ),
-                modifier = Modifier.padding(bottom = 16.sdp)
+                modifier = Modifier.padding(top=20.sdp,bottom = 16.sdp)
             )
 
             // Streak Comparison
@@ -90,7 +98,7 @@ fun StreakActivityGraph(
                 color2 = color2
             )
         }
-    }
+//    }
 }
 
 @Composable
