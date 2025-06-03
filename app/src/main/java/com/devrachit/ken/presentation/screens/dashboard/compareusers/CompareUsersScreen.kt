@@ -2,9 +2,12 @@ package com.devrachit.ken.presentation.screens.dashboard.compareusers
 
 import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -17,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -25,6 +29,7 @@ import com.devrachit.ken.R
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.DashboardHeaderDetails
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.HeatmapCard
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.QuestionProgressCard
+import com.devrachit.ken.presentation.screens.dashboard.compare.components.createArcBitmap
 import com.devrachit.ken.presentation.screens.dashboard.compareusers.components.ComparisonChart
 import com.devrachit.ken.presentation.screens.dashboard.compareusers.components.ComparisonProgressGraph
 import com.devrachit.ken.presentation.screens.dashboard.compareusers.components.StreakActivityGraph
@@ -60,7 +65,9 @@ fun CompareUsersScreen(
         onBackPress()
     }
 
-    Box(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .systemBarsPadding()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -146,16 +153,43 @@ fun CompareUsersScreen(
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.sdp)
+                        horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        QuestionProgressCard(
-                            questionProgress = uiState.user1Data.questionProgress,
-                            modifier = Modifier.weight(1f)
+                        val arcBitmap = createArcBitmap(
+                            solved = uiState.user1Data.questionProgress.solved,
+                            total = uiState.user1Data.questionProgress.total,
+                            easyTotalCount = uiState.user1Data.questionProgress.easyTotalCount,
+                            easySolvedCount = uiState.user1Data.questionProgress.easySolvedCount,
+                            mediumTotalCount = uiState.user1Data.questionProgress.mediumTotalCount,
+                            mediumSolvedCount = uiState.user1Data.questionProgress.mediumSolvedCount,
+                            hardTotalCount = uiState.user1Data.questionProgress.hardTotalCount,
+                            hardSolvedCount = uiState.user1Data.questionProgress.hardSolvedCount
                         )
-                        QuestionProgressCard(
-                            questionProgress = uiState.user2Data.questionProgress,
-                            modifier = Modifier.weight(1f)
+                        Image(
+                            bitmap = arcBitmap.asImageBitmap(),
+                            contentDescription = "Progress Arc",
+                            modifier = Modifier
+                                .padding(top = 20.sdp)
+                                .size(140.sdp)
                         )
+                        val arcBitmap2 = createArcBitmap(
+                            solved = uiState.user2Data.questionProgress.solved,
+                            total = uiState.user2Data.questionProgress.total,
+                            easyTotalCount = uiState.user2Data.questionProgress.easyTotalCount,
+                            easySolvedCount = uiState.user2Data.questionProgress.easySolvedCount,
+                            mediumTotalCount = uiState.user2Data.questionProgress.mediumTotalCount,
+                            mediumSolvedCount = uiState.user2Data.questionProgress.mediumSolvedCount,
+                            hardTotalCount = uiState.user2Data.questionProgress.hardTotalCount,
+                            hardSolvedCount = uiState.user2Data.questionProgress.hardSolvedCount
+                        )
+                        Image(
+                            bitmap = arcBitmap2.asImageBitmap(),
+                            contentDescription = "Progress Arc",
+                            modifier = Modifier
+                                .padding(top = 20.sdp)
+                                .size(140.sdp)
+                        )
+
                     }
                 }
 
@@ -184,10 +218,12 @@ fun CompareUsersScreen(
                         ComparisonProgressGraph(
                             title = "Medium Questions",
                             user1Name = uiState.username1 ?: "User 1",
-                            user1Value = uiState.user1Data?.questionProgress?.mediumSolvedCount ?: 0,
+                            user1Value = uiState.user1Data?.questionProgress?.mediumSolvedCount
+                                ?: 0,
                             user1Total = uiState.user1Data?.questionProgress?.mediumTotalCount ?: 0,
                             user2Name = uiState.username2 ?: "User 2",
-                            user2Value = uiState.user2Data?.questionProgress?.mediumSolvedCount ?: 0,
+                            user2Value = uiState.user2Data?.questionProgress?.mediumSolvedCount
+                                ?: 0,
                             user2Total = uiState.user2Data?.questionProgress?.mediumTotalCount ?: 0,
                             color1 = colorResource(R.color.easy_filled_blue),
                             color2 = colorResource(R.color.medium_filled_yellow)
@@ -260,7 +296,7 @@ fun CompareUsersScreen(
                                         .fillMaxWidth()
                                         .padding(bottom = 8.sdp)
                                 )
-                                
+
                                 uiState.user1Data.calendarData?.let { calendar ->
                                     HeatmapCard(
                                         modifier = Modifier.fillMaxWidth(),
@@ -386,27 +422,35 @@ private fun ComparisonSection(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = colorResource(id = R.color.card_elevated)
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(16.sdp)
-        ) {
-            Text(
-                text = title,
-                style = androidx.compose.ui.text.TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
+//    Card(
+//        modifier = modifier.fillMaxWidth(),
+//        colors = CardDefaults.cardColors(
+//            containerColor = colorResource(id = R.color.card_elevated)
+//        )
+//    ) {
+    Column(
+        modifier = Modifier
+            .padding(16.sdp)
+            .border(
+                border = BorderStroke(
+                    width = 2.sdp,
+                    color = colorResource(R.color.card_elevated)
                 ),
-                modifier = Modifier.padding(bottom = 16.sdp)
+                shape = RoundedCornerShape(36.sdp)
             )
-            content()
-        }
+    ) {
+        Text(
+            text = title,
+            style = androidx.compose.ui.text.TextStyle(
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            ),
+            modifier = Modifier.padding(top=26.sdp,start=24.sdp,bottom = 16.sdp)
+        )
+        content()
     }
+//    }
 }
 
 @Composable
@@ -437,7 +481,7 @@ fun ActivityStatsCard(
                     color = Color.White
                 )
             )
-            
+
             calendarData?.let { data ->
                 Column {
                     // Parse submission calendar to get total submissions
@@ -446,7 +490,7 @@ fun ActivityStatsCard(
                     } catch (e: Exception) {
                         0
                     }
-                    
+
                     Text(
                         text = "Total Submissions: $totalSubmissions",
                         style = androidx.compose.ui.text.TextStyle(
@@ -454,7 +498,7 @@ fun ActivityStatsCard(
                             color = Color.White.copy(alpha = 0.8f)
                         )
                     )
-                    
+
                     Text(
                         text = "Streak: ${data.streak} days",
                         style = androidx.compose.ui.text.TextStyle(
@@ -462,7 +506,7 @@ fun ActivityStatsCard(
                             color = Color.White.copy(alpha = 0.8f)
                         )
                     )
-                    
+
                     Text(
                         text = "Active Days: ${data.totalActiveDays}",
                         style = androidx.compose.ui.text.TextStyle(

@@ -275,7 +275,7 @@ private fun ActiveYearsGraph(
             )
 
             if (userData.isNotEmpty()) {
-                val topUsers = userData.take(6) // Show top 6 users for better spacing
+                val topUsers = userData.take(10) // Show top 10 users like other graphs
 
                 // Get the overall year range across all users
                 val allYears = userData.flatMap { it.activeYears }
