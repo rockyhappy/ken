@@ -275,117 +275,152 @@ private fun ActiveYearsGraph(
             )
 
             if (userData.isNotEmpty()) {
-                val maxYears = userData.maxOfOrNull { it.activeYears.size } ?: 1
-                val topUsers = userData.take(8) // Show top 8 users for years
+                val topUsers = userData.take(6) // Show top 6 users for better spacing
 
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.sdp),
-                    contentPadding = PaddingValues(horizontal = 4.sdp)
+                // Get the overall year range across all users
+                val allYears = userData.flatMap { it.activeYears }
+                val minYear = allYears.minOrNull() ?: 2020
+                val maxYear = allYears.maxOrNull() ?: 2024
+                val yearRange = (minYear..maxYear).toList()
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.sdp)
                 ) {
-                    items(topUsers) { user ->
-                        UserYearsDisplay(
-                            username = user.displayName,
-                            activeYears = user.activeYears,
-                            maxYears = maxYears,
+                    // Year labels header
+                    YearRangeHeader(yearRange = yearRange)
+
+                    // User timelines
+                    topUsers.forEach { user ->
+                        UserTimelineRow(
+                            user = user,
+                            yearRange = yearRange,
                             isTopPerformer = user == topUsers.first()
                         )
                     }
                 }
+
+                // Winner announcement
+                val winner = topUsers.first()
+                Text(
+                    text = "🏆 ${winner.displayName} leads with ${winner.activeYears.size} active years",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = colorResource(R.color.hard_filled_red)
+                    ),
+                    modifier = Modifier.padding(top = 12.sdp)
+                )
             }
         }
     }
 }
 
 @Composable
-private fun UserYearsDisplay(
-    username: String,
-    activeYears: List<Int>,
-    maxYears: Int,
+private fun YearRangeHeader(yearRange: List<Int>) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 100.sdp, end = 16.sdp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        yearRange.forEach { year ->
+            Text(
+                text = year.toString().takeLast(2), // Show last 2 digits (e.g., "24" for 2024)
+                style = androidx.compose.ui.text.TextStyle(
+                    fontSize = 9.sp,
+                    color = Color.White.copy(alpha = 0.6f)
+                ),
+                modifier = Modifier.width(16.sdp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun UserTimelineRow(
+    user: UserStreakData,
+    yearRange: List<Int>,
     isTopPerformer: Boolean = false
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(90.sdp)
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // Username
+        // User info section
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            modifier = Modifier.width(90.sdp)
         ) {
             if (isTopPerformer) {
                 Text(
                     text = "👑",
                     style = androidx.compose.ui.text.TextStyle(fontSize = 12.sp),
-                    modifier = Modifier.padding(end = 2.sdp)
+                    modifier = Modifier.padding(end = 4.sdp)
                 )
             }
-            Text(
-                text = if (username.length > 8) username.take(6) + ".." else username,
-                style = androidx.compose.ui.text.TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = if (isTopPerformer) FontWeight.Bold else FontWeight.Normal,
-                    color = if (isTopPerformer) colorResource(R.color.hard_filled_red) else Color.White
-                ),
-                maxLines = 1,
-                modifier = Modifier.padding(bottom = 8.sdp)
-            )
+
+            Column {
+                Text(
+                    text = if (user.displayName.length > 10) user.displayName.take(8) + ".." else user.displayName,
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 12.sp,
+                        fontWeight = if (isTopPerformer) FontWeight.Bold else FontWeight.Normal,
+                        color = if (isTopPerformer) colorResource(R.color.hard_filled_red) else Color.White
+                    ),
+                    maxLines = 1
+                )
+                Text(
+                    text = "${user.activeYears.size} years",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 10.sp,
+                        color = colorResource(R.color.hard_filled_red).copy(alpha = 0.8f)
+                    )
+                )
+            }
         }
 
-        // Years count
-        Text(
-            text = "${activeYears.size} years",
-            style = androidx.compose.ui.text.TextStyle(
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(R.color.hard_filled_red)
-            ),
-            modifier = Modifier.padding(bottom = 4.sdp)
-        )
+        Spacer(modifier = Modifier.width(10.sdp))
 
-        // Years display
-        val displayYears = if (activeYears.size > 3) {
-            activeYears.take(2) + listOf(-1)
-        } else {
-            activeYears
-        }
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+        // Timeline section
+        Row(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            displayYears.chunked(2).forEach { yearRow ->
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(2.sdp)
+            yearRange.forEach { year ->
+                Box(
+                    modifier = Modifier
+                        .size(16.sdp)
+                        .background(
+                            color = if (user.activeYears.contains(year)) {
+                                if (isTopPerformer) colorResource(R.color.hard_filled_red)
+                                else colorResource(R.color.hard_filled_red).copy(alpha = 0.7f)
+                            } else {
+                                Color.White.copy(alpha = 0.1f)
+                            },
+                            shape = androidx.compose.foundation.shape.CircleShape
+                        )
+                        .border(
+                            width = if (user.activeYears.contains(year)) 2.sdp else 1.sdp,
+                            color = if (user.activeYears.contains(year)) {
+                                if (isTopPerformer) colorResource(R.color.hard_filled_red)
+                                else colorResource(R.color.hard_filled_red).copy(alpha = 0.8f)
+                            } else {
+                                Color.White.copy(alpha = 0.2f)
+                            },
+                            shape = androidx.compose.foundation.shape.CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
                 ) {
-                    yearRow.forEach { year ->
-                        if (year == -1) {
-                            Text(
-                                text = "...",
-                                style = androidx.compose.ui.text.TextStyle(
-                                    fontSize = 8.sp,
-                                    color = Color.White.copy(alpha = 0.6f)
-                                ),
-                                modifier = Modifier
-                                    .background(
-                                        colorResource(R.color.hard_filled_red).copy(alpha = 0.3f),
-                                        RoundedCornerShape(3.sdp)
-                                    )
-                                    .padding(horizontal = 3.sdp, vertical = 1.sdp)
-                            )
-                        } else {
-                            Text(
-                                text = year.toString(),
-                                style = androidx.compose.ui.text.TextStyle(
-                                    fontSize = 8.sp,
-                                    color = Color.White
-                                ),
-                                modifier = Modifier
-                                    .background(
-                                        colorResource(R.color.hard_filled_red).copy(alpha = 0.6f),
-                                        RoundedCornerShape(3.sdp)
-                                    )
-                                    .padding(horizontal = 3.sdp, vertical = 1.sdp)
-                            )
-                        }
+                    if (user.activeYears.contains(year)) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.sdp)
+                                .background(
+                                    Color.White,
+                                    androidx.compose.foundation.shape.CircleShape
+                                )
+                        )
                     }
                 }
             }
