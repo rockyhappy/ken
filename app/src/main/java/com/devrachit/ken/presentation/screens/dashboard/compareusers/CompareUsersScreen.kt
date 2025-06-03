@@ -2,6 +2,9 @@ package com.devrachit.ken.presentation.screens.dashboard.compareusers
 
 import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import com.devrachit.ken.R
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.DashboardHeaderDetails
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.HeatmapCard
-import com.devrachit.ken.presentation.screens.dashboard.Widgets.QuestionProgressCard
 import com.devrachit.ken.presentation.screens.dashboard.compare.components.createArcBitmap
 import com.devrachit.ken.presentation.screens.dashboard.compareusers.components.ComparisonChart
 import com.devrachit.ken.presentation.screens.dashboard.compareusers.components.ComparisonProgressGraph
@@ -49,16 +51,25 @@ fun CompareUsersScreen(
     username2: String?,
     availableUsers: List<String>
 ) {
+    val scrollState = rememberScrollState()
+    val isCollapsed =
+        scrollState.value > 150 // Collapse when scrolled more than 150dp (reduced from 200dp)
+
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState.isLoading,
         onRefresh = {
-            onInitialize(username1, username2, availableUsers)
+            // Only refresh data, don't reset user selections
+            if (uiState.username1 != null && uiState.username2 != null) {
+                onInitialize(uiState.username1, uiState.username2, availableUsers)
+            }
         }
     )
 
-    // Initialize on first load
-    LaunchedEffect(true) {
-        onInitialize(username1, username2, availableUsers)
+    // Initialize on first load only if no users are selected
+    LaunchedEffect(availableUsers.size) {
+        if (uiState.username1 == null && uiState.username2 == null && availableUsers.isNotEmpty()) {
+            onInitialize(username1, username2, availableUsers)
+        }
     }
 
     BackHandler {
@@ -68,12 +79,14 @@ fun CompareUsersScreen(
     Box(modifier = Modifier
         .fillMaxSize()
         .systemBarsPadding()) {
+
+        // Main scrollable content
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .pullRefresh(pullRefreshState)
                 .background(color = colorResource(R.color.bg_neutral))
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
@@ -83,66 +96,12 @@ fun CompareUsersScreen(
                 drawerProgress = 0f
             )
 
-            // User Selection Section
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.sdp, start = 18.sdp, end = 18.sdp),
-                colors = CardDefaults.cardColors(
-                    containerColor = colorResource(id = R.color.card_elevated)
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.sdp)
-                ) {
-                    Text(
-                        text = "Select Users to Compare",
-                        style = androidx.compose.ui.text.TextStyle(
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        ),
-                        modifier = Modifier.padding(bottom = 16.sdp)
-                    )
-
-                    // Debug info - show number of available users
-                    if (availableUsers.isNotEmpty()) {
-                        Text(
-                            text = "${availableUsers.size} users available",
-                            style = androidx.compose.ui.text.TextStyle(
-                                fontSize = 12.sp,
-                                color = Color.White.copy(alpha = 0.7f)
-                            ),
-                            modifier = Modifier.padding(bottom = 8.sdp)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.sdp)
-                    ) {
-                        UserDropdownSelector(
-                            modifier = Modifier.weight(1f),
-                            label = "User 1",
-                            selectedUser = uiState.username1,
-                            availableUsers = availableUsers,
-                            excludeUser = uiState.username2,
-                            onUserSelected = onUser1Selected,
-                            userData = uiState.user1Data
-                        )
-
-                        UserDropdownSelector(
-                            modifier = Modifier.weight(1f),
-                            label = "User 2",
-                            selectedUser = uiState.username2,
-                            availableUsers = availableUsers,
-                            excludeUser = uiState.username1,
-                            onUserSelected = onUser2Selected,
-                            userData = uiState.user2Data
-                        )
-                    }
-                }
-            }
+            // Add padding to account for floating card
+            val topPadding by animateDpAsState(
+                targetValue = if (isCollapsed) 80.sdp else 160.sdp,
+                animationSpec = tween(durationMillis = 300)
+            )
+            Spacer(modifier = Modifier.height(160.sdp))
 
             // Comparison Content
             if (uiState.user1Data != null && uiState.user2Data != null) {
@@ -406,6 +365,17 @@ fun CompareUsersScreen(
             }
         }
 
+        // Floating User Selection Card
+        FloatingUserSelectionCard(
+            modifier = Modifier
+                .align(Alignment.TopCenter),
+            isCollapsed = isCollapsed,
+            uiState = uiState,
+            availableUsers = availableUsers,
+            onUser1Selected = onUser1Selected,
+            onUser2Selected = onUser2Selected
+        )
+
         PullRefreshIndicator(
             refreshing = uiState.isLoading,
             state = pullRefreshState,
@@ -413,6 +383,101 @@ fun CompareUsersScreen(
             backgroundColor = colorResource(id = R.color.card_elevated),
             contentColor = colorResource(id = R.color.white)
         )
+    }
+}
+
+@Composable
+private fun FloatingUserSelectionCard(
+    modifier: Modifier = Modifier,
+    isCollapsed: Boolean,
+    uiState: CompareUsersUiState,
+    availableUsers: List<String>,
+    onUser1Selected: (String) -> Unit,
+    onUser2Selected: (String) -> Unit
+) {
+    val cardTopPadding by animateDpAsState(
+        targetValue = if (!isCollapsed) 80.sdp else 16.sdp,
+        animationSpec = tween(durationMillis = 300)
+    )
+
+    androidx.compose.animation.AnimatedVisibility(
+        visible = true,
+        modifier = modifier.padding(top = cardTopPadding),
+        enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.slideInVertically(),
+        exit = androidx.compose.animation.fadeOut() + androidx.compose.animation.slideOutVertically()
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.sdp)
+                .animateContentSize(
+                    animationSpec = tween(
+                        durationMillis = 700,
+                        easing = androidx.compose.animation.core.FastOutSlowInEasing,
+                        delayMillis = 100
+                    )
+                ),
+            colors = CardDefaults.cardColors(
+                containerColor = colorResource(id = R.color.card_elevated)
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 8.sdp
+            ),
+            shape = RoundedCornerShape(16.sdp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.sdp)
+            ) {
+                if (!isCollapsed) {
+                    Text(
+                        text = "Select Users to Compare",
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        ),
+                        modifier = Modifier.padding(bottom = 16.sdp)
+                    )
+
+                    // Debug info - show number of available users
+                    if (availableUsers.isNotEmpty()) {
+                        Text(
+                            text = "${availableUsers.size} users available",
+                            style = androidx.compose.ui.text.TextStyle(
+                                fontSize = 12.sp,
+                                color = Color.White.copy(alpha = 0.7f)
+                            ),
+                            modifier = Modifier.padding(bottom = 8.sdp)
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.sdp)
+                ) {
+                    UserDropdownSelector(
+                        modifier = Modifier.weight(1f),
+                        label = if (isCollapsed) "" else "User 1",
+                        selectedUser = uiState.username1,
+                        availableUsers = availableUsers,
+                        excludeUser = uiState.username2,
+                        onUserSelected = onUser1Selected,
+                        userData = uiState.user1Data
+                    )
+
+                    UserDropdownSelector(
+                        modifier = Modifier.weight(1f),
+                        label = if (isCollapsed) "" else "User 2",
+                        selectedUser = uiState.username2,
+                        availableUsers = availableUsers,
+                        excludeUser = uiState.username1,
+                        onUserSelected = onUser2Selected,
+                        userData = uiState.user2Data
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -429,10 +494,10 @@ private fun ComparisonSection(
 //        )
 //    ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .padding(16.sdp)
             .border(
-                border = BorderStroke(
+                BorderStroke(
                     width = 2.sdp,
                     color = colorResource(R.color.card_elevated)
                 ),
