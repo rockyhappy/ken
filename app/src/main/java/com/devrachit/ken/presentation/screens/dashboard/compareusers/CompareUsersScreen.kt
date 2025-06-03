@@ -52,8 +52,9 @@ fun CompareUsersScreen(
     availableUsers: List<String>
 ) {
     val scrollState = rememberScrollState()
-    val isCollapsed =
-        scrollState.value > 150 // Collapse when scrolled more than 150dp (reduced from 200dp)
+    val isCollapsed = remember(scrollState.value) {
+        scrollState.value > 150
+    }
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState.isLoading,
@@ -76,9 +77,11 @@ fun CompareUsersScreen(
         onBackPress()
     }
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .systemBarsPadding()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
+    ) {
 
         // Main scrollable content
         Column(
@@ -97,10 +100,6 @@ fun CompareUsersScreen(
             )
 
             // Add padding to account for floating card
-            val topPadding by animateDpAsState(
-                targetValue = if (isCollapsed) 80.sdp else 160.sdp,
-                animationSpec = tween(durationMillis = 300)
-            )
             Spacer(modifier = Modifier.height(160.sdp))
 
             // Comparison Content
@@ -114,7 +113,7 @@ fun CompareUsersScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        val arcBitmap = createArcBitmap(
+                        val arcBitmap1 = createArcBitmap(
                             solved = uiState.user1Data.questionProgress.solved,
                             total = uiState.user1Data.questionProgress.total,
                             easyTotalCount = uiState.user1Data.questionProgress.easyTotalCount,
@@ -125,12 +124,13 @@ fun CompareUsersScreen(
                             hardSolvedCount = uiState.user1Data.questionProgress.hardSolvedCount
                         )
                         Image(
-                            bitmap = arcBitmap.asImageBitmap(),
+                            bitmap = arcBitmap1.asImageBitmap(),
                             contentDescription = "Progress Arc",
                             modifier = Modifier
                                 .padding(top = 20.sdp)
                                 .size(140.sdp)
                         )
+
                         val arcBitmap2 = createArcBitmap(
                             solved = uiState.user2Data.questionProgress.solved,
                             total = uiState.user2Data.questionProgress.total,
@@ -148,14 +148,14 @@ fun CompareUsersScreen(
                                 .padding(top = 20.sdp)
                                 .size(140.sdp)
                         )
-
                     }
                 }
 
                 // Progress Graphs Comparison
                 ComparisonSection(
                     title = "Detailed Progress Comparison",
-                    modifier = Modifier.padding(top = 20.sdp, start = 18.sdp, end = 18.sdp)
+                    modifier = Modifier
+                        .padding(top = 20.sdp, start = 18.sdp, end = 18.sdp)
                 ) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(16.sdp)
@@ -397,85 +397,78 @@ private fun FloatingUserSelectionCard(
 ) {
     val cardTopPadding by animateDpAsState(
         targetValue = if (!isCollapsed) 80.sdp else 16.sdp,
-        animationSpec = tween(durationMillis = 300)
+        animationSpec = tween(durationMillis = 200)
     )
 
-    androidx.compose.animation.AnimatedVisibility(
-        visible = true,
-        modifier = modifier.padding(top = cardTopPadding),
-        enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.slideInVertically(),
-        exit = androidx.compose.animation.fadeOut() + androidx.compose.animation.slideOutVertically()
+    Card(
+        modifier = modifier
+            .padding(top = cardTopPadding)
+            .fillMaxWidth()
+            .padding(horizontal = 18.sdp)
+            .animateContentSize(
+                animationSpec = tween(
+                    durationMillis = 400,
+                    easing = androidx.compose.animation.core.FastOutSlowInEasing
+                )
+            ),
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(id = R.color.card_elevated)
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.sdp
+        ),
+        shape = RoundedCornerShape(16.sdp)
     ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 18.sdp)
-                .animateContentSize(
-                    animationSpec = tween(
-                        durationMillis = 700,
-                        easing = androidx.compose.animation.core.FastOutSlowInEasing,
-                        delayMillis = 100
-                    )
-                ),
-            colors = CardDefaults.cardColors(
-                containerColor = colorResource(id = R.color.card_elevated)
-            ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 8.sdp
-            ),
-            shape = RoundedCornerShape(16.sdp)
+        Column(
+            modifier = Modifier.padding(16.sdp)
         ) {
-            Column(
-                modifier = Modifier.padding(16.sdp)
-            ) {
-                if (!isCollapsed) {
+            if (!isCollapsed) {
+                Text(
+                    text = "Select Users to Compare",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    ),
+                    modifier = Modifier.padding(bottom = 16.sdp)
+                )
+
+                // Debug info - show number of available users
+                if (availableUsers.isNotEmpty()) {
                     Text(
-                        text = "Select Users to Compare",
+                        text = "${availableUsers.size} users available",
                         style = androidx.compose.ui.text.TextStyle(
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            fontSize = 12.sp,
+                            color = Color.White.copy(alpha = 0.7f)
                         ),
-                        modifier = Modifier.padding(bottom = 16.sdp)
-                    )
-
-                    // Debug info - show number of available users
-                    if (availableUsers.isNotEmpty()) {
-                        Text(
-                            text = "${availableUsers.size} users available",
-                            style = androidx.compose.ui.text.TextStyle(
-                                fontSize = 12.sp,
-                                color = Color.White.copy(alpha = 0.7f)
-                            ),
-                            modifier = Modifier.padding(bottom = 8.sdp)
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.sdp)
-                ) {
-                    UserDropdownSelector(
-                        modifier = Modifier.weight(1f),
-                        label = if (isCollapsed) "" else "User 1",
-                        selectedUser = uiState.username1,
-                        availableUsers = availableUsers,
-                        excludeUser = uiState.username2,
-                        onUserSelected = onUser1Selected,
-                        userData = uiState.user1Data
-                    )
-
-                    UserDropdownSelector(
-                        modifier = Modifier.weight(1f),
-                        label = if (isCollapsed) "" else "User 2",
-                        selectedUser = uiState.username2,
-                        availableUsers = availableUsers,
-                        excludeUser = uiState.username1,
-                        onUserSelected = onUser2Selected,
-                        userData = uiState.user2Data
+                        modifier = Modifier.padding(bottom = 8.sdp)
                     )
                 }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.sdp)
+            ) {
+                UserDropdownSelector(
+                    modifier = Modifier.weight(1f),
+                    label = if (isCollapsed) "" else "User 1",
+                    selectedUser = uiState.username1,
+                    availableUsers = availableUsers,
+                    excludeUser = uiState.username2,
+                    onUserSelected = onUser1Selected,
+                    userData = uiState.user1Data
+                )
+
+                UserDropdownSelector(
+                    modifier = Modifier.weight(1f),
+                    label = if (isCollapsed) "" else "User 2",
+                    selectedUser = uiState.username2,
+                    availableUsers = availableUsers,
+                    excludeUser = uiState.username1,
+                    onUserSelected = onUser2Selected,
+                    userData = uiState.user2Data
+                )
             }
         }
     }
@@ -487,15 +480,10 @@ private fun ComparisonSection(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
-//    Card(
-//        modifier = modifier.fillMaxWidth(),
-//        colors = CardDefaults.cardColors(
-//            containerColor = colorResource(id = R.color.card_elevated)
-//        )
-//    ) {
+
     Column(
         modifier = modifier
-            .padding(16.sdp)
+            .padding(vertical = 8.sdp)
             .border(
                 BorderStroke(
                     width = 2.sdp,
@@ -511,11 +499,10 @@ private fun ComparisonSection(
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             ),
-            modifier = Modifier.padding(top=26.sdp,start=24.sdp,bottom = 16.sdp)
+            modifier = Modifier.padding(top = 26.sdp, start = 24.sdp, bottom = 16.sdp)
         )
         content()
     }
-//    }
 }
 
 @Composable

@@ -30,14 +30,14 @@ fun ComparisonProgressGraph(
     color2: Color,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = colorResource(R.color.bg_neutral)
-        ),
-        border = CardDefaults.outlinedCardBorder(),
-        shape = RoundedCornerShape(12.sdp)
-    ) {
+//    Card(
+//        modifier = modifier.fillMaxWidth(),
+//        colors = CardDefaults.cardColors(
+//            containerColor = colorResource(R.color.bg_neutral)
+//        ),
+//        border = CardDefaults.outlinedCardBorder(),
+//        shape = RoundedCornerShape(12.sdp)
+//    ) {
         Column(
             modifier = Modifier.padding(16.sdp)
         ) {
@@ -46,9 +46,9 @@ fun ComparisonProgressGraph(
                 style = androidx.compose.ui.text.TextStyle(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = Color.White.copy(alpha = 0.8f)
                 ),
-                modifier = Modifier.padding(bottom = 16.sdp)
+                modifier = Modifier.padding(start=8.sdp,bottom = 16.sdp)
             )
 
             // User comparison bars
@@ -99,7 +99,7 @@ fun ComparisonProgressGraph(
                     )
                 )
             }
-        }
+//        }
     }
 }
 

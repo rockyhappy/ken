@@ -1,7 +1,9 @@
 package com.devrachit.ken.presentation.screens.dashboard.compareusers.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -19,8 +21,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.devrachit.ken.R
 import com.devrachit.ken.presentation.screens.dashboard.compareusers.UserComparisonData
+import com.devrachit.ken.presentation.screens.dashboard.home.QuestionProgressUiState
 import com.devrachit.ken.utility.composeUtility.sdp
 
 @Composable
@@ -32,7 +36,9 @@ fun ComparisonChart(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 18.sdp),
     ) {
         // Legend
         Row(
@@ -100,15 +106,17 @@ fun ComparisonChart(
                 totalSolved = user1Data.questionProgress.solved,
                 totalProblems = user1Data.questionProgress.total,
                 color = colorResource(R.color.easy_filled_blue),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.fillMaxWidth(0.5f)
             )
-            
+
             ComparisonSummaryCard(
                 title = user2Name,
                 totalSolved = user2Data.questionProgress.solved,
                 totalProblems = user2Data.questionProgress.total,
                 color = colorResource(R.color.medium_filled_yellow),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             )
         }
     }
@@ -129,7 +137,7 @@ private fun LegendItem(
                 .size(12.sdp)
                 .background(color, RoundedCornerShape(2.sdp))
         )
-        
+
         Text(
             text = label,
             style = androidx.compose.ui.text.TextStyle(
@@ -263,53 +271,129 @@ private fun ComparisonSummaryCard(
     color: Color,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = colorResource(R.color.bg_neutral)
-        ),
-        border = CardDefaults.outlinedCardBorder()
-    ) {
-        Column(
-            modifier = Modifier.padding(12.sdp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = title,
-                style = androidx.compose.ui.text.TextStyle(
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White.copy(alpha = 0.8f)
+    Column(
+        modifier = modifier
+            .padding(top = 12.sdp, start = 12.sdp, end = 12.sdp, bottom = 12.sdp)
+            .border(
+                border = BorderStroke(
+                    width = 1.sdp,
+                    color = colorResource(R.color.card_elevated)
                 ),
-                maxLines = 1
+                shape = RoundedCornerShape(16.sdp)
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+
+    ) {
+        Text(
+            text = title,
+            style = androidx.compose.ui.text.TextStyle(
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.White.copy(alpha = 0.8f)
+            ),
+            maxLines = 1,
+            modifier=Modifier.padding(top=12.sdp,bottom=8.sdp)
+        )
+
+        Text(
+            text = totalSolved.toString(),
+            style = androidx.compose.ui.text.TextStyle(
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = color
             )
-            
-            Text(
-                text = totalSolved.toString(),
-                style = androidx.compose.ui.text.TextStyle(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = color
-                )
+        )
+
+        Text(
+            text = "/ $totalProblems",
+            style = androidx.compose.ui.text.TextStyle(
+                fontSize = 12.sp,
+                color = Color.White.copy(alpha = 0.6f)
             )
-            
-            Text(
-                text = "/ $totalProblems",
-                style = androidx.compose.ui.text.TextStyle(
-                    fontSize = 12.sp,
-                    color = Color.White.copy(alpha = 0.6f)
-                )
-            )
-            
-            val percentage = if (totalProblems > 0) (totalSolved.toFloat() / totalProblems * 100).toInt() else 0
-            Text(
-                text = "$percentage%",
-                style = androidx.compose.ui.text.TextStyle(
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = color
-                )
-            )
-        }
+        )
+
+        val percentage =
+            if (totalProblems > 0) (totalSolved.toFloat() / totalProblems * 100).toInt() else 0
+        Text(
+            text = "$percentage%",
+            style = androidx.compose.ui.text.TextStyle(
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                color = color
+            ),
+            modifier = Modifier.padding(bottom=12.sdp)
+        )
     }
+}
+
+@Preview
+@Composable
+fun ComparisonChartPreview() {
+    // Create mock data for preview
+    val user1Data = UserComparisonData(
+        questionProgress = QuestionProgressUiState(
+            easySolvedCount = 10,
+            easyTotalCount = 20,
+            mediumSolvedCount = 5,
+            mediumTotalCount = 15,
+            hardSolvedCount = 2,
+            hardTotalCount = 5,
+            solved = 17,
+            total = 40
+        )
+    )
+    val user2Data = UserComparisonData(
+        questionProgress = QuestionProgressUiState(
+            easySolvedCount = 8,
+            easyTotalCount = 20,
+            mediumSolvedCount = 7,
+            mediumTotalCount = 15,
+            hardSolvedCount = 3,
+            hardTotalCount = 5,
+            solved = 18,
+            total = 40
+        )
+    )
+
+    ComparisonChart(
+        user1Data = user1Data,
+        user2Data = user2Data,
+        user1Name = "User 1",
+        user2Name = "User 2"
+    )
+}
+
+@Preview
+@Composable
+fun ComparisonSummaryCardPreview() {
+    ComparisonSummaryCard(
+        title = "John Doe",
+        totalSolved = 125,
+        totalProblems = 200,
+        color = Color(0xFF4CAF50)
+    )
+}
+
+@Preview
+@Composable
+fun ComparisonBarChartPreview() {
+    ComparisonBarChart(
+        title = "Easy Problems",
+        user1Value = 15,
+        user1Total = 20,
+        user2Value = 12,
+        user2Total = 20,
+        user1Color = Color(0xFF2196F3),
+        user2Color = Color(0xFFFFC107)
+    )
+}
+
+@Preview
+@Composable
+fun LegendItemPreview() {
+    LegendItem(
+        color = Color(0xFF2196F3),
+        label = "User 1"
+    )
 }
