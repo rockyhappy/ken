@@ -115,7 +115,7 @@ private fun QuestionGraphCard(
                 modifier = Modifier.padding(start = 8.sdp,bottom = 16.sdp)
             )
             
-            if (data.size <= 5) {
+            if (data.size <= 3) {
                 // Use Bar Chart for fewer users
                 BarChartComposable(
                     data = data,
