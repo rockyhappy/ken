@@ -221,15 +221,17 @@ fun CompareUsersScreen(
 //                    title = "Streak & Activity Comparison",
 //                    modifier = Modifier.padding(top = 20.sdp, start = 18.sdp, end = 18.sdp)
 //                ) {
-                    StreakActivityGraph(
-                        user1Name = uiState.username1 ?: "User 1",
-                        user1Calendar = uiState.user1Data?.calendarData,
-                        user2Name = uiState.username2 ?: "User 2",
-                        user2Calendar = uiState.user2Data?.calendarData,
-                        color1 = colorResource(R.color.easy_filled_blue),
-                        color2 = colorResource(R.color.medium_filled_yellow),
-                        modifier = Modifier.padding(horizontal = 18.sdp).fillMaxWidth()
-                    )
+                StreakActivityGraph(
+                    user1Name = uiState.username1 ?: "User 1",
+                    user1Calendar = uiState.user1Data?.calendarData,
+                    user2Name = uiState.username2 ?: "User 2",
+                    user2Calendar = uiState.user2Data?.calendarData,
+                    color1 = colorResource(R.color.easy_filled_blue),
+                    color2 = colorResource(R.color.medium_filled_yellow),
+                    modifier = Modifier
+                        .padding(horizontal = 18.sdp)
+                        .fillMaxWidth()
+                )
 //                }
 
                 // Calendar Comparison (if Android 14+)
@@ -239,11 +241,18 @@ fun CompareUsersScreen(
                         modifier = Modifier.padding(top = 20.sdp, start = 18.sdp, end = 18.sdp)
                     ) {
                         Column(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
 
-                        ) {
-                            // User 1 Heatmap
-                            Column(modifier = Modifier.weight(1f)) {
+                            ) {
+
+                            Column(
+                                modifier = Modifier
+                                    .wrapContentHeight()
+                                    .padding(horizontal = 16.sdp)
+                                    .fillMaxWidth()
+                            ) {
                                 Text(
                                     text = uiState.username1 ?: "User 1",
                                     style = androidx.compose.ui.text.TextStyle(
@@ -287,7 +296,12 @@ fun CompareUsersScreen(
                             }
 
                             // User 2 Heatmap
-                            Column(modifier = Modifier.weight(1f)) {
+                            Column(
+                                modifier = Modifier
+                                    .wrapContentHeight()
+                                    .padding(start = 16.sdp, end = 16.sdp, bottom = 20.sdp)
+                                    .fillMaxWidth()
+                            ) {
                                 Text(
                                     text = uiState.username2 ?: "User 2",
                                     style = androidx.compose.ui.text.TextStyle(
@@ -333,32 +347,7 @@ fun CompareUsersScreen(
                     }
                 }
 
-                // Activity Statistics Comparison
-                ComparisonSection(
-                    title = "Activity Statistics",
-                    modifier = Modifier.padding(top = 20.sdp, start = 18.sdp, end = 18.sdp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.sdp)
-                    ) {
-                        // User 1 Stats
-                        ActivityStatsCard(
-                            modifier = Modifier.weight(1f),
-                            username = uiState.username1 ?: "User 1",
-                            calendarData = uiState.user1Data.calendarData,
-                            color = colorResource(R.color.easy_filled_blue)
-                        )
 
-                        // User 2 Stats
-                        ActivityStatsCard(
-                            modifier = Modifier.weight(1f),
-                            username = uiState.username2 ?: "User 2",
-                            calendarData = uiState.user2Data.calendarData,
-                            color = colorResource(R.color.medium_filled_yellow)
-                        )
-                    }
-                }
 
                 Spacer(modifier = Modifier.height(100.sdp))
             } else if (uiState.isLoading) {

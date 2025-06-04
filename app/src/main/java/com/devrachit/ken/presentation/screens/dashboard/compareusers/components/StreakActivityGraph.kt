@@ -48,7 +48,7 @@ fun StreakActivityGraph(
                         color = colorResource(R.color.card_elevated)
                     ),
                     shape = RoundedCornerShape(36.sdp)
-                ).padding(16.sdp)
+                ).padding(start= 20.sdp, bottom = 20.sdp, end=20.sdp, top=12.sdp)
         ) {
             Text(
                 text = "Streak & Activity Comparison",
