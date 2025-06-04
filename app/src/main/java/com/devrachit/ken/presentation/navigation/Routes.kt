@@ -11,4 +11,9 @@ sealed class Screen(val route: String) {
         fun createRoute(username: String) = "user_details/$username"
         const val routeWithArgs = "user_details/{username}"
     }
+    object CompareUsers : Screen("compare_users/{username1}?username2={username2}") {
+        fun createRoute(username1: String, username2: String? = null) = 
+            "compare_users/$username1" + if (username2 != null) "?username2=$username2" else ""
+        const val routeWithArgs = "compare_users/{username1}?username2={username2}"
+    }
 }

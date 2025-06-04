@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,6 +36,7 @@ import com.devrachit.ken.presentation.screens.dashboard.Widgets.HeatmapCard
 import com.devrachit.ken.presentation.screens.dashboard.compare.components.CompareList
 import com.devrachit.ken.presentation.screens.dashboard.compare.components.CompareSinglePersonWidget
 import com.devrachit.ken.presentation.screens.dashboard.compare.components.QuestionProgressGraphs
+import com.devrachit.ken.presentation.screens.dashboard.compare.components.StreakActivityGraphs
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.EnhancedSearchWidget
 import com.devrachit.ken.ui.theme.TextStyleInter20Lh24Fw700
 import com.devrachit.ken.utility.composeUtility.HomeScreenShimmer
@@ -50,6 +52,7 @@ fun CompareScreen(
     onSearchTextChange: (String) -> Unit = {},
     onSuggestionClick: (String, com.devrachit.ken.domain.models.LeetCodeUserInfo) -> Unit = { _, _ -> },
     onNavigateToUserDetails: (String) -> Unit = {},
+    onNavigateToCompareUsers: (String) -> Unit = {},
     onPlatformSearch: () -> Unit = {},
     onHidePlatformResult: () -> Unit = {},
     onRemoveUser: (String) -> Unit = {},
@@ -95,7 +98,7 @@ fun CompareScreen(
                         onRefreshUser = onRefreshUser,
                         onViewProfile = onNavigateToUserDetails,
                         onCompareWith = { username ->
-                            // TODO: Implement compare with functionality if needed
+                            onNavigateToCompareUsers.invoke(username)
                         }
                     )
                     
@@ -108,9 +111,23 @@ fun CompareScreen(
                             hardData = getHardGraphData()
                         )
                     }
+                    
+                    // Streak Activity Graphs
+                    if (!uiState.isLoading && !uiState.userProfileCalender.isNullOrEmpty()) {
+                        StreakActivityGraphs(
+                            modifier = Modifier.padding(horizontal = 16.sdp, vertical = 16.sdp),
+                            userCalendarData = uiState.userProfileCalender ?: emptyMap(),
+                            userDetails = uiState.friendsDetails ?: emptyMap()
+                        )
+                    }
                 }
 
-                else -> HomeScreenShimmer()
+                else ->
+                {
+                    Spacer(modifier = Modifier.height(26.sdp))
+                    HomeScreenShimmer()
+                }
+
             }
         }
 

@@ -8,28 +8,17 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.devrachit.ken.R
-import com.devrachit.ken.presentation.navigation.Screen
+import com.devrachit.ken.presentation.navigation.MainNavHost
 import com.devrachit.ken.presentation.screens.auth.AuthActivity
-import com.devrachit.ken.presentation.screens.dashboard.userdetails.UserDetailsScreen
-import com.devrachit.ken.presentation.screens.dashboard.userdetails.UserDetailsViewModel
 import com.devrachit.ken.utility.composeUtility.LoadingDialog
 import com.devrachit.ken.utility.constants.Constants.Companion.NAVKEYUSERNAME
 import dagger.hilt.android.AndroidEntryPoint
-import android.util.Log
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -50,41 +39,12 @@ class MainActivity : ComponentActivity() {
             if(uiStates.showDialogLoading) LoadingDialog(true, {},{})
             if(uiStates.navigateToLogin)navigateToNewActivity(this)
 
-            NavHost(navController = navController, startDestination = Screen.Dashboard.route) {
-                composable(route = Screen.Dashboard.route) {
-                    DashboardContent(
-                        logout = viewModel::logout, 
-                        username = username, 
-                        uiState = uiStates,
-                        appNavController = navController
-                    )
-                }
-                composable(
-                    route = Screen.UserDetails.routeWithArgs,
-                    arguments = listOf(navArgument("username") { type = NavType.StringType })
-                ) {
-                    val userDetailsViewModel: UserDetailsViewModel = hiltViewModel()
-                    val uiState = userDetailsViewModel.uiState.collectAsStateWithLifecycle()
-                    var hasInitiallyLoaded = rememberSaveable { mutableStateOf(false) }
-
-                    LaunchedEffect(true) {
-                        if (!hasInitiallyLoaded.value) {
-                            userDetailsViewModel.loadUserDetails()
-                            hasInitiallyLoaded.value = true
-                        }
-                    }
-
-                    UserDetailsScreen(
-                        uiState = uiState.value,
-                        onRefresh = { userDetailsViewModel.loadUserDetails() },
-                        onBackPress = { navController.popBackStack() },
-                        onDeleteUser = { username -> 
-                            userDetailsViewModel.deleteUser(username)
-                            navController.popBackStack()
-                        }
-                    )
-                }
-            }
+            MainNavHost(
+                navController = navController,
+                viewModel = viewModel,
+                username = username,
+                uiStates = uiStates
+            )
         }
     }
 

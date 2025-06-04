@@ -235,8 +235,8 @@ fun CompareSinglePersonWidget(
                         },
                         text = { Text("Compare with", color = Color.White) },
                         onClick = {
-                            onCompareWith(username)
                             expanded.value = false
+                            onCompareWith(username)
                         }
                     )
                     Divider(
