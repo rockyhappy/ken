@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:description="@string/simple_text_widget_description"
     android:initialLayout="@layout/simple_text_widget"
     android:minWidth="500dp"
     android:minHeight="50dp"
