@@ -4,8 +4,7 @@
     android:layout_gravity="start"
     android:background="@drawable/widget_background"
     android:orientation="vertical"
-    android:id="@+id/widget_root"
-    android:padding="8dp">
+    android:id="@+id/widget_root">
 <!--    <TextView-->
 <!--        android:id="@+id/username"-->
 <!--        android:layout_width="match_parent"-->
@@ -22,8 +21,7 @@
         android:id="@+id/widget_drawing"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginHorizontal="@dimen/_8sdp"
+        android:paddingHorizontal="6dp"
         android:contentDescription="Progress chart"
         android:elevation="@dimen/_1sdp"
         android:scaleType="fitCenter" />
