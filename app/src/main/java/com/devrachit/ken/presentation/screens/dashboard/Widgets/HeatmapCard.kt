@@ -51,7 +51,7 @@ fun HeatmapCard(
 ) {
 
     val rawActivityData = parseCalendarData(calenderDetails)
-    // Convert the parsed calendar data into a list of DayModel objects
+    
     val dayModels = rawActivityData.map { (timestamp, contributions) ->
         val instant = Instant.ofEpochSecond(timestamp.toLong())
         val localDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
