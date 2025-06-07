@@ -226,7 +226,7 @@ fun GithubStyleHeatmapPreviewRewamp() {
         val localDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             LocalDate.ofInstant(instant, ZoneOffset.UTC)
         } else {
-            TODO("VERSION.SDK_INT < UPSIDE_DOWN_CAKE")
+            instant.atZone(ZoneOffset.UTC).toLocalDate()
         }
 
         DayModel(

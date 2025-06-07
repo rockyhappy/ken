@@ -5,17 +5,17 @@
     android:background="@drawable/widget_background"
     android:orientation="vertical"
     android:id="@+id/widget_root">
-<!--    <TextView-->
-<!--        android:id="@+id/username"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="username"-->
-<!--        android:textAlignment="center"-->
-<!--        android:textColor="@color/white"-->
-<!--        android:textSize="6sp"-->
-<!--        android:textStyle="bold"-->
-<!--        android:maxLines="1"-->
-<!--        />-->
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="username"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:maxLines="1"
+        />
 
     <ImageView
         android:id="@+id/widget_drawing"
