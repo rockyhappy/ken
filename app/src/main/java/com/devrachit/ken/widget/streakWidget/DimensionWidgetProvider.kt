@@ -139,7 +139,8 @@ class DimensionWidgetProvider : AppWidgetProvider() {
                                                     appWidgetId,
                                                     activityData = activityData,
                                                     currentTimestamp = currentTime
-                                                        ?: (System.currentTimeMillis() / 1000.0)
+                                                        ?: (System.currentTimeMillis() / 1000.0),
+                                                    userName = userName
                                                 )
                                             }
 
@@ -245,7 +246,8 @@ class DimensionWidgetProvider : AppWidgetProvider() {
                                                 appWidgetId,
                                                 activityData = activityData,
                                                 currentTimestamp = currentTime
-                                                    ?: (System.currentTimeMillis() / 1000.0)
+                                                    ?: (System.currentTimeMillis() / 1000.0),
+                                                userName=userName
                                             )
                                         }
 
@@ -274,6 +276,7 @@ class DimensionWidgetProvider : AppWidgetProvider() {
             appWidgetId: Int,
             activityData: ActivityData,
             currentTimestamp: Double,
+            userName: String
         ) {
             val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
 
@@ -453,7 +456,7 @@ class DimensionWidgetProvider : AppWidgetProvider() {
                     "Size: ${minWidth}dp × ${minHeight}dp"
                 }
             }
-            views.setTextViewText(R.id.username, dimensionText)
+            views.setTextViewText(R.id.username, userName)
 
             // Adjust text size based on widget size
             val textSize = when {
@@ -481,154 +484,6 @@ class DimensionWidgetProvider : AppWidgetProvider() {
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
 
-        private fun drawBlueSquareBox(
-            canvas: Canvas,
-            canvasWidth: Int,
-            canvasHeight: Int,
-            widgetWidth: Int,
-            widgetHeight: Int
-        ) {
-            // Calculate rectangle dimensions: width = 70% of height
-            val rectangleHeight = minOf(widgetWidth, widgetHeight).toFloat()
-            val rectangleWidth = rectangleHeight * 0.7f
 
-            // Scale the rectangle to fit within the canvas
-            val scaleFactor = minOf(
-                canvasWidth.toFloat() / rectangleWidth,
-                canvasHeight.toFloat() / rectangleHeight
-            )
-            val scaledWidth = rectangleWidth * scaleFactor
-            val scaledHeight = rectangleHeight * scaleFactor
-
-            // Create paint for the rectangles
-            val paint = Paint().apply {
-                this.color = Color.WHITE
-                style = Paint.Style.FILL
-                isAntiAlias = true
-            }
-
-            // Check space availability for multiple rectangles
-            val totalWidthForFourRectangles = scaledWidth * 4
-            val totalWidthForThreeRectangles = scaledWidth * 3
-            val totalWidthForTwoRectangles = scaledWidth * 2
-            val canShowFourRectangles = canvasWidth >= totalWidthForFourRectangles
-            val canShowThreeRectangles = canvasWidth >= totalWidthForThreeRectangles
-            val canShowTwoRectangles = canvasWidth >= totalWidthForTwoRectangles
-
-            when {
-                canShowFourRectangles -> {
-                    // Draw four rectangles side by side
-                    val spacing = (canvasWidth - totalWidthForFourRectangles) / 5f
-                    val topPosition = (canvasHeight - scaledHeight) / 2f
-
-                    // First rectangle
-                    val firstLeft = spacing
-                    val firstRect = RectF(
-                        firstLeft,
-                        topPosition,
-                        firstLeft + scaledWidth,
-                        topPosition + scaledHeight
-                    )
-                    canvas.drawRect(firstRect, paint)
-
-                    // Second rectangle
-                    val secondLeft = firstLeft + scaledWidth + spacing
-                    val secondRect = RectF(
-                        secondLeft,
-                        topPosition,
-                        secondLeft + scaledWidth,
-                        topPosition + scaledHeight
-                    )
-                    canvas.drawRect(secondRect, paint)
-
-                    // Third rectangle
-                    val thirdLeft = secondLeft + scaledWidth + spacing
-                    val thirdRect = RectF(
-                        thirdLeft,
-                        topPosition,
-                        thirdLeft + scaledWidth,
-                        topPosition + scaledHeight
-                    )
-                    canvas.drawRect(thirdRect, paint)
-
-                    // Fourth rectangle
-                    val fourthLeft = thirdLeft + scaledWidth + spacing
-                    val fourthRect = RectF(
-                        fourthLeft,
-                        topPosition,
-                        fourthLeft + scaledWidth,
-                        topPosition + scaledHeight
-                    )
-                    canvas.drawRect(fourthRect, paint)
-                }
-
-                canShowThreeRectangles -> {
-                    // Draw three rectangles side by side
-                    val spacing = (canvasWidth - totalWidthForThreeRectangles) / 4f
-                    val topPosition = (canvasHeight - scaledHeight) / 2f
-
-                    // First rectangle (left)
-                    val firstRectLeft = spacing
-                    val firstRectTop = topPosition
-                    val firstRectRight = firstRectLeft + scaledWidth
-                    val firstRectBottom = firstRectTop + scaledHeight
-                    val firstRect =
-                        RectF(firstRectLeft, firstRectTop, firstRectRight, firstRectBottom)
-                    canvas.drawRect(firstRect, paint)
-
-                    // Second rectangle (middle)
-                    val secondRectLeft = firstRectRight + spacing
-                    val secondRectTop = topPosition
-                    val secondRectRight = secondRectLeft + scaledWidth
-                    val secondRectBottom = secondRectTop + scaledHeight
-                    val secondRect =
-                        RectF(secondRectLeft, secondRectTop, secondRectRight, secondRectBottom)
-                    canvas.drawRect(secondRect, paint)
-
-                    // Third rectangle (right)
-                    val thirdRectLeft = secondRectRight + spacing
-                    val thirdRectTop = topPosition
-                    val thirdRectRight = thirdRectLeft + scaledWidth
-                    val thirdRectBottom = thirdRectTop + scaledHeight
-                    val thirdRect =
-                        RectF(thirdRectLeft, thirdRectTop, thirdRectRight, thirdRectBottom)
-                    canvas.drawRect(thirdRect, paint)
-                }
-
-                canShowTwoRectangles -> {
-                    // Draw two rectangles side by side
-                    val spacing = (canvasWidth - totalWidthForTwoRectangles) / 3f
-                    val topPosition = (canvasHeight - scaledHeight) / 2f
-
-                    // First rectangle (left)
-                    val firstRectLeft = spacing
-                    val firstRectTop = topPosition
-                    val firstRectRight = firstRectLeft + scaledWidth
-                    val firstRectBottom = firstRectTop + scaledHeight
-                    val firstRect =
-                        RectF(firstRectLeft, firstRectTop, firstRectRight, firstRectBottom)
-                    canvas.drawRect(firstRect, paint)
-
-                    // Second rectangle (right)
-                    val secondRectLeft = firstRectRight + spacing
-                    val secondRectTop = topPosition
-                    val secondRectRight = secondRectLeft + scaledWidth
-                    val secondRectBottom = secondRectTop + scaledHeight
-                    val secondRect =
-                        RectF(secondRectLeft, secondRectTop, secondRectRight, secondRectBottom)
-                    canvas.drawRect(secondRect, paint)
-                }
-
-                else -> {
-                    // Draw single rectangle centered
-                    val left = (canvasWidth - scaledWidth) / 2f
-                    val top = (canvasHeight - scaledHeight) / 2f
-                    val right = left + scaledWidth
-                    val bottom = top + scaledHeight
-                    val rect = RectF(left, top, right, bottom)
-                    canvas.drawRect(rect, paint)
-                }
-            }
-        }
     }
 }
