@@ -162,13 +162,14 @@ class DimensionWidgetProvider : AppWidgetProvider() {
 
             // Calculate responsive cell size based on widget height
             val availableHeight = bitmapHeight - 60 * density // Reserve space for text
-            val cellSize = (availableHeight / 8).toFloat() // 7 days + spacing
-            val cellSpacing = cellSize * 0.2f
-            val cornerRadius = cellSize * 0.3f
+            val cellSize = (availableHeight / 9).toFloat() // Reduced from 8 to 9 for smaller cells
+            val cellSpacing = cellSize * 0.15f // Reduced spacing from 0.2f to 0.15f
+            val cornerRadius = cellSize * 0.25f // Slightly reduced corner radius
 
-            // Calculate how many months can fit horizontally
-            val monthWidth = 6 * (cellSize + cellSpacing) // Max 6 columns per month
-            val availableWidth = bitmapWidth - 40 * density // Padding
+            // Calculate how many months can fit horizontally with optimized width
+            val monthWidth =
+                5.5f * (cellSize + cellSpacing) // Reduced from 6 to 5.5 for tighter packing
+            val availableWidth = bitmapWidth - 30 * density // Reduced padding from 40 to 30
             val maxMonths = maxOf(1, (availableWidth / monthWidth).toInt())
 
             val currentDate = run {
@@ -176,29 +177,62 @@ class DimensionWidgetProvider : AppWidgetProvider() {
                 instant.atZone(ZoneOffset.UTC).toLocalDate()
             }
 
-            // Create paint for text
+            // Create paint for text with smaller size for compact layout
             val textPaint = Paint().apply {
                 color = context.getColor(android.R.color.white)
-                textSize = cellSize * 0.8f
+                textSize = cellSize * 0.6f // Reduced from 0.8f to 0.6f for smaller text
                 isAntiAlias = true
                 textAlign = Paint.Align.CENTER
             }
 
-            // Calculate starting position
-            val startX = 20 * density
-            val startY = 40 * density
-            var currentX = startX
+            // Calculate starting position with reduced padding
+            val startX = 15 * density // Reduced from 20 to 15
+            val startY = 35 * density // Reduced from 40 to 35
 
-            // Draw months (current month + previous months that fit)
+            // Calculate actual month width needed based on data
+            var actualMaxWeeks = 0
             for (monthOffset in 0 until maxMonths) {
                 val targetDate = currentDate.minusMonths(monthOffset.toLong())
+                val firstDayOfMonth = LocalDate.of(targetDate.year, targetDate.month, 1)
+                val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
+                val daysInMonth = targetDate.lengthOfMonth()
+                val maxDayToShow = if (monthOffset == 0) currentDate.dayOfMonth else daysInMonth
+                val weeksNeeded = ((firstDayOfWeek + maxDayToShow - 1) / 7) + 1
+                actualMaxWeeks = maxOf(actualMaxWeeks, weeksNeeded)
+            }
+
+            // Recalculate month width based on actual needs and available space
+            val actualMonthWidth = (actualMaxWeeks * (cellSize + cellSpacing)) + cellSpacing
+            val totalWidthNeeded = maxMonths * actualMonthWidth
+
+            // If we have extra space, try to fit more months
+            val revisedMaxMonths = if (totalWidthNeeded < availableWidth) {
+                maxOf(maxMonths, (availableWidth / actualMonthWidth).toInt())
+            } else {
+                maxMonths
+            }
+
+            // Center the entire heatmap if there's remaining space
+            val totalUsedWidth = revisedMaxMonths * actualMonthWidth
+            val remainingSpace = availableWidth - totalUsedWidth
+            val adjustedStartX = startX + (remainingSpace / 2)
+
+            // Draw months (current month first, then previous months)
+            // Reverse order: start with current month (offset 0), then go backwards
+            for (monthOffset in 0 until revisedMaxMonths) {
+                val targetDate = currentDate.minusMonths(monthOffset.toLong())
+
+                // Calculate position from right to left for proper visual order
+                val monthIndex = monthOffset
+                val xPosition =
+                    adjustedStartX + (revisedMaxMonths - 1 - monthIndex) * actualMonthWidth
 
                 // Draw month label
                 val monthText =
                     targetDate.month.getDisplayName(TextStyle.SHORT, Locale.getDefault())
                 canvas.drawText(
                     monthText,
-                    currentX + monthWidth / 2,
+                    xPosition + actualMonthWidth / 2,
                     startY - 10 * density,
                     textPaint
                 )
@@ -231,7 +265,7 @@ class DimensionWidgetProvider : AppWidgetProvider() {
                     val dayOfWeek = (firstDayOfWeek + day - 1) % 7
                     val weekNumber = (firstDayOfWeek + day - 1) / 7
 
-                    val cellX = currentX + weekNumber * (cellSize + cellSpacing)
+                    val cellX = xPosition + weekNumber * (cellSize + cellSpacing)
                     val cellY = startY + dayOfWeek * (cellSize + cellSpacing)
 
                     val rect = RectF(
@@ -249,10 +283,8 @@ class DimensionWidgetProvider : AppWidgetProvider() {
                     canvas.drawRoundRect(rect, cornerRadius, cornerRadius, paint)
                 }
 
-                currentX += monthWidth
-
-                // Break if we've reached the width limit
-                if (currentX + monthWidth > bitmapWidth) break
+                // Break if we've processed all months that can fit
+                if (monthOffset + 1 >= revisedMaxMonths) break
             }
 
             // Set the bitmap to the ImageView
