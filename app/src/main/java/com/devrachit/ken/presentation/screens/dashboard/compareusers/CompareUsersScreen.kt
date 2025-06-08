@@ -234,120 +234,116 @@ fun CompareUsersScreen(
                 )
 //                }
 
-                // Calendar Comparison (if Android 14+)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    ComparisonSection(
-                        title = "Activity Calendar Comparison",
-                        modifier = Modifier.padding(top = 20.sdp, start = 18.sdp, end = 18.sdp)
-                    ) {
+                // Calendar Comparison
+                ComparisonSection(
+                    title = "Activity Calendar Comparison",
+                    modifier = Modifier.padding(top = 20.sdp, start = 18.sdp, end = 18.sdp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+
+                        ) {
+
                         Column(
                             modifier = Modifier
+                                .wrapContentHeight()
+                                .padding(horizontal = 16.sdp)
                                 .fillMaxWidth()
-                                .wrapContentHeight(),
-
-                            ) {
-
-                            Column(
+                        ) {
+                            Text(
+                                text = uiState.username1 ?: "User 1",
+                                style = androidx.compose.ui.text.TextStyle(
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.White
+                                ),
+                                textAlign = TextAlign.Center,
                                 modifier = Modifier
-                                    .wrapContentHeight()
-                                    .padding(horizontal = 16.sdp)
                                     .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = uiState.username1 ?: "User 1",
-                                    style = androidx.compose.ui.text.TextStyle(
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = Color.White
-                                    ),
-                                    textAlign = TextAlign.Center,
+                                    .padding(bottom = 8.sdp)
+                            )
+
+                            uiState.user1Data.calendarData?.let { calendar ->
+                                HeatmapCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    currentTimestamp = System.currentTimeMillis() / 1000.0,
+                                    calenderDetails = calendar.submissionCalendar,
+                                    activeYears = calendar.activeYears,
+                                    streak = calendar.streak,
+                                    activeDays = calendar.totalActiveDays
+                                )
+                            } ?: run {
+                                Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(bottom = 8.sdp)
-                                )
-
-                                uiState.user1Data.calendarData?.let { calendar ->
-                                    HeatmapCard(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        currentTimestamp = System.currentTimeMillis() / 1000.0,
-                                        calenderDetails = calendar.submissionCalendar,
-                                        activeYears = calendar.activeYears,
-                                        streak = calendar.streak,
-                                        activeDays = calendar.totalActiveDays
+                                        .height(200.sdp)
+                                        .background(
+                                            colorResource(R.color.bg_neutral),
+                                            RoundedCornerShape(10.sdp)
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "No data available",
+                                        color = Color.White.copy(alpha = 0.6f),
+                                        fontSize = 12.sp
                                     )
-                                } ?: run {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(200.sdp)
-                                            .background(
-                                                colorResource(R.color.bg_neutral),
-                                                RoundedCornerShape(10.sdp)
-                                            ),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = "No data available",
-                                            color = Color.White.copy(alpha = 0.6f),
-                                            fontSize = 12.sp
-                                        )
-                                    }
                                 }
                             }
+                        }
 
-                            // User 2 Heatmap
-                            Column(
+                        // User 2 Heatmap
+                        Column(
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .padding(start = 16.sdp, end = 16.sdp, bottom = 20.sdp)
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = uiState.username2 ?: "User 2",
+                                style = androidx.compose.ui.text.TextStyle(
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.White
+                                ),
+                                textAlign = TextAlign.Center,
                                 modifier = Modifier
-                                    .wrapContentHeight()
-                                    .padding(start = 16.sdp, end = 16.sdp, bottom = 20.sdp)
                                     .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = uiState.username2 ?: "User 2",
-                                    style = androidx.compose.ui.text.TextStyle(
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = Color.White
-                                    ),
-                                    textAlign = TextAlign.Center,
+                                    .padding(bottom = 8.sdp)
+                            )
+
+                            uiState.user2Data.calendarData?.let { calendar ->
+                                HeatmapCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    currentTimestamp = System.currentTimeMillis() / 1000.0,
+                                    calenderDetails = calendar.submissionCalendar,
+                                    activeYears = calendar.activeYears,
+                                    streak = calendar.streak,
+                                    activeDays = calendar.totalActiveDays
+                                )
+                            } ?: run {
+                                Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(bottom = 8.sdp)
-                                )
-
-                                uiState.user2Data.calendarData?.let { calendar ->
-                                    HeatmapCard(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        currentTimestamp = System.currentTimeMillis() / 1000.0,
-                                        calenderDetails = calendar.submissionCalendar,
-                                        activeYears = calendar.activeYears,
-                                        streak = calendar.streak,
-                                        activeDays = calendar.totalActiveDays
+                                        .height(200.sdp)
+                                        .background(
+                                            colorResource(R.color.bg_neutral),
+                                            RoundedCornerShape(10.sdp)
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "No data available",
+                                        color = Color.White.copy(alpha = 0.6f),
+                                        fontSize = 12.sp
                                     )
-                                } ?: run {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(200.sdp)
-                                            .background(
-                                                colorResource(R.color.bg_neutral),
-                                                RoundedCornerShape(10.sdp)
-                                            ),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = "No data available",
-                                            color = Color.White.copy(alpha = 0.6f),
-                                            fontSize = 12.sp
-                                        )
-                                    }
                                 }
                             }
                         }
                     }
                 }
-
-
 
                 Spacer(modifier = Modifier.height(100.sdp))
             } else if (uiState.isLoading) {

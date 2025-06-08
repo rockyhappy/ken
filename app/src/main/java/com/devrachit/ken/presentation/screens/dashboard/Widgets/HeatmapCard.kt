@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
@@ -37,7 +36,11 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.TextStyle
+import java.util.Calendar
+import java.util.Date
+import java.util.GregorianCalendar
 import java.util.Locale
+import java.util.TimeZone
 
 @Composable
 fun HeatmapCard(
@@ -54,13 +57,14 @@ fun HeatmapCard(
     
     val dayModels = rawActivityData.map { (timestamp, contributions) ->
         val instant = Instant.ofEpochSecond(timestamp.toLong())
-        val localDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            LocalDate.ofInstant(instant, ZoneOffset.UTC)
-        } else {
-            LocalDate.from(
-                instant.atZone(ZoneOffset.UTC)
-            )
-        }
+        val date = Date.from(instant)
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        calendar.time = date
+        val localDate = LocalDate.of(
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH) + 1,
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
 
         DayModel(
             day = localDate.dayOfMonth,
@@ -86,7 +90,7 @@ fun HeatmapCard(
                 ),
                 shape = RoundedCornerShape(36.sdp),
             )
-            .padding( top=30.sdp,end = 10.sdp),
+            .padding(top = 30.sdp, end = 10.sdp),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -119,7 +123,7 @@ fun HeatmapCard(
                                     color = colorResource(R.color.white).copy(alpha = 0.5f)
                                 ), shape = RoundedCornerShape(16.sdp)
                             )
-                            .padding(horizontal=10.sdp, vertical=5.sdp)
+                            .padding(horizontal = 10.sdp, vertical = 5.sdp)
                         ,
                         color = colorResource(R.color.white),
                         style = TextStyleInter10Lh12Fw400()
@@ -130,35 +134,34 @@ fun HeatmapCard(
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-                 modifier = Modifier.padding(bottom =20.sdp).fillMaxWidth()
+                 modifier = Modifier
+                     .padding(bottom = 20.sdp)
+                     .fillMaxWidth()
             )
             {
                 Text(
                     text = "Active Days: $activeDays",
-                    modifier = Modifier.padding(start = 10.sdp).alpha(0.9f),
+                    modifier = Modifier
+                        .padding(start = 10.sdp)
+                        .alpha(0.9f),
                     color = colorResource(R.color.white),
                     style = TextStyleInter10Lh12Fw400()
                 )
                 Text(
                     text = "Streak: $streak",
-                    modifier = Modifier.padding( end=10.sdp).alpha(0.9f),
+                    modifier = Modifier
+                        .padding(end = 10.sdp)
+                        .alpha(0.9f),
                     color = colorResource(R.color.white),
                     style = TextStyleInter10Lh12Fw400()
                 )
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 HeatmapRevamp(
                     activityData = activityData,
                     currentTimestamp = currentTimestamp,
                     modifier = Modifier
                         .fillMaxWidth()
                 )
-            } else {
-                Text(
-                    text = "Activity visualization requires Android 14 or higher",
-                    modifier = Modifier.padding(16.sdp)
-                )
-            }
             Row(
                 modifier = Modifier
                     .padding(start = 20.sdp, bottom =20.sdp)
@@ -171,28 +174,28 @@ fun HeatmapCard(
                 )
                 Box(
                     modifier = Modifier
-                        .padding(start = 4.sdp, end=2.sdp)
+                        .padding(start = 4.sdp, end = 2.sdp)
                         .size(12.sdp)
                         .clip(RoundedCornerShape(4.sdp))
                         .background(colorResource(R.color.heatmap4))
                 )
                 Box(
                     modifier = Modifier
-                        .padding(start = 2.sdp, end=2.sdp)
+                        .padding(start = 2.sdp, end = 2.sdp)
                         .size(12.sdp)
                         .clip(RoundedCornerShape(4.sdp))
                         .background(colorResource(R.color.heatmap3))
                 )
                 Box(
                     modifier = Modifier
-                        .padding(start = 2.sdp, end=2.sdp)
+                        .padding(start = 2.sdp, end = 2.sdp)
                         .size(12.sdp)
                         .clip(RoundedCornerShape(4.sdp))
                         .background(colorResource(R.color.heatmap2))
                 )
                 Box(
                     modifier = Modifier
-                        .padding(start = 2.sdp, end=4.sdp)
+                        .padding(start = 2.sdp, end = 4.sdp)
                         .size(12.sdp)
                         .clip(RoundedCornerShape(4.sdp))
                         .background(colorResource(R.color.heatmap1))
