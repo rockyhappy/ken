@@ -47,7 +47,7 @@ fun LoginScreenPortrait() {
         )
         {
             Image(
-                painterResource(id = R.drawable.logo),
+                painterResource(id = R.drawable.logo2),
                 contentDescription = "Logo",
                 modifier = Modifier
                     .padding(top = 30.sdp, bottom = 20.sdp)

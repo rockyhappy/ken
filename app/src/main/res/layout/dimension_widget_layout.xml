@@ -1,0 +1,30 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="@drawable/widget_background"
+    android:orientation="vertical"
+    android:id="@+id/widget_root">
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="username"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:maxLines="1"
+        />
+
+    <ImageView
+        android:id="@+id/widget_drawing"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="6dp"
+        android:contentDescription="Progress chart"
+        android:elevation="@dimen/_1sdp"
+        android:scaleType="fitCenter" />
+
+
+</LinearLayout>

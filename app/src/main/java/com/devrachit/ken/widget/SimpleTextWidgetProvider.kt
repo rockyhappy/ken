@@ -18,6 +18,8 @@ import com.devrachit.ken.R
 import com.devrachit.ken.data.local.datastore.DataStoreRepository
 import com.devrachit.ken.domain.models.UserQuestionStatusData
 import com.devrachit.ken.domain.models.toQuestionProgressUiState
+import com.devrachit.ken.domain.usecases.getCurrentTime.GetCurrentTime
+import com.devrachit.ken.domain.usecases.getUserProfileCalender.GetUserProfileCalenderUseCase
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
 import com.devrachit.ken.presentation.screens.dashboard.home.QuestionProgressUiState
 import com.devrachit.ken.utility.NetworkUtility.Resource
@@ -39,6 +41,8 @@ import javax.inject.Inject
 @InstallIn(SingletonComponent::class)
 interface WidgetEntryPoint {
     fun getUserQuestionStatusUseCase(): GetUserQuestionStatusUseCase
+    fun getUserProfileCalenderUseCase(): GetUserProfileCalenderUseCase
+    fun getCurrentTime(): GetCurrentTime
 }
 
 

@@ -56,7 +56,9 @@ fun EnhancedSearchWidget(
     val focusRequester = remember { FocusRequester() }
 
     Column(
-        modifier = modifier.fillMaxWidth().padding(start=16.sdp, end=16.sdp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 16.sdp, end = 16.sdp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Search Input Card
@@ -201,17 +203,44 @@ fun EnhancedSearchWidget(
                         ) { index ->
                             val key = localResults.keys.toList()[index]
                             val userInfo = localResults[key]!!
+                            val displayName = userInfo.profile?.realName?.takeIf { it.isNotBlank() }
+                                ?: userInfo.username
+                                ?: "Unknown User"
 
-                            UserResultItem(
-                                userInfo = userInfo,
-                                onClick = { onLocalResultClick(key, userInfo) },
-                                onNavigate = { 
-                                    onNavigateToUserDetails(userInfo.username ?: key)
-                                    onSearchTextChange("")
-                                    onHidePlatformResult()
-                                },
-                                showAddButton = false
-                            )
+                            if (displayName == "Unknown User") {
+                                // Show "no user found" message for unknown users
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.sdp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_cross),
+                                        contentDescription = null,
+                                        tint = Color.Red,
+                                        modifier = Modifier.size(20.sdp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.sdp))
+                                    Text(
+                                        text = "No user found",
+                                        color = Color.White.copy(alpha = 0.8f),
+                                        fontSize = 14.sp
+                                    )
+                                }
+                            } else {
+                                UserResultItem(
+                                    userInfo = userInfo,
+                                    onClick = { onLocalResultClick(key, userInfo) },
+                                    onNavigate = {
+                                        onNavigateToUserDetails(userInfo.username ?: key)
+                                        onSearchTextChange("")
+                                        onHidePlatformResult()
+                                    },
+                                    showAddButton = false,
+                                    isClickable = true
+                                )
+                            }
                         }
                     }
                     
@@ -277,31 +306,72 @@ fun EnhancedSearchWidget(
                             ),
                             modifier = Modifier.padding(bottom = 8.sdp)
                         )
-                        
+
                         when {
                             platformResult != null -> {
-                                UserResultItem(
-                                    userInfo = platformResult,
-                                    onClick = {  },
-                                    onNavigate = { 
-                                        onNavigateToUserDetails(platformResult.username ?: searchText)
-                                        onSearchTextChange("")
-                                        onHidePlatformResult()
-                                    },
-                                    showAddButton = true,
-                                    onAddClick = { 
-                                        onNavigateToUserDetails(platformResult.username ?: searchText)
-                                        onSearchTextChange("")
-                                        onHidePlatformResult()
+                                val displayName =
+                                    platformResult.profile?.realName?.takeIf { it.isNotBlank() }
+                                        ?: platformResult.username
+                                        ?: "Unknown User"
+
+                                if (displayName == "Unknown User") {
+                                    // Show "no user found" message for unknown users
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(
+                                                color = colorResource(id = R.color.card_elevated_twice).copy(
+                                                    alpha = 0.3f
+                                                ),
+                                                shape = RoundedCornerShape(8.sdp)
+                                            )
+                                            .padding(12.sdp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_cross),
+                                            contentDescription = null,
+                                            tint = Color.Red,
+                                            modifier = Modifier.size(20.sdp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.sdp))
+                                        Text(
+                                            text = "No user found",
+                                            color = Color.White.copy(alpha = 0.8f),
+                                            fontSize = 14.sp
+                                        )
                                     }
-                                )
+                                } else {
+                                    UserResultItem(
+                                        userInfo = platformResult,
+                                        onClick = { },
+                                        onNavigate = {
+                                            onNavigateToUserDetails(
+                                                platformResult.username ?: searchText
+                                            )
+                                            onSearchTextChange("")
+                                            onHidePlatformResult()
+                                        },
+                                        showAddButton = true,
+                                        onAddClick = {
+                                            onNavigateToUserDetails(
+                                                platformResult.username ?: searchText
+                                            )
+                                            onSearchTextChange("")
+                                            onHidePlatformResult()
+                                        },
+                                        isClickable = true
+                                    )
+                                }
                             }
                             platformError != null -> {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .background(
-                                            color = colorResource(id = R.color.card_elevated_twice).copy(alpha = 0.3f),
+                                            color = colorResource(id = R.color.card_elevated_twice).copy(
+                                                alpha = 0.3f
+                                            ),
                                             shape = RoundedCornerShape(8.sdp)
                                         )
                                         .padding(12.sdp),
@@ -348,14 +418,21 @@ private fun UserResultItem(
     onClick: () -> Unit,
     onNavigate: () -> Unit,
     showAddButton: Boolean = false,
-    onAddClick: () -> Unit = {}
+    onAddClick: () -> Unit = {},
+    isClickable: Boolean = true
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .combinedClickable(
-                onClick = onNavigate,
-                onLongClick = onNavigate
+            .then(
+                if (isClickable) {
+                    Modifier.combinedClickable(
+                        onClick = onNavigate,
+                        onLongClick = onNavigate
+                    )
+                } else {
+                    Modifier
+                }
             )
             .padding(12.sdp),
         verticalAlignment = Alignment.CenterVertically

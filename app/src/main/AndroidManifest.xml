@@ -73,6 +73,16 @@
                 <action android:name="com.devrachit.ken.ACTION_UPDATE_WIDGET" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".widget.streakWidget.DimensionWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/dimension_widget_info" />
+        </receiver>
     </application>
 
 </manifest>
