@@ -9,6 +9,8 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.util.Log
 import com.devrachit.ken.widget.SegmentedProgressLarge.SegmentedProgressWidgetLargeProvider
+import com.devrachit.ken.widget.SegmentedProgressSmall.SegmentedProgressWidgetSmallProvider
+import com.devrachit.ken.widget.streakWidget.DimensionWidgetProvider
 
 class WidgetUpdateReceiver : BroadcastReceiver() {
     
@@ -78,13 +80,39 @@ class WidgetUpdateReceiver : BroadcastReceiver() {
             context.sendBroadcast(simpleTextIntent)
             
             // Update the SegmentedProgressWidgetLarge
-            val segmentedProgressIntent = Intent(context, SegmentedProgressWidgetLargeProvider::class.java).apply {
+            val segmentedProgressLargeIntent =
+                Intent(context, SegmentedProgressWidgetLargeProvider::class.java).apply {
                 action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                 val ids = AppWidgetManager.getInstance(context)
                     .getAppWidgetIds(ComponentName(context, SegmentedProgressWidgetLargeProvider::class.java))
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
             }
-            context.sendBroadcast(segmentedProgressIntent)
+            context.sendBroadcast(segmentedProgressLargeIntent)
+
+            // Update the SegmentedProgressWidgetSmall
+            val segmentedProgressSmallIntent =
+                Intent(context, SegmentedProgressWidgetSmallProvider::class.java).apply {
+                    action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                    val ids = AppWidgetManager.getInstance(context)
+                        .getAppWidgetIds(
+                            ComponentName(
+                                context,
+                                SegmentedProgressWidgetSmallProvider::class.java
+                            )
+                        )
+                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+                }
+            context.sendBroadcast(segmentedProgressSmallIntent)
+
+            // Update the DimensionWidget
+            val dimensionWidgetIntent = Intent(context, DimensionWidgetProvider::class.java).apply {
+                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                val ids = AppWidgetManager.getInstance(context)
+                    .getAppWidgetIds(ComponentName(context, DimensionWidgetProvider::class.java))
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+            }
+            context.sendBroadcast(dimensionWidgetIntent)
         }
+        
     }
 }
