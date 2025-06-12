@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
@@ -69,6 +68,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import coil.compose.AsyncImage
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.HeatmapRevamp2
+import androidx.compose.foundation.shape.RoundedCornerShape
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -201,10 +201,10 @@ fun CompareSinglePersonWidget(
                             shape = RoundedCornerShape(12.sdp),
                             border = BorderStroke(
                                 width = 2.sdp,
-                                color = colorResource(R.color.white).copy(alpha=0.3f)
+                                color = colorResource(R.color.white).copy(alpha = 0.3f)
                             ),
                         )
-                        .padding(horizontal =12.sdp, vertical = 8.sdp)
+                        .padding(horizontal = 12.sdp, vertical = 8.sdp)
                 ) {
                     DropdownMenuItem(
                         leadingIcon = {
@@ -344,28 +344,21 @@ fun CompareSinglePersonWidget(
             }
 
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            HeatmapRevamp2(
-                activityData = activityData,
-                currentTimestamp = currentTimestamp,
-                modifier = Modifier
-                    .padding(top = 16.sdp, bottom = 16.sdp)
-                    .fillMaxWidth()
-                    .border(
-                        border = BorderStroke(
-                            width = 1.sdp,
-                            color = colorResource(R.color.card_elevated)
-                        ),
-                        shape = RoundedCornerShape(26.sdp),
-                    )
-                    .padding(top = 16.sdp, end = 16.sdp)
-            )
-        } else {
-            Text(
-                text = "Activity visualization requires Android 14 or higher",
-                modifier = Modifier.padding(16.sdp)
-            )
-        }
+        HeatmapRevamp2(
+            activityData = activityData,
+            currentTimestamp = currentTimestamp,
+            modifier = Modifier
+                .padding(top = 16.sdp, bottom = 16.sdp)
+                .fillMaxWidth()
+                .border(
+                    border = BorderStroke(
+                        width = 1.sdp,
+                        color = colorResource(R.color.card_elevated)
+                    ),
+                    shape = RoundedCornerShape(26.sdp),
+                )
+                .padding(top = 16.sdp, end = 16.sdp)
+        )
     }
 }
 

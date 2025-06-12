@@ -34,7 +34,6 @@ import com.devrachit.ken.utility.composeUtility.sdp
 /**
  * A composable that displays a GitHub-style heatmap showing activity over the last 4 months
  */
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun HeatmapRevamp(
     activityData: ActivityData,
@@ -52,7 +51,11 @@ fun HeatmapRevamp(
     val cornerRadius = 4.sdp
     val currentDate = remember(currentTimestamp) {
         val instant = Instant.ofEpochSecond(currentTimestamp.toLong())
-        LocalDate.ofInstant(instant, ZoneOffset.UTC)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            LocalDate.ofInstant(instant, ZoneOffset.UTC)
+        } else {
+            instant.atZone(ZoneOffset.UTC).toLocalDate()
+        }
     }
 
 
@@ -80,7 +83,7 @@ fun HeatmapRevamp(
                     )
                 }
             })
-            .padding(start=50.sdp, end=50.sdp)
+            .padding(start = 50.sdp, end = 50.sdp)
         ,
         horizontalArrangement = Arrangement.spacedBy(40.sdp),
     ) {
@@ -226,7 +229,7 @@ fun GithubStyleHeatmapPreviewRewamp() {
         val localDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             LocalDate.ofInstant(instant, ZoneOffset.UTC)
         } else {
-            TODO("VERSION.SDK_INT < UPSIDE_DOWN_CAKE")
+            instant.atZone(ZoneOffset.UTC).toLocalDate()
         }
 
         DayModel(
