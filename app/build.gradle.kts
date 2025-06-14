@@ -1,9 +1,12 @@
+import org.gradle.kotlin.dsl.debug
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
+    id("com.google.gms.google-services")
 //    alias(libs.plugins.room)
 }
 
@@ -21,7 +24,31 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("devRelease") {
+            storeFile = file("../keystore-dev.jks")
+            storePassword = "12345678"
+            keyAlias = "key0"
+            keyPassword = "12345678"
+        }
+        create("stagingRelease") {
+            storeFile = file("../keystore-staging.jks")
+            storePassword = "12345678"
+            keyAlias = "key0"
+            keyPassword = "12345678"
+        }
+        create("prodRelease") {
+            storeFile = file("../keystore.jks")
+            storePassword = "12345678"
+            keyAlias = "key0"
+            keyPassword = "12345678"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = null
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -35,17 +62,19 @@ android {
     productFlavors {
         create("dev") {
             dimension = "version"
-
-
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+            signingConfig = signingConfigs.getByName("devRelease")
         }
         create("staging") {
             dimension = "version"
             applicationIdSuffix = ".staging"
             versionNameSuffix = "-staging"
-
+            signingConfig = signingConfigs.getByName("stagingRelease")
         }
         create("prod") {
             dimension = "version"
+            signingConfig = signingConfigs.getByName("prodRelease")
         }
     }
 
@@ -68,6 +97,7 @@ android {
 //        schemaDirectory("${projectDir.absolutePath.replace("\\", "/").replace(" ", "\\ ")}/schemas")
 //    }
 }
+
 
 dependencies {
 
@@ -158,7 +188,9 @@ dependencies {
 //    implementation("androidx.compose.material3:material3:1.2.0")
     debugImplementation("com.github.chuckerteam.chucker:library:4.0.0") // For Debug  
     releaseImplementation("com.github.chuckerteam.chucker:library-no-op:4.0.0") // No-op in release
-    
+
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+    implementation("com.google.firebase:firebase-analytics")
     // MPAndroidChart for graphs
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
