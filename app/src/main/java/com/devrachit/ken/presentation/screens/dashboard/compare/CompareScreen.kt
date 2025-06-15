@@ -41,6 +41,10 @@ import com.devrachit.ken.presentation.screens.dashboard.Widgets.EnhancedSearchWi
 import com.devrachit.ken.ui.theme.TextStyleInter20Lh24Fw700
 import com.devrachit.ken.utility.composeUtility.HomeScreenShimmer
 import com.devrachit.ken.utility.composeUtility.sdp
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -62,15 +66,23 @@ fun CompareScreen(
     getHardGraphData: () -> List<com.devrachit.ken.presentation.screens.dashboard.compare.QuestionGraphData> = { emptyList() }
 ) {
     val (hasInitiallyLoaded, setHasInitiallyLoaded) = remember { mutableStateOf(false) }
+    val firebaseAnalytics = Firebase.analytics
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState.isLoading,
         onRefresh = {
+            firebaseAnalytics.logEvent("compare_screen_refresh") {
+                param("users_count", uiState.friendsDetails?.size?.toLong() ?: 0L)
+            }
             onFirstLoad.invoke()
         }
     )
 
     LaunchedEffect(true) {
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "compare_screen")
+            param(FirebaseAnalytics.Param.SCREEN_CLASS, "CompareScreen")
+        }
         onFirstLoad.invoke()
         if (!hasInitiallyLoaded) {
             setHasInitiallyLoaded(true)
@@ -94,10 +106,31 @@ fun CompareScreen(
                     CompareList(
                         modifier = Modifier.padding(top = 8.sdp),
                         uiState = uiState,
-                        onRemoveUser = onRemoveUser,
-                        onRefreshUser = onRefreshUser,
-                        onViewProfile = onNavigateToUserDetails,
+                        onRemoveUser = { username ->
+                            firebaseAnalytics.logEvent("compare_user_removed") {
+                                param("username", username)
+                                param("remaining_users", (uiState.friendsDetails?.size ?: 1) - 1L)
+                            }
+                            onRemoveUser(username)
+                        },
+                        onRefreshUser = { username ->
+                            firebaseAnalytics.logEvent("compare_user_refreshed") {
+                                param("username", username)
+                            }
+                            onRefreshUser(username)
+                        },
+                        onViewProfile = { username ->
+                            firebaseAnalytics.logEvent("compare_view_profile") {
+                                param("username", username)
+                                param("source", "compare_list")
+                            }
+                            onNavigateToUserDetails(username)
+                        },
                         onCompareWith = { username ->
+                            firebaseAnalytics.logEvent("compare_navigate_to_compare_users") {
+                                param("username", username)
+                                param("source", "compare_list")
+                            }
                             onNavigateToCompareUsers.invoke(username)
                         }
                     )
@@ -144,18 +177,36 @@ fun CompareScreen(
             isPlatformSearching = uiState.isPlatformSearching,
             showPlatformResult = uiState.showPlatformResult,
             onSearchTextChange = { newText ->
+                if (newText.isNotEmpty()) {
+                    firebaseAnalytics.logEvent("compare_search_query") {
+                        param("query_length", newText.length.toLong())
+                        param("has_results", (uiState.searchResults?.isNotEmpty() == true).toString())
+                    }
+                }
                 onSearchTextChange.invoke(newText)
             },
             onLocalResultClick = { username, userInfo ->
+                firebaseAnalytics.logEvent("compare_user_selected") {
+                    param("username", username)
+                    param("source", "local_search")
+                }
                 onSuggestionClick.invoke(username, userInfo)
             },
             onPlatformSearch = {
+                firebaseAnalytics.logEvent("compare_platform_search") {
+                    param("query", uiState.searchQuery)
+                }
                 onPlatformSearch.invoke()
             },
             onNavigateToUserDetails = { username ->
+                firebaseAnalytics.logEvent("compare_view_profile") {
+                    param("username", username)
+                    param("source", "search_widget")
+                }
                 onNavigateToUserDetails.invoke(username)
             },
             onHidePlatformResult = {
+                firebaseAnalytics.logEvent("compare_hide_platform_result") {}
                 onHidePlatformResult.invoke()
             }
         )

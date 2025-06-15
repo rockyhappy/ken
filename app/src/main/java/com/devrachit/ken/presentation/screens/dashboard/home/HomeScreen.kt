@@ -38,6 +38,10 @@ import androidx.compose.ui.graphics.Color
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.BadgesWidget
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.ContestHistogram
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -46,20 +50,68 @@ fun HomeScreen(
     onFirstLoad: () -> Unit = {},
 ) {
     val (hasInitiallyLoaded, setHasInitiallyLoaded) = rememberSaveable { mutableStateOf(false) }
+    val firebaseAnalytics = Firebase.analytics
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState.isLoading,
         onRefresh = {
+            firebaseAnalytics.logEvent("home_screen_refresh") {
+                param("has_question_progress", (uiState.questionProgress != null).toString())
+                param("has_calendar_data", (uiState.userProfileCalender != null).toString())
+                param("has_contest_data", (uiState.contestRatingHistogramResponse != null).toString())
+                param("has_badges", (uiState.userBadgesResponse?.data?.matchedUser?.badges?.isNotEmpty() == true).toString())
+            }
             onFirstLoad.invoke()
         }
     )
 
     LaunchedEffect(true) {
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "home_screen")
+            param(FirebaseAnalytics.Param.SCREEN_CLASS, "HomeScreen")
+        }
+        
         if (!hasInitiallyLoaded) {
+            firebaseAnalytics.logEvent("home_screen_first_load") {
+                param("timestamp", System.currentTimeMillis())
+            }
             onFirstLoad.invoke()
             setHasInitiallyLoaded(true)
         }
     }
+
+    // Track when data becomes available
+    LaunchedEffect(uiState.questionProgress) {
+        if (uiState.questionProgress != null) {
+            firebaseAnalytics.logEvent("home_question_progress_loaded") {
+                param("total_solved", uiState.questionProgress.solved.toLong())
+                param("easy_solved", uiState.questionProgress.easySolvedCount.toLong())
+                param("medium_solved", uiState.questionProgress.mediumSolvedCount.toLong())
+                param("hard_solved", uiState.questionProgress.hardSolvedCount.toLong())
+            }
+        }
+    }
+
+    LaunchedEffect(uiState.userProfileCalender) {
+        if (uiState.userProfileCalender != null) {
+            firebaseAnalytics.logEvent("home_calendar_data_loaded") {
+                param("streak", uiState.userProfileCalender.streak.toLong())
+                param("active_days", uiState.userProfileCalender.totalActiveDays.toLong())
+                param("active_years_count", uiState.userProfileCalender.activeYears.size.toLong())
+            }
+        }
+    }
+
+    LaunchedEffect(uiState.userBadgesResponse) {
+        if (uiState.userBadgesResponse != null) {
+            val badgeCount = uiState.userBadgesResponse.data?.matchedUser?.badges?.size ?: 0
+            firebaseAnalytics.logEvent("home_badges_loaded") {
+                param("badge_count", badgeCount.toLong())
+                param("has_badges", (badgeCount > 0).toString())
+            }
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
 
         Column(
