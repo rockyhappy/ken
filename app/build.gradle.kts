@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 //    alias(libs.plugins.room)
 }
 
@@ -55,6 +56,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            firebaseCrashlytics {
+                mappingFileUploadEnabled =true
+            }
         }
     }
 
@@ -187,6 +191,7 @@ dependencies {
     releaseImplementation("com.github.chuckerteam.chucker:library-no-op:4.0.0") // No-op in release
 
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+    implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-config")
     implementation ("com.google.android.play:app-update:2.1.0")

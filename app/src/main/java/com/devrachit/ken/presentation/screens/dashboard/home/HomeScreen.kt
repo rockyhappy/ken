@@ -37,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.BadgesWidget
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.ContestHistogram
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
