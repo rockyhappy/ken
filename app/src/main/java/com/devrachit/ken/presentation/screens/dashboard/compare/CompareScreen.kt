@@ -71,8 +71,8 @@ fun CompareScreen(
     )
 
     LaunchedEffect(true) {
+        onFirstLoad.invoke()
         if (!hasInitiallyLoaded) {
-            onFirstLoad.invoke()
             setHasInitiallyLoaded(true)
         }
     }

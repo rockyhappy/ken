@@ -26,9 +26,28 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:779440831284:android:bb883032537dd6dbe18361",
+        "mobilesdk_app_id": "1:779440831284:android:49bbb0bab4025243e18361",
         "android_client_info": {
-          "package_name": "com.devrachit.ken.debug"
+          "package_name": "com.devrachit.ken.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_dtfGHH6_9TxRX-uOr_Nkif-owVrfCl0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:779440831284:android:d1178f36919328f5e18361",
+        "android_client_info": {
+          "package_name": "com.devrachit.ken.staging"
         }
       },
       "oauth_client": [],

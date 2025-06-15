@@ -18,8 +18,8 @@ android {
         applicationId = "com.devrachit.ken"
         minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.0.4"
+        versionCode = 6
+        versionName = "1.0.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -63,7 +63,7 @@ android {
         create("dev") {
             dimension = "version"
             applicationIdSuffix = ".dev"
-            versionNameSuffix = "-dev"
+//            versionNameSuffix = "-dev"
             signingConfig = signingConfigs.getByName("devRelease")
         }
         create("staging") {
@@ -183,14 +183,13 @@ dependencies {
     implementation(libs.datastore)
     implementation(libs.datastore.preferences)
 
-
-    // TODO: Remove these chucker dependencies
-//    implementation("androidx.compose.material3:material3:1.2.0")
     debugImplementation("com.github.chuckerteam.chucker:library:4.0.0") // For Debug  
     releaseImplementation("com.github.chuckerteam.chucker:library-no-op:4.0.0") // No-op in release
 
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
     implementation("com.google.firebase:firebase-analytics")
-    // MPAndroidChart for graphs
+    implementation("com.google.firebase:firebase-config")
+    implementation ("com.google.android.play:app-update:2.1.0")
+    implementation ("com.google.android.play:app-update-ktx:2.1.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
