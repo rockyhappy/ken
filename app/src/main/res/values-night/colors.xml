@@ -5,7 +5,10 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
 
+    <color name="bg_neutral">#1A1A1A</color>
     <color name="green_normal_100">#D7FCE7</color>
     <color name="green_normal_200">#A9F7CB</color>
     <color name="green_normal_300">#56EE98</color>
@@ -1167,40 +1170,4 @@
     <color name="heatmap3">#109932</color>
     <color name="heatmap4">#016620</color>
     <color name="primary_color_dark">#FFA116</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="bg_neutral">#1A1A1A</color>
-    <!-- Primary & Notification -->
-<!--        <color name="white">#FF000000</color>-->
-<!--        <color name="black">#FFFFFFFF</color>-->
-<!--    <color name="bg_neutral">#E8E8E8</color>-->
-<!--    <color name="blue_notification">#4A7FFB</color>   &lt;!&ndash; lighter blue &ndash;&gt;-->
-<!--    <color name="primary_color">#FFD149</color>        &lt;!&ndash; warm yellow &ndash;&gt;-->
-<!--    <color name="primary_color_dark">#FFB900</color>-->
-
-<!--    &lt;!&ndash; Card backgrounds &ndash;&gt;-->
-<!--    <color name="card_elevated">#F0F0F0</color>-->
-<!--    <color name="card_elevated_twice">#E0E0E0</color>-->
-
-<!--    &lt;!&ndash; Easy difficulty (blue) &ndash;&gt;-->
-<!--    <color name="easy_base_blue">#4E7575</color>-->
-<!--    <color name="easy_filled_blue">#2DC0C0</color>-->
-
-<!--    &lt;!&ndash; Medium difficulty (yellow) &ndash;&gt;-->
-<!--    <color name="medium_base_yellow">#A67F40</color>-->
-<!--    <color name="medium_filled_yellow">#FFD54F</color>-->
-
-<!--    &lt;!&ndash; Hard difficulty (red) &ndash;&gt;-->
-<!--    <color name="hard_base_red">#814949</color>-->
-<!--    <color name="hard_filled_red">#FF6B6B</color>-->
-
-<!--    &lt;!&ndash; Status indicators &ndash;&gt;-->
-<!--    <color name="solved_color">#66BB6A</color>-->
-<!--    <color name="attempting_color">#26C6DA</color>-->
-
-<!--    &lt;!&ndash; Heatmap gradient (light to dark green) &ndash;&gt;-->
-<!--    <color name="heatmap1">#A8E8A8</color>-->
-<!--    <color name="heatmap2">#60CA60</color>-->
-<!--    <color name="heatmap3">#3FAF3F</color>-->
-<!--    <color name="heatmap4">#2B8A2B</color>-->
 </resources>
