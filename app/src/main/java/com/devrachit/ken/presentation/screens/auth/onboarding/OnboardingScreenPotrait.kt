@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -66,6 +67,10 @@ import com.devrachit.ken.utility.composeUtility.CompletePreviews
 import com.devrachit.ken.utility.composeUtility.OrientationPreviews
 import com.devrachit.ken.utility.composeUtility.sdp
 import com.devrachit.ken.utility.constants.Constants.Companion.DEFAULT_USERNAME
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 
 @Composable
 fun OnboardingScreenPortrait(
@@ -74,6 +79,32 @@ fun OnboardingScreenPortrait(
     onContinueButtonClick: () -> Unit,
     onVerified:()->Unit
 ) {
+    val firebaseAnalytics = Firebase.analytics
+
+    LaunchedEffect(Unit) {
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "onboarding_screen")
+            param(FirebaseAnalytics.Param.SCREEN_CLASS, "OnboardingScreenPortrait")
+        }
+    }
+
+    LaunchedEffect(userValues.isUserNameValid) {
+        if (userValues.isUserNameValid != null) {
+            firebaseAnalytics.logEvent("onboarding_username_validation") {
+                param("is_valid", userValues.isUserNameValid.toString())
+                param("username_length", (userValues.userName?.length ?: 0).toLong())
+            }
+        }
+    }
+
+    LaunchedEffect(userValues.isLoadingUsername) {
+        if (userValues.isLoadingUsername) {
+            firebaseAnalytics.logEvent("onboarding_username_validation_started") {
+                param("username", userValues.userName ?: "empty")
+            }
+        }
+    }
+
     Scaffold(
         modifier = Modifier
             .systemBarsPadding()
@@ -149,7 +180,13 @@ fun OnboardingScreenPortrait(
                 Spacer(modifier = Modifier.height(12.sdp))
                 OutlinedTextField(
                     value = userValues.userName ?: "",
-                    onValueChange = { updateUserName(it) },
+                    onValueChange = { newValue ->
+                        firebaseAnalytics.logEvent("onboarding_username_changed") {
+                            param("username_length", newValue.length.toLong())
+                            param("is_default", (newValue == DEFAULT_USERNAME).toString())
+                        }
+                        updateUserName(newValue)
+                    },
                     shape = RoundedCornerShape(10.sdp),
                     modifier = Modifier
                         .padding(start = 24.sdp, end = 24.sdp, top = 10.sdp)
@@ -213,7 +250,14 @@ fun OnboardingScreenPortrait(
                 Spacer(modifier = Modifier.height(24.sdp))
                 if(!userValues.isLoadingUsername)
                 Button(
-                    onClick = onContinueButtonClick,
+                    onClick = {
+                        firebaseAnalytics.logEvent("onboarding_continue_clicked") {
+                            param("username", userValues.userName ?: "empty")
+                            param("is_valid", (userValues.isUserNameValid == true).toString())
+                            param("is_default", (userValues.userName == DEFAULT_USERNAME).toString())
+                        }
+                        onContinueButtonClick()
+                    },
                     modifier = Modifier
                         .padding(start = 24.sdp, end = 24.sdp, top = 10.sdp)
                         .height(50.sdp)
@@ -280,6 +324,9 @@ fun OnboardingScreenPortrait(
                 }
                 OutlinedButton(
                     onClick = {
+                        firebaseAnalytics.logEvent("onboarding_guest_user_clicked") {
+                            param("previous_username", userValues.userName ?: "empty")
+                        }
                         updateUserName(DEFAULT_USERNAME)
                         onContinueButtonClick()
                     },
@@ -307,6 +354,7 @@ fun OnboardingScreenPortrait(
                     modifier = Modifier
                         .padding(top = 16.sdp, bottom = 16.sdp)
                         .clickable {
+                            firebaseAnalytics.logEvent("onboarding_create_account_clicked") {}
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://leetcode.com/accounts/signup/"))
                             ContextCompat.startActivity(context, intent, null)
                         },
