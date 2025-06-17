@@ -114,7 +114,8 @@ fun MainNavHost(
                 onBackPress = { navController.popBackStack() },
                 username1 = username1,
                 username2 = username2,
-                availableUsers = uiState.value.availableUsers
+                availableUsers = uiState.value.availableUsers,
+                callFromMainScreen = false
             )
         }
     }

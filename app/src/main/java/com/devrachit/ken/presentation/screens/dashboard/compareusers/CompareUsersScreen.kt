@@ -54,7 +54,8 @@ fun CompareUsersScreen(
     onBackPress: () -> Unit,
     username1: String?,
     username2: String?,
-    availableUsers: List<String>
+    availableUsers: List<String>,
+    callFromMainScreen: Boolean
 ) {
     val scrollState = rememberScrollState()
     val isCollapsed = remember(scrollState.value) {
@@ -68,7 +69,10 @@ fun CompareUsersScreen(
             firebaseAnalytics.logEvent("compare_users_refresh") {
                 param("user1", uiState.username1 ?: "none")
                 param("user2", uiState.username2 ?: "none")
-                param("has_both_users", (uiState.username1 != null && uiState.username2 != null).toString())
+                param(
+                    "has_both_users",
+                    (uiState.username1 != null && uiState.username2 != null).toString()
+                )
             }
             // Only refresh data, don't reset user selections
             if (uiState.username1 != null && uiState.username2 != null) {
@@ -86,7 +90,7 @@ fun CompareUsersScreen(
             param("initial_user1", username1 ?: "none")
             param("initial_user2", username2 ?: "none")
         }
-        
+
         if (uiState.username1 == null && uiState.username2 == null && availableUsers.isNotEmpty()) {
             onInitialize(username1, username2, availableUsers)
         }
@@ -105,8 +109,6 @@ fun CompareUsersScreen(
             .fillMaxSize()
             .systemBarsPadding()
     ) {
-
-        // Main scrollable content
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -116,21 +118,20 @@ fun CompareUsersScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            DashboardHeaderDetails(
-                username = "Compare Users",
-                onClick = { 
-                    firebaseAnalytics.logEvent("compare_users_header_back") {}
-                    onBackPress() 
-                },
-                drawerProgress = 0f
-            )
+            if (!callFromMainScreen) {
 
-            // Add padding to account for floating card
+                DashboardHeaderDetails(
+                    username = "Compare Users",
+                    onClick = {
+                        firebaseAnalytics.logEvent("compare_users_header_back") {}
+                        onBackPress()
+                    },
+                    drawerProgress = 0f
+                )
+
+            }
             Spacer(modifier = Modifier.height(160.sdp))
-
-            // Comparison Content
             if (uiState.user1Data != null && uiState.user2Data != null) {
-                // Question Progress Comparison
                 ComparisonSection(
                     title = "Question Progress Comparison",
                     modifier = Modifier.padding(top = 20.sdp, start = 18.sdp, end = 18.sdp)
@@ -397,7 +398,8 @@ fun CompareUsersScreen(
                     param("previous_user", uiState.username2 ?: "none")
                 }
                 onUser2Selected(username)
-            }
+            },
+            callFromMainScreen = callFromMainScreen
         )
 
         PullRefreshIndicator(
@@ -417,12 +419,14 @@ private fun FloatingUserSelectionCard(
     uiState: CompareUsersUiState,
     availableUsers: List<String>,
     onUser1Selected: (String) -> Unit,
-    onUser2Selected: (String) -> Unit
+    onUser2Selected: (String) -> Unit,
+    callFromMainScreen: Boolean
 ) {
     val cardTopPadding by animateDpAsState(
-        targetValue = if (!isCollapsed) 80.sdp else 16.sdp,
+        targetValue = if (!isCollapsed && callFromMainScreen==false) 80.sdp else 16.sdp,
         animationSpec = tween(durationMillis = 200)
     )
+
 
     Card(
         modifier = modifier
