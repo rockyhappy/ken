@@ -125,4 +125,25 @@ class DataStoreRepository(private val context: Context) {
             }.firstOrNull()
     }
 
+    // Friends View Mode Preference
+    private val FRIENDS_VIEW_MODE_KEY = stringPreferencesKey("friends_view_mode")
+
+    val friendsViewMode: Flow<String?> = context.dataStore.data
+        .map { preferences ->
+            preferences[FRIENDS_VIEW_MODE_KEY] ?: "LIST" // Default to LIST view
+        }
+
+    suspend fun saveFriendsViewMode(viewMode: String) {
+        context.dataStore.edit { preferences ->
+            preferences[FRIENDS_VIEW_MODE_KEY] = viewMode
+        }
+    }
+
+    suspend fun readFriendsViewMode(): String {
+        return context.dataStore.data
+            .map { preferences ->
+                preferences[FRIENDS_VIEW_MODE_KEY] ?: "LIST"
+            }.firstOrNull() ?: "LIST"
+    }
+
 }

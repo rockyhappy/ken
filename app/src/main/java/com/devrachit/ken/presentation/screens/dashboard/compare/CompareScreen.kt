@@ -55,6 +55,7 @@ import com.google.firebase.ktx.Firebase
 fun CompareScreen(
     uiState: CompareUiStates,
     loadingStates: LoadingStates,
+    friendsViewMode: String = "LIST",
     onFirstLoad: () -> Unit = {},
     onRefreshAllData: () -> Unit = {},
     onSearchTextChange: (String) -> Unit = {},
@@ -65,6 +66,7 @@ fun CompareScreen(
     onHidePlatformResult: () -> Unit = {},
     onRemoveUser: (String) -> Unit = {},
     onRefreshUser: (String) -> Unit = {},
+    onViewModeChanged: (String) -> Unit = {},
     getEasyGraphData: () -> List<com.devrachit.ken.presentation.screens.dashboard.compare.QuestionGraphData> = { emptyList() },
     getMediumGraphData: () -> List<com.devrachit.ken.presentation.screens.dashboard.compare.QuestionGraphData> = { emptyList() },
     getHardGraphData: () -> List<com.devrachit.ken.presentation.screens.dashboard.compare.QuestionGraphData> = { emptyList() }
@@ -124,6 +126,8 @@ fun CompareScreen(
                     CompareList(
                         modifier = Modifier.padding(top = 8.sdp),
                         uiState = uiState,
+                        initialViewMode = friendsViewMode,
+                        onViewModeChanged = onViewModeChanged,
                         onRemoveUser = { username ->
                             firebaseAnalytics.logEvent("compare_user_removed") {
                                 param("username", username)

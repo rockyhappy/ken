@@ -59,6 +59,7 @@ fun NavGraph(
             CompareScreen(
                 uiState = viewmodel.userStatesValues.collectAsStateWithLifecycle().value,
                 loadingStates = viewmodel.loadingStatesValues.collectAsStateWithLifecycle().value,
+                friendsViewMode = viewmodel.friendsViewMode.collectAsStateWithLifecycle().value,
                 onFirstLoad = { viewmodel.loadAllUsersInfo() },
                 onSearchTextChange = { query -> viewmodel.updateSearchQuery(query) },
                 onSuggestionClick = { username, userInfo ->
@@ -82,6 +83,7 @@ fun NavGraph(
                 },
                 onRemoveUser = { username -> viewmodel.deleteUser(username) },
                 onRefreshUser = { username -> viewmodel.refreshSingleUser(username) },
+                onViewModeChanged = { viewMode -> viewmodel.updateFriendsViewMode(viewMode) },
                 getEasyGraphData = { viewmodel.getEasyQuestionGraphData() },
                 getMediumGraphData = { viewmodel.getMediumQuestionGraphData() },
                 getHardGraphData = { viewmodel.getHardQuestionGraphData() }

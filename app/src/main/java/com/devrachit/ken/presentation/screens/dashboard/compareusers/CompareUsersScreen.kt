@@ -423,7 +423,7 @@ private fun FloatingUserSelectionCard(
     callFromMainScreen: Boolean
 ) {
     val cardTopPadding by animateDpAsState(
-        targetValue = if (!isCollapsed && callFromMainScreen==false) 80.sdp else 16.sdp,
+        targetValue = if( callFromMainScreen==true)0.sdp else if (!isCollapsed ) 80.sdp else 16.sdp,
         animationSpec = tween(durationMillis = 200)
     )
 
