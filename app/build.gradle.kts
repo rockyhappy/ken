@@ -1,9 +1,13 @@
+import org.gradle.kotlin.dsl.debug
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 //    alias(libs.plugins.room)
 }
 
@@ -15,19 +19,46 @@ android {
         applicationId = "com.devrachit.ken"
         minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.0.4"
+        versionCode = 6
+        versionName = "1.0.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("devRelease") {
+            storeFile = file("../keystore-dev.jks")
+            storePassword = "12345678"
+            keyAlias = "key0"
+            keyPassword = "12345678"
+        }
+        create("stagingRelease") {
+            storeFile = file("../keystore-staging.jks")
+            storePassword = "12345678"
+            keyAlias = "key0"
+            keyPassword = "12345678"
+        }
+        create("prodRelease") {
+            storeFile = file("../keystore.jks")
+            storePassword = "12345678"
+            keyAlias = "key0"
+            keyPassword = "12345678"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = null
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            firebaseCrashlytics {
+                mappingFileUploadEnabled =true
+            }
         }
     }
 
@@ -35,17 +66,19 @@ android {
     productFlavors {
         create("dev") {
             dimension = "version"
-
-
+            applicationIdSuffix = ".dev"
+//            versionNameSuffix = "-dev"
+            signingConfig = signingConfigs.getByName("devRelease")
         }
         create("staging") {
             dimension = "version"
             applicationIdSuffix = ".staging"
             versionNameSuffix = "-staging"
-
+            signingConfig = signingConfigs.getByName("stagingRelease")
         }
         create("prod") {
             dimension = "version"
+            signingConfig = signingConfigs.getByName("prodRelease")
         }
     }
 
@@ -68,6 +101,7 @@ android {
 //        schemaDirectory("${projectDir.absolutePath.replace("\\", "/").replace(" ", "\\ ")}/schemas")
 //    }
 }
+
 
 dependencies {
 
@@ -153,12 +187,14 @@ dependencies {
     implementation(libs.datastore)
     implementation(libs.datastore.preferences)
 
-
-    // TODO: Remove these chucker dependencies
-//    implementation("androidx.compose.material3:material3:1.2.0")
     debugImplementation("com.github.chuckerteam.chucker:library:4.0.0") // For Debug  
     releaseImplementation("com.github.chuckerteam.chucker:library-no-op:4.0.0") // No-op in release
-    
-    // MPAndroidChart for graphs
+
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-config")
+    implementation ("com.google.android.play:app-update:2.1.0")
+    implementation ("com.google.android.play:app-update-ktx:2.1.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

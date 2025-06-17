@@ -28,6 +28,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import com.devrachit.ken.R
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.DashboardHeaderDetails
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.HeatmapCard
@@ -38,6 +39,10 @@ import com.devrachit.ken.presentation.screens.dashboard.compareusers.components.
 import com.devrachit.ken.presentation.screens.dashboard.compareusers.components.UserDropdownSelector
 import com.devrachit.ken.utility.composeUtility.HomeScreenShimmer
 import com.devrachit.ken.utility.composeUtility.sdp
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -55,10 +60,16 @@ fun CompareUsersScreen(
     val isCollapsed = remember(scrollState.value) {
         scrollState.value > 150
     }
+    val firebaseAnalytics = Firebase.analytics
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState.isLoading,
         onRefresh = {
+            firebaseAnalytics.logEvent("compare_users_refresh") {
+                param("user1", uiState.username1 ?: "none")
+                param("user2", uiState.username2 ?: "none")
+                param("has_both_users", (uiState.username1 != null && uiState.username2 != null).toString())
+            }
             // Only refresh data, don't reset user selections
             if (uiState.username1 != null && uiState.username2 != null) {
                 onInitialize(uiState.username1, uiState.username2, availableUsers)
@@ -68,12 +79,24 @@ fun CompareUsersScreen(
 
     // Initialize on first load only if no users are selected
     LaunchedEffect(availableUsers.size) {
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "compare_users_screen")
+            param(FirebaseAnalytics.Param.SCREEN_CLASS, "CompareUsersScreen")
+            param("available_users_count", availableUsers.size.toLong())
+            param("initial_user1", username1 ?: "none")
+            param("initial_user2", username2 ?: "none")
+        }
+        
         if (uiState.username1 == null && uiState.username2 == null && availableUsers.isNotEmpty()) {
             onInitialize(username1, username2, availableUsers)
         }
     }
 
     BackHandler {
+        firebaseAnalytics.logEvent("compare_users_back_pressed") {
+            param("user1", uiState.username1 ?: "none")
+            param("user2", uiState.username2 ?: "none")
+        }
         onBackPress()
     }
 
@@ -95,7 +118,10 @@ fun CompareUsersScreen(
         ) {
             DashboardHeaderDetails(
                 username = "Compare Users",
-                onClick = { onBackPress() },
+                onClick = { 
+                    firebaseAnalytics.logEvent("compare_users_header_back") {}
+                    onBackPress() 
+                },
                 drawerProgress = 0f
             )
 
@@ -358,8 +384,20 @@ fun CompareUsersScreen(
             isCollapsed = isCollapsed,
             uiState = uiState,
             availableUsers = availableUsers,
-            onUser1Selected = onUser1Selected,
-            onUser2Selected = onUser2Selected
+            onUser1Selected = { username ->
+                firebaseAnalytics.logEvent("compare_users_user1_selected") {
+                    param("username", username)
+                    param("previous_user", uiState.username1 ?: "none")
+                }
+                onUser1Selected(username)
+            },
+            onUser2Selected = { username ->
+                firebaseAnalytics.logEvent("compare_users_user2_selected") {
+                    param("username", username)
+                    param("previous_user", uiState.username2 ?: "none")
+                }
+                onUser2Selected(username)
+            }
         )
 
         PullRefreshIndicator(

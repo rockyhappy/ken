@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Ken Production</string>
+    <string name="app_name">Ken</string>
+    <string name="make_an_account_text">Don\'t have an account? <b>Sign Up</b></string>
+    <string name="simple_text_widget_description">A simple greeting widget</string>
 </resources>
