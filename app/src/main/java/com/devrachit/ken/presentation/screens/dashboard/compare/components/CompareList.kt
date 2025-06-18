@@ -55,10 +55,10 @@ import com.devrachit.ken.ui.theme.TextStyleInter20Lh24Fw700
 import com.devrachit.ken.utility.composeUtility.SegmentedProgressIndicator2
 import com.devrachit.ken.utility.composeUtility.sdp
 
-enum class ViewMode(val displayName: String, val icon: ImageVector) {
-    LIST("LIST", Icons.Default.List),
-    GRID("GRID", Icons.Default.MoreVert), 
-    HORIZONTAL_PAGER("HORIZONTAL_PAGER", Icons.Default.Menu)
+enum class ViewMode(val displayName: String, val icon: Int) {
+    LIST("LIST", R.drawable.ic_list),
+    GRID("GRID", R.drawable.ic_grid),
+    HORIZONTAL_PAGER("HORIZONTAL_PAGER", R.drawable.ic_pager)
 }
 
 @Composable
@@ -101,10 +101,10 @@ fun CompareList(
             )
             
             Icon(
-                imageVector = currentViewMode.icon,
+                painter = painterResource(currentViewMode.icon),
                 contentDescription = "View Mode: ${currentViewMode.displayName}",
                 modifier = Modifier
-                    .size(24.sdp)
+                    .size(20.sdp)
                     .clickable {
                         val nextMode = when (currentViewMode) {
                             ViewMode.LIST -> ViewMode.HORIZONTAL_PAGER
