@@ -1,5 +1,8 @@
 package com.devrachit.ken.presentation.screens.dashboard.compare.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,9 +13,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import com.devrachit.ken.R
 import com.devrachit.ken.utility.composeUtility.sdp
@@ -35,13 +40,22 @@ fun PagerIndicator(
             ) {
                 for (i in 0 until pageCount) {
                     val isActive = i == currentPage
-                    val indicatorColor = if (isActive) colorResource(R.color.white).copy(alpha = 0.8f) else colorResource(R.color.white).copy(alpha = 0.2f)
-                    val indicatorSize = if (isActive) 16.sdp else 16.sdp
+                    val indicatorColor by animateColorAsState(
+                        targetValue = if (isActive) colorResource(R.color.white).copy(alpha = 0.8f) 
+                                     else colorResource(R.color.white).copy(alpha = 0.2f),
+                        animationSpec = tween(300),
+                        label = "dot_color_$i"
+                    )
+                    val indicatorWidth by animateDpAsState(
+                        targetValue = if (isActive) 20.sdp else 16.sdp,
+                        animationSpec = tween(300),
+                        label = "dot_width_$i"
+                    )
 
                     Box(
                         modifier = Modifier
-                            .height(indicatorSize)
-                            .width(indicatorSize)
+                            .height(16.sdp)
+                            .width(indicatorWidth)
                             .padding(vertical = 4.sdp, horizontal = 4.sdp)
                             .clip(RoundedCornerShape(50))
                             .background(indicatorColor)
@@ -68,13 +82,22 @@ fun PagerIndicator(
 
                     if (actualIndex in 0 until pageCount) {
                         val isActive = actualIndex == currentPage
-                        val indicatorColor = if (isActive) colorResource(R.color.white).copy(alpha = 0.8f) else colorResource(R.color.white).copy(alpha = 0.2f)
-                        val indicatorSize = if (isActive) 16.sdp else 16.sdp
+                        val indicatorColor by animateColorAsState(
+                            targetValue = if (isActive) colorResource(R.color.white).copy(alpha = 0.8f) 
+                                         else colorResource(R.color.white).copy(alpha = 0.2f),
+                            animationSpec = tween(300),
+                            label = "dot_color_$actualIndex"
+                        )
+                        val indicatorWidth by animateDpAsState(
+                            targetValue = if (isActive) 20.sdp else 16.sdp,
+                            animationSpec = tween(300),
+                            label = "dot_width_$actualIndex"
+                        )
 
                         Box(
                             modifier = Modifier
-                                .height(indicatorSize)
-                                .width(indicatorSize)
+                                .height(16.sdp)
+                                .width(indicatorWidth)
                                 .padding(vertical = 4.sdp, horizontal = 4.sdp)
                                 .clip(RoundedCornerShape(50))
                                 .background(indicatorColor)

@@ -1,5 +1,16 @@
 package com.devrachit.ken.presentation.screens.dashboard.compare.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
@@ -100,11 +112,22 @@ fun CompareList(
                 style = TextStyleInter20Lh24Fw700()
             )
             
+            val iconRotation by animateFloatAsState(
+                targetValue = when (currentViewMode) {
+                    ViewMode.LIST -> 0f
+                    ViewMode.HORIZONTAL_PAGER -> 360f
+                    ViewMode.GRID -> 180f
+                },
+                animationSpec = tween(300),
+                label = "icon_rotation"
+            )
+            
             Icon(
                 painter = painterResource(currentViewMode.icon),
                 contentDescription = "View Mode: ${currentViewMode.displayName}",
                 modifier = Modifier
                     .size(20.sdp)
+                    .rotate(iconRotation)
                     .clickable {
                         val nextMode = when (currentViewMode) {
                             ViewMode.LIST -> ViewMode.HORIZONTAL_PAGER
@@ -121,36 +144,44 @@ fun CompareList(
         val usernames = uiState.friendsDetails?.keys?.toList() ?: emptyList()
 
         if (usernames.isNotEmpty()) {
-            when (currentViewMode) {
-                ViewMode.LIST -> {
-                    FriendsListView(
-                        usernames = usernames,
-                        uiState = uiState,
-                        onViewProfile = onViewProfile,
-                        onCompareWith = onCompareWith,
-                        onRemoveUser = onRemoveUser,
-                        onRefreshUser = onRefreshUser
-                    )
-                }
-                ViewMode.GRID -> {
-                    FriendsGridView(
-                        usernames = usernames,
-                        uiState = uiState,
-                        onViewProfile = onViewProfile,
-                        onCompareWith = onCompareWith,
-                        onRemoveUser = onRemoveUser,
-                        onRefreshUser = onRefreshUser
-                    )
-                }
-                ViewMode.HORIZONTAL_PAGER -> {
-                    FriendsHorizontalPagerView(
-                        usernames = usernames,
-                        uiState = uiState,
-                        onViewProfile = onViewProfile,
-                        onCompareWith = onCompareWith,
-                        onRemoveUser = onRemoveUser,
-                        onRefreshUser = onRefreshUser
-                    )
+            AnimatedContent(
+                targetState = currentViewMode,
+                transitionSpec = {
+                    getTransitionSpec(initialState, targetState)
+                },
+                label = "view_mode_transition"
+            ) { viewMode ->
+                when (viewMode) {
+                    ViewMode.LIST -> {
+                        FriendsListView(
+                            usernames = usernames,
+                            uiState = uiState,
+                            onViewProfile = onViewProfile,
+                            onCompareWith = onCompareWith,
+                            onRemoveUser = onRemoveUser,
+                            onRefreshUser = onRefreshUser
+                        )
+                    }
+                    ViewMode.GRID -> {
+                        FriendsGridView(
+                            usernames = usernames,
+                            uiState = uiState,
+                            onViewProfile = onViewProfile,
+                            onCompareWith = onCompareWith,
+                            onRemoveUser = onRemoveUser,
+                            onRefreshUser = onRefreshUser
+                        )
+                    }
+                    ViewMode.HORIZONTAL_PAGER -> {
+                        FriendsHorizontalPagerView(
+                            usernames = usernames,
+                            uiState = uiState,
+                            onViewProfile = onViewProfile,
+                            onCompareWith = onCompareWith,
+                            onRemoveUser = onRemoveUser,
+                            onRefreshUser = onRefreshUser
+                        )
+                    }
                 }
             }
         } else {
@@ -159,6 +190,91 @@ fun CompareList(
                 color = Color.White,
                 modifier = Modifier.padding(top = 50.sdp)
             )
+        }
+    }
+}
+
+private fun getTransitionSpec(
+    initialState: ViewMode,
+    targetState: ViewMode
+): ContentTransform {
+    val animationDuration = 400
+    
+    return when {
+        // List to Pager - slide right and fade
+        initialState == ViewMode.LIST && targetState == ViewMode.HORIZONTAL_PAGER -> {
+            (slideInHorizontally(
+                initialOffsetX = { it },
+                animationSpec = tween(animationDuration)
+            ) + fadeIn(animationSpec = tween(animationDuration))) togetherWith
+            (slideOutHorizontally(
+                targetOffsetX = { -it },
+                animationSpec = tween(animationDuration)
+            ) + fadeOut(animationSpec = tween(animationDuration)))
+        }
+        
+        // Pager to Grid - scale and fade
+        initialState == ViewMode.HORIZONTAL_PAGER && targetState == ViewMode.GRID -> {
+            (scaleIn(
+                initialScale = 0.8f,
+                animationSpec = tween(animationDuration)
+            ) + fadeIn(animationSpec = tween(animationDuration))) togetherWith
+            (scaleOut(
+                targetScale = 1.2f,
+                animationSpec = tween(animationDuration)
+            ) + fadeOut(animationSpec = tween(animationDuration)))
+        }
+        
+        // Grid to List - slide down and fade
+        initialState == ViewMode.GRID && targetState == ViewMode.LIST -> {
+            (slideInHorizontally(
+                initialOffsetX = { -it },
+                animationSpec = tween(animationDuration)
+            ) + fadeIn(animationSpec = tween(animationDuration))) togetherWith
+            (slideOutHorizontally(
+                targetOffsetX = { it },
+                animationSpec = tween(animationDuration)
+            ) + fadeOut(animationSpec = tween(animationDuration)))
+        }
+        
+        // Reverse transitions
+        initialState == ViewMode.HORIZONTAL_PAGER && targetState == ViewMode.LIST -> {
+            (slideInHorizontally(
+                initialOffsetX = { -it },
+                animationSpec = tween(animationDuration)
+            ) + fadeIn(animationSpec = tween(animationDuration))) togetherWith
+            (slideOutHorizontally(
+                targetOffsetX = { it },
+                animationSpec = tween(animationDuration)
+            ) + fadeOut(animationSpec = tween(animationDuration)))
+        }
+        
+        initialState == ViewMode.GRID && targetState == ViewMode.HORIZONTAL_PAGER -> {
+            (scaleIn(
+                initialScale = 1.2f,
+                animationSpec = tween(animationDuration)
+            ) + fadeIn(animationSpec = tween(animationDuration))) togetherWith
+            (scaleOut(
+                targetScale = 0.8f,
+                animationSpec = tween(animationDuration)
+            ) + fadeOut(animationSpec = tween(animationDuration)))
+        }
+        
+        initialState == ViewMode.LIST && targetState == ViewMode.GRID -> {
+            (slideInHorizontally(
+                initialOffsetX = { it },
+                animationSpec = tween(animationDuration)
+            ) + fadeIn(animationSpec = tween(animationDuration))) togetherWith
+            (slideOutHorizontally(
+                targetOffsetX = { -it },
+                animationSpec = tween(animationDuration)
+            ) + fadeOut(animationSpec = tween(animationDuration)))
+        }
+        
+        // Default fade transition
+        else -> {
+            fadeIn(animationSpec = tween(animationDuration)) togetherWith
+            fadeOut(animationSpec = tween(animationDuration))
         }
     }
 }
@@ -185,51 +301,56 @@ private fun FriendsHorizontalPagerView(
             pageCount = { usernames.size }
         )
     }
-    
-    HorizontalPager(
-        state = pagerState,
-        modifier = Modifier
-            .wrapContentHeight()
-            .padding(vertical = 8.sdp),
-        contentPadding = PaddingValues(horizontal = 22.sdp),
-        pageSpacing = 8.sdp
-    ) { page ->
-        val actualIndex = if (usernames.size >= 3) {
-            page % usernames.size
-        } else {
-            page
-        }
-        val username = usernames[actualIndex]
-        val userInfo = uiState.friendsDetails?.get(username)
-        val questionProgress = uiState.friendsQuestionProgressInfo?.get(username)
-        val userCalendar = uiState.userProfileCalender?.get(username)
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .wrapContentHeight()
+                .padding(vertical = 8.sdp),
+            contentPadding = PaddingValues(horizontal = 22.sdp),
+            pageSpacing = 8.sdp
+        ) { page ->
+            val actualIndex = if (usernames.size >= 3) {
+                page % usernames.size
+            } else {
+                page
+            }
+            val username = usernames[actualIndex]
+            val userInfo = uiState.friendsDetails?.get(username)
+            val questionProgress = uiState.friendsQuestionProgressInfo?.get(username)
+            val userCalendar = uiState.userProfileCalender?.get(username)
 
-        // Only show widget if we have the essential data
-        if (userInfo != null && questionProgress != null) {
-            CompareSinglePersonWidget(
-                username = username,
-                userInfo = userInfo,
-                userQuestionProfile = questionProgress,
-                currentTimestamp = uiState.currentTimestamp ?: (System.currentTimeMillis().toDouble() / 1000),
-                calenderDetails = userCalendar?.submissionCalendar ?: "{}",
-                activeYears = userCalendar?.activeYears ?: emptyList(),
-                activeDays = userCalendar?.totalActiveDays ?: 0,
-                streak = userCalendar?.streak ?: 0,
-                modifier = Modifier.padding(horizontal = 8.sdp),
-                onViewProfile = onViewProfile,
-                onCompareWith = onCompareWith,
-                onRemoveUser = onRemoveUser,
-                onRefreshUser = onRefreshUser
-            )
+            // Only show widget if we have the essential data
+            if (userInfo != null && questionProgress != null) {
+                CompareSinglePersonWidget(
+                    username = username,
+                    userInfo = userInfo,
+                    userQuestionProfile = questionProgress,
+                    currentTimestamp = uiState.currentTimestamp ?: (System.currentTimeMillis()
+                        .toDouble() / 1000),
+                    calenderDetails = userCalendar?.submissionCalendar ?: "{}",
+                    activeYears = userCalendar?.activeYears ?: emptyList(),
+                    activeDays = userCalendar?.totalActiveDays ?: 0,
+                    streak = userCalendar?.streak ?: 0,
+                    modifier = Modifier.padding(horizontal = 8.sdp),
+                    onViewProfile = onViewProfile,
+                    onCompareWith = onCompareWith,
+                    onRemoveUser = onRemoveUser,
+                    onRefreshUser = onRefreshUser
+                )
+            }
         }
+
+        // Pager Indicator
+        PagerIndicator(
+            pageCount = usernames.size,
+            currentPage = (pagerState.currentPage % usernames.size),
+            modifier = Modifier.padding(top = 10.sdp).fillMaxWidth()
+        )
     }
-    
-    // Pager Indicator
-    PagerIndicator(
-        pageCount = usernames.size,
-        currentPage = (pagerState.currentPage % usernames.size),
-        modifier = Modifier.padding(top = 10.sdp).fillMaxWidth()
-    )
 }
 
 @Preview
