@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -75,7 +76,7 @@ fun FriendsGridView(
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxWidth()
-            .height(400.sdp)
+            .heightIn(min = 100.dp, max = 400.dp)
             .padding(horizontal = 16.sdp),
         horizontalArrangement = Arrangement.spacedBy(8.sdp),
         verticalArrangement = Arrangement.spacedBy(8.sdp)

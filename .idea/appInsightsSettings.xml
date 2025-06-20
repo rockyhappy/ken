@@ -23,8 +23,8 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.devrachit.ken" />
-                  <option name="mobileSdkAppId" value="1:779440831284:android:f97818291bcabe03e18361" />
+                  <option name="appId" value="com.devrachit.ken.dev" />
+                  <option name="mobileSdkAppId" value="1:779440831284:android:49bbb0bab4025243e18361" />
                   <option name="projectId" value="ken-b3d0f" />
                   <option name="projectNumber" value="779440831284" />
                 </ConnectionSetting>
