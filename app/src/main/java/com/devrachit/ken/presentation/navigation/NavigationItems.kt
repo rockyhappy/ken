@@ -27,25 +27,33 @@ fun rememberNavigationItems() = remember {
             R.drawable.ic_home_filled,
             Screen.Home.route
         ),
+
         1 to NavItemData(
+            "Friends",
+            R.drawable.ic_friends_outlined,
+            R.drawable.ic_friends_filled,
+            Screen.Compare.route
+        ),
+        2 to NavItemData(
+            "Compare Friends",
+            R.drawable.ic_compare_outlined,
+            R.drawable.ic_compare_filled,
+            Screen.CompareUsers.route,
+        ),
+        3 to NavItemData(
             "Questions",
             R.drawable.ic_questions_outlined,
             R.drawable.ic_questions_filled,
             Screen.Questions.route
         ),
-        2 to NavItemData(
-            "Compare",
-            R.drawable.ic_compare_outlined,
-            R.drawable.ic_compare_filled,
-            Screen.Compare.route
-        ),
-        3 to NavItemData(
+        4 to NavItemData(
             "Sheets",
             R.drawable.ic_sheets_outlined,
             R.drawable.ic_sheets_filled,
             Screen.Sheets.route
         ),
-        4 to NavItemData(
+
+        5 to NavItemData(
             "Logout",
             R.drawable.ic_logout_outlined,
             R.drawable.ic_logout_filled,
@@ -62,9 +70,11 @@ fun getRouteIndex(route: String?): Int? {
     
     return when (route) {
         Screen.Home.route -> 0
-        Screen.Questions.route -> 1
-        Screen.Compare.route -> 2
-        Screen.Sheets.route -> 3
+        Screen.Compare.route -> 1
+        Screen.CompareUsers.route -> 2
+        Screen.Questions.route -> 3
+        Screen.Sheets.route -> 4
+        Screen.Logout.route -> 5
         else -> null
     }
 }

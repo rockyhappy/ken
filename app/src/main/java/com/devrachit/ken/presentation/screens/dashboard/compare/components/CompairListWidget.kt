@@ -374,11 +374,11 @@ fun createArcBitmap(
     hardSolvedCount: Int
 ): Bitmap {
     val context = LocalContext.current
-    val size = 130
+    val size = 230
     val bitmap = createBitmap(size, size, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
 
-    val strokeWidth = 10f
+    val strokeWidth = 15f
     val startAngle = 135f
     val gapAngle = 10f
     val totalSweepAngle = 250f
@@ -452,7 +452,7 @@ fun createArcBitmap(
     val mainTextPaint = Paint().apply {
         color = AndroidColor.WHITE
         textAlign = Paint.Align.CENTER
-        textSize = 20f
+        textSize = 42f
         isAntiAlias = true
         isFakeBoldText = true
     }
@@ -460,12 +460,12 @@ fun createArcBitmap(
     val smallTextPaint = Paint().apply {
         color = AndroidColor.WHITE
         textAlign = Paint.Align.CENTER
-        textSize = 12f
+        textSize = 25f
         isAntiAlias = true
     }
 
     canvas.drawText(solved.toString(), size / 2f, size / 2f - 5f, mainTextPaint)
-    canvas.drawText("/$total", size / 2f, size / 2f + 15f, smallTextPaint)
+    canvas.drawText("/$total", size / 2f, size / 1.75f + 15f, smallTextPaint)
 
     return bitmap
 }
