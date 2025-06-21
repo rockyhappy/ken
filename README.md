@@ -61,9 +61,15 @@ journey through beautiful analytics and widgets.
 
 ### App Screenshots
 
-<!-- Add your screenshots here -->
-
-
+<img src="https://github.com/user-attachments/assets/dc5781e3-fa7b-4419-88cd-0b19f4251c87" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/c24afde7-c996-4243-a9c6-a6ef9f2bf093" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/85118546-b9f2-47f2-bad8-3cdb3712c1a0" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/d478364a-ca3e-4c0d-a78d-2200a3bb63a3" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/b1c8c0dc-dcd0-43f3-abd8-84e4d5f48d62" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/f705de64-ba0e-4393-8f18-08f02c3309e8" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/56dddc38-1f1a-4f92-800a-12fc739e3540" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/c6eba457-d5e4-417b-835a-349f46a7fcb4" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/5c07becc-bf81-4658-83d9-517036848526" alt="Ken Sample" width="150" >
 <img src="https://github.com/user-attachments/assets/87f61271-fe19-4ede-b995-85c9900724e3" alt="Ken Sample" width="150" >
 <img src="https://github.com/user-attachments/assets/ee7ab488-c724-4c0c-8d43-a97f1973bd14" alt="Ken Sample" width="150" >
 <img src="https://github.com/user-attachments/assets/c5387a46-44f4-43fe-a0e8-a40e4f4efdb3" alt="Ken Sample" width="150" >
