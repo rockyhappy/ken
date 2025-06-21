@@ -63,17 +63,28 @@ journey through beautiful analytics and widgets.
 
 <!-- Add your screenshots here -->
 
-| Home Screen                   | User Comparison                     | Widgets                             |
-|-------------------------------|-------------------------------------|-------------------------------------|
-| ![Home](screenshots/home.png) | ![Compare](screenshots/compare.png) | ![Widgets](screenshots/widgets.png) |
 
-### Demo Videos
+<img src="https://github.com/user-attachments/assets/87f61271-fe19-4ede-b995-85c9900724e3" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/ee7ab488-c724-4c0c-8d43-a97f1973bd14" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/c5387a46-44f4-43fe-a0e8-a40e4f4efdb3" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/a31aee9b-5796-443d-adae-1e277dda9f0b" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/e5f22ed0-5308-4dc7-a28b-50caf35831f2" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/98732dca-b844-49bf-8cff-360493bb44c2" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/f17c7e14-1777-428a-832b-7d5a2bf433e2" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/b76b3600-01a4-4800-b118-f92fc3a02940" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/048aaa4a-d81d-4d2d-a8c2-7795a6b4178b" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/aca4845a-3001-4397-8d24-07f8d53287bf" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/76efdcad-728e-4a01-a4d5-0f3fe48c8dfc" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/f8215eae-eca8-4875-9316-b54923e9f19a" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/45bbe78a-2fc0-4361-bdb0-9fc6c0784da5" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/d12f4b3e-e6f0-4850-93f7-8f2fcb42143e" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/f96c2237-c6da-4f13-93b0-02a586003fc6" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/ef4187a1-2b47-4357-9c1a-44d27241baa9" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/94881011-1e8e-4dd6-838b-badd4e1d1340" alt="Ken Sample" width="150" >
+<img src="https://github.com/user-attachments/assets/0631fa73-da7e-4820-94bc-89a74a5f4743" alt="Ken Sample" width="150" >
+<!-- <img src="" alt="Ken Sample" width="150" > -->
 
-<!-- Add your demo videos here -->
 
-| Feature Demo             | User Comparison                     | Widget Setup                      |
-|--------------------------|-------------------------------------|-----------------------------------|
-| ![Demo](videos/demo.gif) | ![Compare Demo](videos/compare.gif) | ![Widget Demo](videos/widget.gif) |
 
 ## 🏗️ Project Structure
 
