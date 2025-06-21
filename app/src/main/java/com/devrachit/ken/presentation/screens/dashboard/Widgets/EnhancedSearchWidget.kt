@@ -84,7 +84,9 @@ fun EnhancedSearchWidget(
                     .background(colorResource(R.color.card_elevated))
             ) {
                 Button(
-                    onClick = { /* Handle search button click */ },
+                    onClick = {
+                        onPlatformSearch
+                    },
                     modifier = Modifier
                         .width(56.sdp)
                         .fillMaxHeight()

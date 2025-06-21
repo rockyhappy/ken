@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
 import javax.inject.Inject
 
 @HiltViewModel
@@ -63,6 +64,25 @@ class CompareViewModel @Inject constructor(
     val loadingStatesValues :StateFlow<LoadingStates> = _loadingStatesValues.asStateFlow()
 
     private var searchJob: Job? = null
+
+    // View Mode State
+    private val _friendsViewMode = MutableStateFlow("HORIZONTAL_PAGER")
+    val friendsViewMode: StateFlow<String> = _friendsViewMode.asStateFlow()
+
+    init {
+        // Load saved view mode on initialization
+        viewModelScope.launch(Dispatchers.IO) {
+            val savedViewMode = dataStoreRepository.readFriendsViewMode()
+            _friendsViewMode.value = savedViewMode
+        }
+    }
+
+    fun updateFriendsViewMode(viewMode: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _friendsViewMode.value = viewMode
+            dataStoreRepository.saveFriendsViewMode(viewMode)
+        }
+    }
 
     fun loadAllUsersInfo(){
         viewModelScope.launch {

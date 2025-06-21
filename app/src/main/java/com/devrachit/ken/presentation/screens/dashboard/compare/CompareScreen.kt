@@ -21,6 +21,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +32,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.devrachit.ken.R
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.HeatmapCard
 import com.devrachit.ken.presentation.screens.dashboard.compare.components.CompareList
@@ -51,6 +55,7 @@ import com.google.firebase.ktx.Firebase
 fun CompareScreen(
     uiState: CompareUiStates,
     loadingStates: LoadingStates,
+    friendsViewMode: String = "LIST",
     onFirstLoad: () -> Unit = {},
     onRefreshAllData: () -> Unit = {},
     onSearchTextChange: (String) -> Unit = {},
@@ -61,6 +66,7 @@ fun CompareScreen(
     onHidePlatformResult: () -> Unit = {},
     onRemoveUser: (String) -> Unit = {},
     onRefreshUser: (String) -> Unit = {},
+    onViewModeChanged: (String) -> Unit = {},
     getEasyGraphData: () -> List<com.devrachit.ken.presentation.screens.dashboard.compare.QuestionGraphData> = { emptyList() },
     getMediumGraphData: () -> List<com.devrachit.ken.presentation.screens.dashboard.compare.QuestionGraphData> = { emptyList() },
     getHardGraphData: () -> List<com.devrachit.ken.presentation.screens.dashboard.compare.QuestionGraphData> = { emptyList() }
@@ -77,7 +83,21 @@ fun CompareScreen(
             onFirstLoad.invoke()
         }
     )
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                if (hasInitiallyLoaded) {
+                    onFirstLoad.invoke()
+                }
+            }
+        }
 
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
     LaunchedEffect(true) {
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
             param(FirebaseAnalytics.Param.SCREEN_NAME, "compare_screen")
@@ -106,6 +126,8 @@ fun CompareScreen(
                     CompareList(
                         modifier = Modifier.padding(top = 8.sdp),
                         uiState = uiState,
+                        initialViewMode = friendsViewMode,
+                        onViewModeChanged = onViewModeChanged,
                         onRemoveUser = { username ->
                             firebaseAnalytics.logEvent("compare_user_removed") {
                                 param("username", username)
@@ -168,7 +190,7 @@ fun CompareScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.sdp, end= 16.sdp, top= 18.sdp),
-            placeholder = "Search users to compare...",
+            placeholder = "Add a friend to compete with",
             searchText = uiState.searchQuery,
             localResults = uiState.searchResults,
             showSuggestions = uiState.showSearchSuggestions,

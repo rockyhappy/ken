@@ -5,6 +5,8 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NamedNavArgument
@@ -19,6 +21,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.devrachit.ken.presentation.screens.dashboard.compare.CompareScreen
 import com.devrachit.ken.presentation.screens.dashboard.compare.CompareViewModel
+import com.devrachit.ken.presentation.screens.dashboard.compareusers.CompareUsersScreen
+import com.devrachit.ken.presentation.screens.dashboard.compareusers.CompareUsersViewModel
 import com.devrachit.ken.presentation.screens.dashboard.home.HomeScreen
 import com.devrachit.ken.presentation.screens.dashboard.home.HomeViewmodel
 import com.devrachit.ken.presentation.screens.dashboard.questions.QuestionsScreen
@@ -45,47 +49,105 @@ fun NavGraph(
                 onFirstLoad = { viewmodel.loadUserDetails() },
             )
         }
-        
+
         animatedComposable(Screen.Questions.route) {
             QuestionsScreen()
         }
-        
+
         animatedComposable(Screen.Compare.route) {
             val viewmodel = hiltViewModel<CompareViewModel>()
             CompareScreen(
                 uiState = viewmodel.userStatesValues.collectAsStateWithLifecycle().value,
                 loadingStates = viewmodel.loadingStatesValues.collectAsStateWithLifecycle().value,
+                friendsViewMode = viewmodel.friendsViewMode.collectAsStateWithLifecycle().value,
                 onFirstLoad = { viewmodel.loadAllUsersInfo() },
                 onSearchTextChange = { query -> viewmodel.updateSearchQuery(query) },
-                onSuggestionClick = { username, userInfo -> viewmodel.selectSearchResult(username, userInfo) },
-                onNavigateToUserDetails = { username -> 
+                onSuggestionClick = { username, userInfo ->
+                    viewmodel.selectSearchResult(
+                        username,
+                        userInfo
+                    )
+                },
+                onNavigateToUserDetails = { username ->
                     appNavController?.navigate(Screen.UserDetails.createRoute(username))
                 },
                 onNavigateToCompareUsers = { username ->
                     appNavController?.navigate(Screen.CompareUsers.createRoute(username))
                 },
-                onPlatformSearch = { 
+                onPlatformSearch = {
                     val currentQuery = viewmodel.userStatesValues.value.searchQuery
                     viewmodel.searchPlatformUser(currentQuery)
                 },
-                onHidePlatformResult = { 
+                onHidePlatformResult = {
                     viewmodel.hidePlatformResult()
                 },
                 onRemoveUser = { username -> viewmodel.deleteUser(username) },
                 onRefreshUser = { username -> viewmodel.refreshSingleUser(username) },
+                onViewModeChanged = { viewMode -> viewmodel.updateFriendsViewMode(viewMode) },
                 getEasyGraphData = { viewmodel.getEasyQuestionGraphData() },
                 getMediumGraphData = { viewmodel.getMediumQuestionGraphData() },
                 getHardGraphData = { viewmodel.getHardQuestionGraphData() }
             )
         }
-        
+
         animatedComposable(Screen.Sheets.route) {
             SheetsScreen()
         }
-        
+        animatedComposable(
+            route = Screen.CompareUsers.routeWithArgs,
+            arguments = listOf(
+                navArgument("username1") {
+                    type = NavType.StringType
+                    defaultValue = null
+                    nullable = true
+                },
+                navArgument("username2") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+                navArgument("call_from_mainScreen") {
+                    type = NavType.BoolType
+                    defaultValue = true
+                }
+            )
+        ) { backStackEntry ->
+            val compareUsersViewModel: CompareUsersViewModel = hiltViewModel()
+            val uiState = compareUsersViewModel.uiState.collectAsStateWithLifecycle()
+
+            val username1 = backStackEntry.arguments?.getString("username1")
+            val username2 = backStackEntry.arguments?.getString("username2")
+            val callFromMainScreen = backStackEntry.arguments?.getBoolean("call_from_mainScreen") ?: true
+            val availableUsers = remember {
+                emptyList<String>()
+            }
+
+            LaunchedEffect(Unit) {
+                compareUsersViewModel.loadAvailableUsers()
+            }
+
+            CompareUsersScreen(
+                uiState = uiState.value,
+                onInitialize = { u1, u2, users ->
+                    compareUsersViewModel.initializeComparison(u1, u2, users)
+                },
+                onUser1Selected = { username ->
+                    compareUsersViewModel.selectUser1(username)
+                },
+                onUser2Selected = { username ->
+                    compareUsersViewModel.selectUser2(username)
+                },
+                onBackPress = { navController.popBackStack() },
+                username1 = username1,
+                username2 = username2,
+                availableUsers = uiState.value.availableUsers,
+                callFromMainScreen = callFromMainScreen
+            )
+        }
         // UserDetails route removed as it's now handled at the app level
     }
 }
+
 /**
  * Extension function for NavGraphBuilder that adds a composable with standard
  * pager-like slide animations based on navigation direction
@@ -116,12 +178,12 @@ private fun slideEnterTransition(
 ): EnterTransition {
     val targetIndex = getRouteIndex(scope.targetState.destination.route) ?: 0
     val initialIndex = getRouteIndex(scope.initialState.destination.route) ?: 0
-    
+
     val direction = if (targetIndex > initialIndex)
         AnimatedContentTransitionScope.SlideDirection.Left
     else
         AnimatedContentTransitionScope.SlideDirection.Right
-    
+
     return scope.slideIntoContainer(
         towards = direction,
         animationSpec = tween(ANIMATION_DURATION)
@@ -136,12 +198,12 @@ private fun slideExitTransition(
 ): ExitTransition {
     val targetIndex = getRouteIndex(scope.targetState.destination.route) ?: 0
     val initialIndex = getRouteIndex(scope.initialState.destination.route) ?: 0
-    
+
     val direction = if (targetIndex > initialIndex)
         AnimatedContentTransitionScope.SlideDirection.Left
     else
         AnimatedContentTransitionScope.SlideDirection.Right
-    
+
     return scope.slideOutOfContainer(
         towards = direction,
         animationSpec = tween(ANIMATION_DURATION)
