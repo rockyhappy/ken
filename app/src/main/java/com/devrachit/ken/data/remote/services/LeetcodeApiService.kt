@@ -44,4 +44,9 @@ interface LeetcodeApiService {
     @POST("graphql")
     suspend fun fetchUserBadges(@Body requestBody: RequestBody): ResponseBody
 
+
+    @Headers("Content-Type: application/json", "Referer: https://leetcode.com/")
+    @POST("graphql")
+    suspend fun fetchQuestions(@Body requestBody: RequestBody): ResponseBody
+
 }

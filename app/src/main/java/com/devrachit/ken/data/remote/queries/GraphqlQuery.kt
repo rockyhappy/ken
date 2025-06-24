@@ -132,7 +132,7 @@ class GraphqlQuery {
             }
         }
 
-//        val getUserContestRankingQuery = """
+        //        val getUserContestRankingQuery = """
 //    query userContestRankingInfo(${"$"}username: String!) {
 //      userContestRanking(username: ${"$"}username) {
 //        attendedContestsCount
@@ -221,7 +221,6 @@ class GraphqlQuery {
         }
 
 
-
         val getUserBadgesQuery = """
     query userBadges(${"$"}username: String!) {
       matchedUser(username: ${"$"}username) {
@@ -258,5 +257,37 @@ class GraphqlQuery {
                 put("variables", JSONObject().put("username", username))
             }
         }
+
+        val fetchQuestionQuery = """
+query problemsetQuestionListV2(${"$"}limit: Int) {
+  problemsetQuestionListV2(
+    limit: ${"$"}limit,
+    skip: 0,
+    searchKeyword: "",
+    sortBy: { sortField: CUSTOM, sortOrder: ASCENDING },
+    categorySlug: "all-code-essentials"
+  ) {
+    questions {
+      id
+      titleSlug
+      title
+      difficulty
+      paidOnly
+      acRate
+    }
+    totalLength
+    hasMore
+  }
+}
+""".trimIndent()
+
+        fun getQuestionJsonRequest(limit: Int): JSONObject {
+            return JSONObject().apply {
+                put("query", fetchQuestionQuery)
+                put("operationName", "problemsetQuestionListV2")
+                put("variables", JSONObject().put("limit", limit))
+            }
+        }
+
     }
 }

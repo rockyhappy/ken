@@ -9,7 +9,7 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.devrachit.ken" />
+                  <option name="appId" value="com.reyaz.milliaconnect" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
@@ -24,9 +24,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.devrachit.ken" />
-                  <option name="mobileSdkAppId" value="1:779440831284:android:f97818291bcabe03e18361" />
-                  <option name="projectId" value="ken-b3d0f" />
-                  <option name="projectNumber" value="779440831284" />
+                  <option name="mobileSdkAppId" value="1:777013776103:android:bed282b283dd4daca35c42" />
+                  <option name="projectId" value="ken-app-9bf78" />
+                  <option name="projectNumber" value="777013776103" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

@@ -66,7 +66,7 @@ android {
     productFlavors {
         create("dev") {
             dimension = "version"
-            applicationIdSuffix = ".dev"
+//            applicationIdSuffix = ".dev"
 //            versionNameSuffix = "-dev"
             signingConfig = signingConfigs.getByName("devRelease")
         }
