@@ -40,7 +40,7 @@ fun NavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = Screen.Questions.route
     ) {
         // Use extension function for each screen to avoid repetition
         animatedComposable(Screen.Home.route) {
@@ -58,7 +58,8 @@ fun NavGraph(
                 uiState = uiState,
                 onQuestionClick = {
 
-                }
+                },
+                onEvent = viewmodel::onEvent
             )
         }
 

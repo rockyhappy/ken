@@ -1,15 +1,16 @@
 package com.devrachit.ken.domain.usecases.getQuestionsUseCase
 
 import Question
-import com.devrachit.ken.domain.models.LeetCodeUserInfo
+import android.util.Log
 import com.devrachit.ken.domain.policy.CachePolicy
 import com.devrachit.ken.domain.repository.local.LeetcodeLocalRepository
 import com.devrachit.ken.domain.repository.remote.LeetcodeRemoteRepository
 import com.devrachit.ken.utility.NetworkUtility.NetworkManager
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import kotlinx.coroutines.flow.*
+import timber.log.Timber
 import javax.inject.Inject
-
+private const val TAG = "GET_QUESTIONS_USE_CASE"
 class GetQuestionsUseCase @Inject constructor(
     private val localRepository: LeetcodeLocalRepository,
     private val remoteRepository: LeetcodeRemoteRepository,
@@ -18,6 +19,7 @@ class GetQuestionsUseCase @Inject constructor(
 ) {
     operator fun invoke(
         limit: Int,
+        skip: Int,
         forceRefresh: Boolean = true
     ): Flow<Resource<List<Question?>>> = flow {
         // Start by emitting loading state
@@ -48,8 +50,8 @@ class GetQuestionsUseCase @Inject constructor(
         // Only proceed with network call if network is available
         if (isNetworkAvailable) {
             // Fetch from network
-            val networkResult = remoteRepository.fetchQuestions(limit)
-
+            val networkResult = remoteRepository.fetchQuestions(limit=limit, skip = skip)
+            Log.d(TAG, "invoke: ${networkResult.data}")
             // Save successful response to cache
             if (networkResult is Resource.Success && networkResult.data != null) {
                 //localRepository.saveUserInfo(networkResult.data)
@@ -57,6 +59,7 @@ class GetQuestionsUseCase @Inject constructor(
 
             // If network fetch failed but we have cache data, return that instead
             if (networkResult is Resource.Error) {
+                Timber.tag(TAG).d("Error: ${networkResult.message}")
                 /*var cacheData: Resource<LeetCodeUserInfo>? = null
                 localRepository.getUserInfoFlow(username).firstOrNull()?.let { cacheResult ->
                     if (cacheResult is Resource.Success) {

@@ -1,5 +1,6 @@
 package com.devrachit.ken.presentation.screens.dashboard.questions
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devrachit.ken.data.local.dao.LeetCodeUserBadgesDao
@@ -13,7 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
+private const val TAG = "QUESTION_VM"
 @HiltViewModel
 class QuestionsViewModel @Inject constructor(
     private val getQuestionsUseCase: GetQuestionsUseCase
@@ -24,28 +25,37 @@ class QuestionsViewModel @Inject constructor(
     val uiState: StateFlow<QuestionUiState> = _uiState.asStateFlow()
 
     init {
-        fetchQuestions(100)
+        fetchQuestions()
     }
 
-    private fun fetchQuestions(limit: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            getQuestionsUseCase(limit).collect { it ->
-                when (it) {
+    fun onEvent(event: QuestionEvent) {
+        when (event) {
+            is QuestionEvent.LoadQuestions -> {
+                fetchQuestions()
+            }
+        }
+    }
 
+    private fun fetchQuestions() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getQuestionsUseCase(skip = uiState.value.skip, limit = uiState.value.limit).collect { resource ->
+                when (resource) {
                     is Resource.Loading -> {
+                        Log.d(TAG, "fetchQuestions: Loading")
                         _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
                     }
 
                     is Resource.Success -> {
                         _uiState.value = _uiState.value.copy(
-                            questionList = it.data?.mapNotNull { it } ?: emptyList(),
+                            questionList = _uiState.value.questionList + (resource.data?.mapNotNull { it } ?: emptyList()),
                             isLoading = false,
-                            errorMessage = null
+                            errorMessage = null,
+                            page = _uiState.value.page + 1
                         )
                     }
 
                     is Resource.Error -> {
-                        _uiState.value = _uiState.value.copy(errorMessage = it.message, isLoading = false)
+                        _uiState.value = _uiState.value.copy(errorMessage = resource.message, isLoading = false)
                     }
                 }
 

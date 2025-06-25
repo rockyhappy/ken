@@ -259,10 +259,10 @@ class GraphqlQuery {
         }
 
         val fetchQuestionQuery = """
-query problemsetQuestionListV2(${"$"}limit: Int) {
+query problemsetQuestionListV2(${"$"}limit: Int, ${"$"}skip: Int) {
   problemsetQuestionListV2(
     limit: ${"$"}limit,
-    skip: 0,
+    skip: ${"$"}skip,
     searchKeyword: "",
     sortBy: { sortField: CUSTOM, sortOrder: ASCENDING },
     categorySlug: "all-code-essentials"
@@ -281,11 +281,14 @@ query problemsetQuestionListV2(${"$"}limit: Int) {
 }
 """.trimIndent()
 
-        fun getQuestionJsonRequest(limit: Int): JSONObject {
+        fun getQuestionJsonRequest(limit: Int, skip: Int): JSONObject {
             return JSONObject().apply {
                 put("query", fetchQuestionQuery)
                 put("operationName", "problemsetQuestionListV2")
-                put("variables", JSONObject().put("limit", limit))
+                put("variables", JSONObject().apply {
+                    put("limit", limit)
+                    put("skip", skip)
+                })
             }
         }
 

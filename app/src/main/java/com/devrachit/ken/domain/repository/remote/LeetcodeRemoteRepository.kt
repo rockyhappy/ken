@@ -1,6 +1,5 @@
 package com.devrachit.ken.domain.repository.remote
 
-import Question
 import QuestionListResponse
 import com.devrachit.ken.domain.models.ContestRatingHistogramResponse
 import com.devrachit.ken.domain.models.CurrentTimeResponse
@@ -22,5 +21,5 @@ interface LeetcodeRemoteRepository {
     suspend fun fetchContestRankingHistogram(): Resource<ContestRatingHistogramResponse>
     suspend fun fetchUserContestRanking(username : String): Resource<UserContestRankingResponse>
     suspend fun fetchUserBadges(username: String): Resource<UserBadgesResponse>
-    suspend fun fetchQuestions(limit: Int): Resource<QuestionListResponse>
+    suspend fun fetchQuestions(limit: Int, skip: Int): Resource<QuestionListResponse>
 }
