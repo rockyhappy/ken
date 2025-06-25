@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devrachit.ken.data.local.datastore.DataStoreRepository
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
+import com.devrachit.ken.domain.repository.remote.LeetcodeRemoteRepository
 import com.devrachit.ken.domain.usecases.getUserInfoUsecase.GetUserInfoUseCase
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
 import com.devrachit.ken.domain.usecases.logout.LogoutUseCase
@@ -43,7 +44,8 @@ class MainViewModel @Inject constructor(
     private val dataStoreRepository: DataStoreRepository,
     private val getUserQuestionStatusUseCase: GetUserQuestionStatusUseCase,
     private val savedStateHandle: SavedStateHandle,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
+    private val repository: LeetcodeRemoteRepository
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(false)

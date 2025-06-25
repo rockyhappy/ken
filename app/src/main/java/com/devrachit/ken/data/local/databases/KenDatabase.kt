@@ -10,8 +10,10 @@ import com.devrachit.ken.data.local.dao.LeetCodeUserDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserProfileCalenderDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserRecentSubmissionDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserBadgesDao
+import com.devrachit.ken.data.local.dao.LeetcodeQuestionDao
 import com.devrachit.ken.data.local.entity.LeetCodeConverters
 import com.devrachit.ken.data.local.entity.LeetCodeUserEntity
+import com.devrachit.ken.data.local.entity.QuestionEntity
 import com.devrachit.ken.data.local.entity.UserContestRankingEntity
 import com.devrachit.ken.data.local.entity.UserProfileCalenderEntity
 import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
@@ -26,9 +28,10 @@ import com.devrachit.ken.data.local.entity.UserBadgesConverters
         UserProfileCalenderEntity::class,
         UserRecentSubmissionEntity::class,
         UserContestRankingEntity::class,
-        UserBadgesEntity::class
+        UserBadgesEntity::class,
+        QuestionEntity::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 @TypeConverters(LeetCodeConverters::class, UserBadgesConverters::class)
@@ -39,6 +42,7 @@ abstract class KenDatabase : RoomDatabase() {
     abstract fun leetcodeUserRecentSubmissionDao(): LeetCodeUserRecentSubmissionDao
     abstract fun leetcodeUserContestRankingDao(): LeetCodeUserContestRatingDao
     abstract fun leetcodeUserBadgesDao(): LeetCodeUserBadgesDao
+    abstract fun leetcodeQuestionDao(): LeetcodeQuestionDao
 
     companion object {
         @Volatile

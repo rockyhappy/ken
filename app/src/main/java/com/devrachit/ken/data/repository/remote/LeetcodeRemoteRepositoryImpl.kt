@@ -1,5 +1,6 @@
 package com.devrachit.ken.data.repository.remote
 
+import QuestionListResponse
 import android.util.Log
 import com.devrachit.ken.data.remote.queries.GraphqlQuery
 import com.devrachit.ken.data.remote.services.LeetcodeApiService
@@ -21,7 +22,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import timber.log.Timber
 import javax.inject.Inject
-
+private const val TAG = "LEETCODE_REMOTE_REPOSITORY_IMPL"
 class LeetcodeRemoteRepositoryImpl @Inject constructor(
     private val apiService: LeetcodeApiService
 ) : LeetcodeRemoteRepository {
@@ -132,6 +133,23 @@ class LeetcodeRemoteRepositoryImpl @Inject constructor(
             Resource.Success(userBadges)
         }
         catch (e: Exception){
+            Resource.Error("Error fetching user badges: ${e.message}")
+        }
+    }
+
+    override suspend fun fetchQuestions(limit: Int, skip: Int): Resource<QuestionListResponse> {
+        Log.d(TAG, "fetchQuestions: $limit $skip")
+        val jsonRequest = GraphqlQuery.getQuestionJsonRequest(limit = limit, skip = skip)
+        val request = jsonRequest.toString().toRequestBody("application/json".toMediaType())
+        return try {
+            val response = apiService.fetchQuestions(request)
+            Log.d(TAG,"fetchQuestions: $response")
+            val responseBody = response.string()
+            val questionListResponse= json.decodeFromString<QuestionListResponse>(responseBody)
+            Resource.Success(questionListResponse)
+        }
+        catch (e: Exception){
+            Log.d(TAG,"Error while fetching questions: ${e.message}")
             Resource.Error("Error fetching user badges: ${e.message}")
         }
     }

@@ -1,6 +1,7 @@
 package com.devrachit.ken.domain.repository.local
 
 import com.devrachit.ken.data.local.entity.LeetCodeUserEntity
+import com.devrachit.ken.data.local.entity.QuestionEntity
 import com.devrachit.ken.data.local.entity.UserProfileCalenderEntity
 import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
 import com.devrachit.ken.data.local.entity.UserRecentSubmissionEntity
@@ -22,7 +23,7 @@ interface LeetcodeLocalRepository {
     suspend fun clearUserCache(username: String)
     suspend fun deleteUser(username: String)
     suspend fun cleanExpiredCache(expiryTimeMillis: Long)
-    suspend fun getAllUsers() : List<LeetCodeUserEntity>
+    suspend fun getAllUsers(): List<LeetCodeUserEntity>
 
     suspend fun getLastUserQuestionStatusFetchTime(username: String): Long?
     suspend fun getUserQuestionStatus(username: String): Resource<UserQuestionStatusData>
@@ -33,14 +34,18 @@ interface LeetcodeLocalRepository {
 
     // These function are for the User Streak
     suspend fun getUserProfileCalender(username: String): Resource<UserProfileCalenderEntity>
-    suspend fun saveUserProfileCalender(username : String , userCalender: UserProfileCalenderEntity)
+    suspend fun saveUserProfileCalender(username: String, userCalender: UserProfileCalenderEntity)
     suspend fun deleteUserProfileCalender(username: String)
     suspend fun deleteAllUserProfileCalender()
     suspend fun getLastUserProfileCalenderFetchTime(username: String): Long?
     suspend fun getAllUserCalendars(): List<UserProfileCalenderEntity>
 
     // these functions are for user Recent Submissions
-    suspend fun saveRecentSubmissions(username: String, recentSubmissions: UserRecentSubmissionEntity)
+    suspend fun saveRecentSubmissions(
+        username: String,
+        recentSubmissions: UserRecentSubmissionEntity
+    )
+
     suspend fun getRecentSubmissions(username: String): Resource<UserRecentSubmissionEntity>
     suspend fun deleteRecentSubmissions(username: String)
     suspend fun deleteAllRecentSubmissions()
@@ -59,4 +64,6 @@ interface LeetcodeLocalRepository {
     suspend fun deleteUserBadges(username: String)
     suspend fun deleteAllUserBadges()
     suspend fun getLastUserBadgesFetchTime(username: String): Long?
+
+    suspend fun getQuestions(limit: Int): Resource<QuestionEntity>
 }

@@ -1,19 +1,18 @@
 package com.devrachit.ken.data.repository.local
 
+import com.devrachit.ken.data.local.dao.LeetCodeUserBadgesDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserContestRatingDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserProfileCalenderDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserRecentSubmissionDao
-import com.devrachit.ken.data.local.dao.LeetCodeUserBadgesDao
 import com.devrachit.ken.data.local.entity.LeetCodeUserEntity
+import com.devrachit.ken.data.local.entity.QuestionEntity
+import com.devrachit.ken.data.local.entity.UserBadgesEntity
 import com.devrachit.ken.data.local.entity.UserContestRankingEntity
 import com.devrachit.ken.data.local.entity.UserProfileCalenderEntity
 import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
 import com.devrachit.ken.data.local.entity.UserRecentSubmissionEntity
-import com.devrachit.ken.data.local.entity.UserBadgesEntity
 import com.devrachit.ken.domain.models.LeetCodeUserInfo
-import com.devrachit.ken.domain.models.UserCalendar
-import com.devrachit.ken.domain.models.UserProfileCalendarData
 import com.devrachit.ken.domain.models.UserQuestionStatusData
 import com.devrachit.ken.domain.repository.local.LeetcodeLocalRepository
 import com.devrachit.ken.utility.NetworkUtility.Resource
@@ -214,6 +213,10 @@ class LeetcodeLocalRepositoryImpl @Inject constructor(
 
     override suspend fun getLastUserBadgesFetchTime(username: String): Long? {
         return userBadgesDao.getUserBadges(username)?.lastFetchTime
+    }
+
+    override suspend fun getQuestions(limit: Int): Resource<QuestionEntity> {
+        return Resource.Success(QuestionEntity(4, "dfadfaj", "hard", true))
     }
 
     override suspend fun getAllUsers():List<LeetCodeUserEntity>{

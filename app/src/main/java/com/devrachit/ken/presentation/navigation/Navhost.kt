@@ -6,6 +6,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -26,8 +27,8 @@ import com.devrachit.ken.presentation.screens.dashboard.compareusers.CompareUser
 import com.devrachit.ken.presentation.screens.dashboard.home.HomeScreen
 import com.devrachit.ken.presentation.screens.dashboard.home.HomeViewmodel
 import com.devrachit.ken.presentation.screens.dashboard.questions.QuestionsScreen
+import com.devrachit.ken.presentation.screens.dashboard.questions.QuestionsViewModel
 import com.devrachit.ken.presentation.screens.dashboard.sheets.SheetsScreen
-import com.devrachit.ken.presentation.screens.dashboard.userdetails.UserDetailsScreen
 
 
 private const val ANIMATION_DURATION = 300
@@ -39,7 +40,7 @@ fun NavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = Screen.Questions.route
     ) {
         // Use extension function for each screen to avoid repetition
         animatedComposable(Screen.Home.route) {
@@ -51,7 +52,15 @@ fun NavGraph(
         }
 
         animatedComposable(Screen.Questions.route) {
-            QuestionsScreen()
+            val viewmodel = hiltViewModel<QuestionsViewModel>()
+            val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
+            QuestionsScreen(
+                uiState = uiState,
+                onQuestionClick = {
+
+                },
+                onEvent = viewmodel::onEvent
+            )
         }
 
         animatedComposable(Screen.Compare.route) {

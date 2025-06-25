@@ -55,6 +55,11 @@ object RepositoryModule {
 
     @Provides
     @Singleton
+    fun provideLeetcodeQuestionDao(database: KenDatabase) =
+        database.leetcodeQuestionDao()
+
+    @Provides
+    @Singleton
     fun provideLeetcodeLocalRepository(
         userDao: LeetCodeUserDao,
         userProfileCalenderDao: LeetCodeUserProfileCalenderDao,
