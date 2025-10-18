@@ -52,6 +52,7 @@ fun MainNavHost(
         ) {
             val userDetailsViewModel: UserDetailsViewModel = hiltViewModel()
             val uiState = userDetailsViewModel.uiState.collectAsStateWithLifecycle()
+            val badgeDisplayMode = userDetailsViewModel.badgeDisplayMode.collectAsStateWithLifecycle()
             var hasInitiallyLoaded = rememberSaveable { mutableStateOf(false) }
 
             LaunchedEffect(true) {
@@ -63,6 +64,7 @@ fun MainNavHost(
 
             UserDetailsScreen(
                 uiState = uiState.value,
+                badgeDisplayMode = badgeDisplayMode.value,
                 onRefresh = { userDetailsViewModel.loadUserDetails() },
                 onBackPress = { navController.popBackStack() },
                 onDeleteUser = { username -> 

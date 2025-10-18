@@ -47,6 +47,7 @@ fun NavGraph(
             val viewmodel = hiltViewModel<HomeViewmodel>()
             HomeScreen(
                 uiState = viewmodel.uiState.collectAsStateWithLifecycle().value,
+                badgeDisplayMode = viewmodel.badgeDisplayMode.collectAsStateWithLifecycle().value,
                 onFirstLoad = { viewmodel.loadUserDetails() },
             )
         }

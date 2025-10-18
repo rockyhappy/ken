@@ -146,4 +146,25 @@ class DataStoreRepository(private val context: Context) {
             }.firstOrNull() ?: "LIST"
     }
 
+    // Badge Display Mode Preference
+    private val BADGE_DISPLAY_MODE_KEY = stringPreferencesKey("badge_display_mode")
+
+    val badgeDisplayMode: Flow<String?> = context.dataStore.data
+        .map { preferences ->
+            preferences[BADGE_DISPLAY_MODE_KEY] ?: "DIALOG" // Default to DIALOG view
+        }
+
+    suspend fun saveBadgeDisplayMode(displayMode: String) {
+        context.dataStore.edit { preferences ->
+            preferences[BADGE_DISPLAY_MODE_KEY] = displayMode
+        }
+    }
+
+    suspend fun readBadgeDisplayMode(): String {
+        return context.dataStore.data
+            .map { preferences ->
+                preferences[BADGE_DISPLAY_MODE_KEY] ?: "DIALOG"
+            }.firstOrNull() ?: "DIALOG"
+    }
+
 }

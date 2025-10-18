@@ -63,6 +63,7 @@ import com.devrachit.ken.presentation.screens.dashboard.Widgets.DashboardHeaderD
 @Composable
 fun UserDetailsScreen(
     uiState: UserDetailsUiStates,
+    badgeDisplayMode: String = "DIALOG",
     onRefresh: () -> Unit,
     onBackPress: () -> Unit,
     onDeleteUser: (String) -> Unit = {}
@@ -228,7 +229,8 @@ fun UserDetailsScreen(
                             start = 18.sdp,
                             end = 18.sdp
                         ),
-                        userBadgesResponse = uiState.userBadgesResponse!!
+                        userBadgesResponse = uiState.userBadgesResponse!!,
+                        badgeDisplayMode = badgeDisplayMode
                     )
                 }
                 uiState.userBadgesResponse != null && (uiState.userBadgesResponse!!.data?.matchedUser?.badges?.size) == 0 -> {

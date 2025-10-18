@@ -38,7 +38,8 @@ class UserDetailsViewModel @Inject constructor(
     private val getUserBadgesUseCase: GetUserBadgesUseCase,
     private val getUserContestRankingUseCase: GetUserContestRankingUseCase,
     private val getContestRankingHistogramUseCase: GetContestRankingHistogramUseCase,
-    private val deleteUserUsecase: DeleteUserUsecase
+    private val deleteUserUsecase: DeleteUserUsecase,
+    private val dataStoreRepository: com.devrachit.ken.data.local.datastore.DataStoreRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UserDetailsUiStates())
@@ -47,12 +48,25 @@ class UserDetailsViewModel @Inject constructor(
     private val _loadingState = MutableStateFlow(UserDetailsLoadingStates())
     val loadingState: StateFlow<UserDetailsLoadingStates> = _loadingState.asStateFlow()
 
+    // Badge Display Mode State
+    private val _badgeDisplayMode = MutableStateFlow("DIALOG")
+    val badgeDisplayMode: StateFlow<String> = _badgeDisplayMode.asStateFlow()
+
     private val username: String = savedStateHandle.get<String>("username") ?: ""
 
     init {
         _uiState.value = _uiState.value.copy(username = username)
         if (username.isNotEmpty()) {
             loadUserDetails()
+        }
+        
+        // Continuously observe badge display mode changes from DataStore
+        viewModelScope.launch(Dispatchers.IO) {
+            dataStoreRepository.badgeDisplayMode.collect { badgeMode ->
+                badgeMode?.let {
+                    _badgeDisplayMode.value = it
+                }
+            }
         }
     }
 

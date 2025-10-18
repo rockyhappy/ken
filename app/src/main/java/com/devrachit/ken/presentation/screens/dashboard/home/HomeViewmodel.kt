@@ -45,6 +45,21 @@ class HomeViewmodel @Inject constructor(
     private val _loadingState = MutableStateFlow(LoadingStates())
     val loadingState: StateFlow<LoadingStates> = _loadingState.asStateFlow()
 
+    // Badge Display Mode State
+    private val _badgeDisplayMode = MutableStateFlow("DIALOG")
+    val badgeDisplayMode: StateFlow<String> = _badgeDisplayMode.asStateFlow()
+
+    init {
+        // Continuously observe badge display mode changes from DataStore
+        viewModelScope.launch(Dispatchers.IO) {
+            dataStoreRepository.badgeDisplayMode.collect { badgeMode ->
+                badgeMode?.let {
+                    _badgeDisplayMode.value = it
+                }
+            }
+        }
+    }
+
     private suspend fun updateLoadingState() {
         _uiState.value =
             _uiState.value.copy(

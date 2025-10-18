@@ -2,6 +2,8 @@ package com.devrachit.ken.presentation.screens.dashboard.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devrachit.ken.domain.usecases.badgeDisplayMode.GetBadgeDisplayModeUseCase
+import com.devrachit.ken.domain.usecases.badgeDisplayMode.SaveBadgeDisplayModeUseCase
 import com.devrachit.ken.domain.usecases.displayType.GetDisplayTypeUseCase
 import com.devrachit.ken.domain.usecases.displayType.SaveDisplayTypeUseCase
 import com.devrachit.ken.domain.usecases.getCurrentTime.GetCurrentTime
@@ -17,12 +19,18 @@ import javax.inject.Inject
 class SettingsViewmodel@Inject constructor(
     private val getCurrentTime: GetCurrentTime,
     private val getDisplayTypeUseCase: GetDisplayTypeUseCase,
-    private val saveDisplayTypeUseCase: SaveDisplayTypeUseCase
+    private val saveDisplayTypeUseCase: SaveDisplayTypeUseCase,
+    private val getBadgeDisplayModeUseCase: GetBadgeDisplayModeUseCase,
+    private val saveBadgeDisplayModeUseCase: SaveBadgeDisplayModeUseCase
 ): ViewModel() {
     
     // Display Type State
     private val _displayType = MutableStateFlow("LIST")
     val displayType: StateFlow<String> = _displayType.asStateFlow()
+
+    // Badge Display Mode State
+    private val _badgeDisplayMode = MutableStateFlow("DIALOG")
+    val badgeDisplayMode: StateFlow<String> = _badgeDisplayMode.asStateFlow()
 
     init {
         // Continuously observe display type changes from DataStore
@@ -33,12 +41,28 @@ class SettingsViewmodel@Inject constructor(
                 }
             }
         }
+
+        // Continuously observe badge display mode changes from DataStore
+        viewModelScope.launch(Dispatchers.IO) {
+            getBadgeDisplayModeUseCase().collect { badgeMode ->
+                badgeMode?.let {
+                    _badgeDisplayMode.value = it
+                }
+            }
+        }
     }
 
     fun updateDisplayType(displayType: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _displayType.value = displayType
             saveDisplayTypeUseCase(displayType)
+        }
+    }
+
+    fun updateBadgeDisplayMode(displayMode: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _badgeDisplayMode.value = displayMode
+            saveBadgeDisplayModeUseCase(displayMode)
         }
     }
 }

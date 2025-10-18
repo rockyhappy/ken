@@ -47,6 +47,7 @@ import com.google.firebase.ktx.Firebase
 @Composable
 fun HomeScreen(
     uiState: HomeUiStates,
+    badgeDisplayMode: String = "DIALOG",
     onFirstLoad: () -> Unit = {},
 ) {
     val (hasInitiallyLoaded, setHasInitiallyLoaded) = rememberSaveable { mutableStateOf(false) }
@@ -167,7 +168,8 @@ fun HomeScreen(
                             start = 18.sdp,
                             end = 18.sdp
                         ),
-                        userBadgesResponse = uiState.userBadgesResponse
+                        userBadgesResponse = uiState.userBadgesResponse,
+                        badgeDisplayMode = badgeDisplayMode
                     )
                 }
 
