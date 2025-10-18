@@ -66,6 +66,7 @@ import com.devrachit.ken.presentation.screens.dashboard.compare.CompareUiStates
 import com.devrachit.ken.ui.theme.TextStyleInter20Lh24Fw700
 import com.devrachit.ken.utility.composeUtility.SegmentedProgressIndicator2
 import com.devrachit.ken.utility.composeUtility.sdp
+import java.time.Instant
 
 enum class ViewMode(val displayName: String, val icon: Int) {
     LIST("LIST", R.drawable.ic_list),
@@ -329,8 +330,7 @@ private fun FriendsHorizontalPagerView(
                     username = username,
                     userInfo = userInfo,
                     userQuestionProfile = questionProgress,
-                    currentTimestamp = uiState.currentTimestamp ?: (System.currentTimeMillis()
-                        .toDouble() / 1000),
+                    currentTimestamp = uiState.currentTimestamp ?: (Instant.now().epochSecond.toDouble()),
                     calenderDetails = userCalendar?.submissionCalendar ?: "{}",
                     activeYears = userCalendar?.activeYears ?: emptyList(),
                     activeDays = userCalendar?.totalActiveDays ?: 0,

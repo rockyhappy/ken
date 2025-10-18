@@ -2,6 +2,7 @@ package com.devrachit.ken.di.modules
 
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.devrachit.ken.R
 import com.devrachit.ken.data.local.databases.KenDatabase
 import com.devrachit.ken.data.local.dao.LeetCodeUserDao
 import com.devrachit.ken.data.remote.services.LeetcodeApiService
@@ -20,18 +21,44 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import javax.inject.Singleton
+import okhttp3.tls.HandshakeCertificates
+import java.io.InputStream
+import java.security.cert.CertificateFactory
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
+//    @Provides
+//    @Singleton
+//    @WithChucker
+//    fun provideOkHttpClientWithChucker(@ApplicationContext context: Context): OkHttpClient {
+//        return OkHttpClient.Builder()
+//            .addInterceptor(ChuckerInterceptor.Builder(context).build())
+//            .build()
+//    }
     @Provides
     @Singleton
     @WithChucker
     fun provideOkHttpClientWithChucker(@ApplicationContext context: Context): OkHttpClient {
-        return OkHttpClient.Builder()
-            .addInterceptor(ChuckerInterceptor.Builder(context).build())
-            .build()
+    val cf: CertificateFactory = CertificateFactory.getInstance("X.509")
+    val certInputStream: InputStream = context.resources.openRawResource(R.raw.netskope_ca)
+    val ca = certInputStream.use {
+        cf.generateCertificate(it)
+    } as java.security.cert.X509Certificate
+
+    // Build a HandshakeCertificates instance that includes the Netskope certificate
+    val handshakeCertificates = HandshakeCertificates.Builder()
+        .addPlatformTrustedCertificates()
+        .addTrustedCertificate(ca)
+        .build()
+
+    return OkHttpClient.Builder()
+        .sslSocketFactory(handshakeCertificates.sslSocketFactory(),
+            handshakeCertificates.trustManager
+        )
+        .addInterceptor(ChuckerInterceptor.Builder(context).build())
+        .build()
     }
 
     @Provides

@@ -25,11 +25,21 @@ class GetCurrentTime @Inject constructor(
         emit(Resource.Loading())
         val isNetworkAvailable = networkManager.isConnected()
         if (isNetworkAvailable) {
-            val currentTime = remoteRepository.fetchCurrentData()
-            println("hii thie is the current time "+currentTime)
-            dataStoreRepository.savePrimaryTime(currentTime.data?.data?.currentTimestamp.toString())
-            Log.d("HomeViewModel", "Current Time: ")
-            emit(currentTime)
+            try {
+                val currentTime = remoteRepository.fetchCurrentData()
+                println("hii thie is the current time " + currentTime)
+                dataStoreRepository.savePrimaryTime(currentTime.data?.data?.currentTimestamp.toString())
+                Log.d("HomeViewModel", "Current Time: ")
+                emit(currentTime)
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Error fetching current time: ${e.message}")
+                val currentTime = dataStoreRepository.readPrimaryTime()
+                if(currentTime!=null)
+                    emit(Resource.Success(CurrentTimeResponse(
+                        data = CurrentTimeData(currentTimestamp = currentTime.toDouble()))))
+                else
+                    emit(Resource.Error("No internet connection"))
+            }
         } else {
             val currentTime = dataStoreRepository.readPrimaryTime()
             if(currentTime!=null)

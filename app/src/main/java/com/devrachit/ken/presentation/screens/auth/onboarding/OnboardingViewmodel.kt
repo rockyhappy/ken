@@ -56,9 +56,10 @@ class OnboardingViewmodel @Inject constructor(
                 isUserNameValid = false,
                 errorMessage = "Username cannot be empty"
             )
+            Log.d("OnboardingViewModel", "Username cannot be empty")
             return
         }
-
+        Log.d("OnboardingViewModel", "Checking username: $username")
         viewModelScope.launch(Dispatchers.IO) {
             fetchUserInfo(username)
         }
@@ -102,6 +103,7 @@ class OnboardingViewmodel @Inject constructor(
     }
 
     private fun handleErrorState(errorMessage: String?) {
+        Log.d("OnboardingViewModel", "Error checking username: $errorMessage")
         val isUserNotFound = errorMessage?.contains("not found", ignoreCase = true) == true
         val displayMessage = if (isUserNotFound) {
             "User not found on Leetcode"
