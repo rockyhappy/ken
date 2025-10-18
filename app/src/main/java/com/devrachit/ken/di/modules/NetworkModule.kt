@@ -23,42 +23,43 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import javax.inject.Singleton
 import java.io.InputStream
 import java.security.cert.CertificateFactory
+import okhttp3.tls.HandshakeCertificates
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    @Provides
-    @Singleton
-    @WithChucker
-    fun provideOkHttpClientWithChucker(@ApplicationContext context: Context): OkHttpClient {
-        return OkHttpClient.Builder()
-            .addInterceptor(ChuckerInterceptor.Builder(context).build())
-            .build()
-    }
 //    @Provides
 //    @Singleton
 //    @WithChucker
 //    fun provideOkHttpClientWithChucker(@ApplicationContext context: Context): OkHttpClient {
-//    val cf: CertificateFactory = CertificateFactory.getInstance("X.509")
-//    val certInputStream: InputStream = context.resources.openRawResource(R.raw.netskope_ca)
-//    val ca = certInputStream.use {
-//        cf.generateCertificate(it)
-//    } as java.security.cert.X509Certificate
-//
-//    // Build a HandshakeCertificates instance that includes the Netskope certificate
-//    val handshakeCertificates = HandshakeCertificates.Builder()
-//        .addPlatformTrustedCertificates()
-//        .addTrustedCertificate(ca)
-//        .build()
-//
-//    return OkHttpClient.Builder()
-//        .sslSocketFactory(handshakeCertificates.sslSocketFactory(),
-//            handshakeCertificates.trustManager
-//        )
-//        .addInterceptor(ChuckerInterceptor.Builder(context).build())
-//        .build()
+//        return OkHttpClient.Builder()
+//            .addInterceptor(ChuckerInterceptor.Builder(context).build())
+//            .build()
 //    }
+    @Provides
+    @Singleton
+    @WithChucker
+    fun provideOkHttpClientWithChucker(@ApplicationContext context: Context): OkHttpClient {
+    val cf: CertificateFactory = CertificateFactory.getInstance("X.509")
+    val certInputStream: InputStream = context.resources.openRawResource(R.raw.groww_ca)
+    val ca = certInputStream.use {
+        cf.generateCertificate(it)
+    } as java.security.cert.X509Certificate
+
+    // Build a HandshakeCertificates instance that includes the Netskope certificate
+    val handshakeCertificates = HandshakeCertificates.Builder()
+        .addPlatformTrustedCertificates()
+        .addTrustedCertificate(ca)
+        .build()
+
+    return OkHttpClient.Builder()
+        .sslSocketFactory(handshakeCertificates.sslSocketFactory(),
+            handshakeCertificates.trustManager
+        )
+        .addInterceptor(ChuckerInterceptor.Builder(context).build())
+        .build()
+    }
 
     @Provides
     @Singleton
@@ -70,7 +71,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideLeetCodeApi(@WithoutChucker okhttpClient: OkHttpClient): LeetcodeApiService {
+    fun provideLeetCodeApi(@WithChucker okhttpClient: OkHttpClient): LeetcodeApiService {
         return Retrofit.Builder()
             .baseUrl("https://leetcode.com/")
             .client(okhttpClient)

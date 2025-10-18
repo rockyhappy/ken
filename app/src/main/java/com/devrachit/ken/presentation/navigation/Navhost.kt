@@ -26,6 +26,7 @@ import com.devrachit.ken.presentation.screens.dashboard.compareusers.CompareUser
 import com.devrachit.ken.presentation.screens.dashboard.home.HomeScreen
 import com.devrachit.ken.presentation.screens.dashboard.home.HomeViewmodel
 import com.devrachit.ken.presentation.screens.dashboard.questions.QuestionsScreen
+import com.devrachit.ken.presentation.screens.dashboard.settings.SettingsScreen
 import com.devrachit.ken.presentation.screens.dashboard.sheets.SheetsScreen
 import com.devrachit.ken.presentation.screens.dashboard.userdetails.UserDetailsScreen
 
@@ -48,6 +49,10 @@ fun NavGraph(
                 uiState = viewmodel.uiState.collectAsStateWithLifecycle().value,
                 onFirstLoad = { viewmodel.loadUserDetails() },
             )
+        }
+
+        animatedComposable(Screen.Settings.route){
+            SettingsScreen()
         }
 
         animatedComposable(Screen.Questions.route) {

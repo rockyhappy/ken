@@ -133,7 +133,7 @@ fun ScreenContents(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     navItems.forEach { (_, itemData) ->
-                        if (itemData.route != Screen.Logout.route && itemData.route!= Screen.CompareUsers.route)
+                        if (itemData.route != Screen.Logout.route && itemData.route!= Screen.CompareUsers.route && itemData.route!= Screen.Settings.route)
                         NavItem(
                             label = itemData.label,
                             outlinedIconRes = itemData.outlinedIcon,

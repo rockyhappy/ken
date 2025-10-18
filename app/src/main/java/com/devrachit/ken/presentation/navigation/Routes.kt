@@ -7,6 +7,8 @@ sealed class Screen(val route: String) {
     object Compare : Screen("compare")
     object Sheets : Screen("sheets")
     object Logout : Screen("logout")
+
+    object Settings : Screen("settings")
     object UserDetails : Screen("user_details/{username}") {
         fun createRoute(username: String) = "user_details/$username"
         const val routeWithArgs = "user_details/{username}"
