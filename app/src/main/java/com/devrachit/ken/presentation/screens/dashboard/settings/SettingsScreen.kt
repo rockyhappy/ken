@@ -18,7 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.devrachit.ken.R
 import com.devrachit.ken.presentation.screens.dashboard.settings.components.BadgeDisplayModeSelector
 import com.devrachit.ken.presentation.screens.dashboard.settings.components.DisplayTypeSelector
-import com.devrachit.ken.ui.theme.TextStyleInter20Lh24Fw700
+import com.devrachit.ken.ui.theme.TextStyleInter16Lh24Fw700
 import com.devrachit.ken.utility.composeUtility.sdp
 
 @Composable
@@ -37,8 +37,8 @@ fun SettingsScreen() {
         Text(
             text = "Settings",
             color = colorResource(R.color.white),
-            style = TextStyleInter20Lh24Fw700(),
-            modifier = Modifier.padding(bottom = 24.sdp)
+            style = TextStyleInter16Lh24Fw700(),
+            modifier = Modifier.padding(bottom = 16.sdp)
         )
         
         DisplayTypeSelector(
@@ -48,7 +48,7 @@ fun SettingsScreen() {
             }
         )
         
-        Spacer(modifier = Modifier.height(20.sdp))
+        Spacer(modifier = Modifier.height(12.sdp))
         
         BadgeDisplayModeSelector(
             currentBadgeDisplayMode = currentBadgeDisplayMode,
@@ -56,6 +56,6 @@ fun SettingsScreen() {
                 viewmodel.updateBadgeDisplayMode(displayMode)
             }
         )
-        Spacer(modifier = Modifier.height(80.sdp))
+        Spacer(modifier = Modifier.height(40.sdp))
     }
 }

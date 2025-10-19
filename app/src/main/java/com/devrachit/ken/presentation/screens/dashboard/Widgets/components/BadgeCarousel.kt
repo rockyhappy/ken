@@ -100,8 +100,8 @@ fun BadgeCarouselDialog(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(topStart = 200.sdp,topEnd=200.sdp))
-                    .background(colorResource(R.color.bg_neutral).copy(alpha = 0.75f))
+                    .clip(RoundedCornerShape(topStart = 100.sdp,topEnd=100.sdp))
+                    .background(colorResource(R.color.bg_neutral).copy(alpha = 0.95f))
 //                    .clip(RoundedCornerShape(topStart = 100.sdp,topEnd=100.sdp))
             ) {
                 CircularCarouselList(

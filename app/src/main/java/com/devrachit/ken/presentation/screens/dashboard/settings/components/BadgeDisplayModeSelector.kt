@@ -15,7 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import com.devrachit.ken.R
-import com.devrachit.ken.ui.theme.TextStyleInter20Lh24Fw700
+import com.devrachit.ken.ui.theme.TextStyleInter14Lh20Fw600
+import com.devrachit.ken.ui.theme.TextStyleInter12Lh16Fw400
 import com.devrachit.ken.utility.composeUtility.sdp
 
 @Composable
@@ -35,19 +36,20 @@ fun BadgeDisplayModeSelector(
                 shape = RoundedCornerShape(16.sdp)
             )
             .background(color = colorResource(R.color.card_elevated).copy(alpha = 0.3f))
-            .padding(20.sdp)
+            .padding(14.sdp)
     ) {
         Text(
             text = "Badge Display Mode",
             color = colorResource(R.color.white),
-            style = TextStyleInter20Lh24Fw700(),
-            modifier = Modifier.padding(bottom = 16.sdp)
+            style = TextStyleInter14Lh20Fw600(),
+            modifier = Modifier.padding(bottom = 10.sdp)
         )
 
         Text(
             text = "Choose how badges appear when clicked",
             color = colorResource(R.color.white).copy(alpha = 0.7f),
-            modifier = Modifier.padding(bottom = 20.sdp)
+            style = TextStyleInter12Lh16Fw400(),
+            modifier = Modifier.padding(bottom = 12.sdp)
         )
         
         BadgeDisplayMode.entries.forEach { displayMode ->
@@ -58,7 +60,7 @@ fun BadgeDisplayModeSelector(
             )
             
             if (displayMode != BadgeDisplayMode.entries.last()) {
-                Spacer(modifier = Modifier.height(12.sdp))
+                Spacer(modifier = Modifier.height(8.sdp))
             }
         }
     }

@@ -33,8 +33,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import com.devrachit.ken.R
 import com.devrachit.ken.utility.composeUtility.sdp
+import com.devrachit.ken.utility.composeUtility.ssp
 
 @Composable
 fun BadgeDisplayModeOption(
@@ -81,7 +83,7 @@ fun BadgeDisplayModeOption(
                 shape = RoundedCornerShape(12.sdp)
             )
             .clickable { onSelect() }
-            .padding(16.sdp),
+            .padding(12.sdp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -91,7 +93,7 @@ fun BadgeDisplayModeOption(
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.sdp)
+                    .size(32.sdp)
                     .clip(RoundedCornerShape(8.sdp))
                     .background(
                         if (isSelected) {
@@ -106,7 +108,7 @@ fun BadgeDisplayModeOption(
                     painter = painterResource(displayMode.icon),
                     contentDescription = displayMode.displayName,
                     modifier = Modifier
-                        .size(24.sdp)
+                        .size(18.sdp)
                         .rotate(iconRotation),
                     tint = if (isSelected) {
                         colorResource(R.color.white)
@@ -117,7 +119,7 @@ fun BadgeDisplayModeOption(
             }
             
             Column(
-                modifier = Modifier.padding(start = 16.sdp)
+                modifier = Modifier.padding(start = 12.sdp)
             ) {
                 Text(
                     text = displayMode.displayName,
@@ -126,13 +128,15 @@ fun BadgeDisplayModeOption(
                     } else {
                         colorResource(R.color.white).copy(alpha = 0.7f)
                     },
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                    fontSize = 13.ssp,
+                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                 )
                 
                 Text(
                     text = displayMode.description,
                     color = colorResource(R.color.white).copy(alpha = 0.5f),
-                    modifier = Modifier.padding(top = 4.sdp)
+                    fontSize = 11.ssp,
+                    modifier = Modifier.padding(top = 2.sdp)
                 )
             }
         }
@@ -148,29 +152,29 @@ fun BadgeDisplayModeOption(
             if (selected) {
                 Box(
                     modifier = Modifier
-                        .size(24.sdp)
-                        .clip(RoundedCornerShape(12.sdp))
+                        .size(20.sdp)
+                        .clip(RoundedCornerShape(10.sdp))
                         .background(colorResource(R.color.white)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         painter = painterResource(android.R.drawable.checkbox_on_background),
                         contentDescription = "Selected",
-                        modifier = Modifier.size(16.sdp),
+                        modifier = Modifier.size(14.sdp),
                         tint = colorResource(R.color.card_elevated)
                     )
                 }
             } else {
                 Box(
                     modifier = Modifier
-                        .size(24.sdp)
-                        .clip(RoundedCornerShape(12.sdp))
+                        .size(20.sdp)
+                        .clip(RoundedCornerShape(10.sdp))
                         .border(
                             border = BorderStroke(
                                 width = 2.sdp,
                                 color = colorResource(R.color.white).copy(alpha = 0.3f)
                             ),
-                            shape = RoundedCornerShape(12.sdp)
+                            shape = RoundedCornerShape(10.sdp)
                         )
                 )
             }
