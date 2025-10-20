@@ -40,7 +40,7 @@ import com.devrachit.ken.ui.theme.TextStyleInter14Lh20Fw400
 import com.devrachit.ken.utility.composeUtility.sdp
 
 @Composable
-fun QuestionStatsSection(questionDetails: QuestionDetails) {
+fun QuestionStatsSection(questionDetails: QuestionDetails, modifier: Modifier = Modifier) {
     var isExpanded by remember { mutableStateOf(true) }
     val rotationAngle by animateFloatAsState(
         targetValue = if (isExpanded) 180f else 0f,
@@ -48,9 +48,9 @@ fun QuestionStatsSection(questionDetails: QuestionDetails) {
     )
     
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 18.sdp)
+        modifier = modifier
+//            .fillMaxWidth()
+//            .padding(horizontal = 18.sdp)
             .clip(RoundedCornerShape(16.sdp))
             .border(
                 border = BorderStroke(

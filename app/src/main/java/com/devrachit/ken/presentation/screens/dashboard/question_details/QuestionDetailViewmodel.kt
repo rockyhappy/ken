@@ -5,14 +5,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devrachit.ken.domain.models.QuestionDetails
 import com.devrachit.ken.domain.usecases.getQuestionDetails.GetQuestionDetailsUseCase
+import com.devrachit.ken.presentation.screens.dashboard.question_details.components.QuestionSection
+import com.devrachit.ken.presentation.screens.dashboard.question_details.components.parseSections
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import com.devrachit.ken.utility.QuestionHtmlParser
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,11 +45,22 @@ class QuestionDetailViewmodel @Inject constructor(
                     }
                     is Resource.Success -> {
                         result.data?.let { htmlContent ->
-                            val questionDetails = parseHtmlToQuestionDetails(htmlContent)
+                            // Parse HTML on Default dispatcher
+                            val questionDetails = withContext(Dispatchers.Default) {
+                                parseHtmlToQuestionDetails(htmlContent)
+                            }
+                            
+                            // Parse sections on Default dispatcher (heavy operation)
+                            val parsedSections = withContext(Dispatchers.Default) {
+                                parseSections(questionDetails.description)
+                            }
+                            
                             _uiState.value = _uiState.value.copy(
                                 questionDetails = questionDetails,
+                                parsedSections = parsedSections,
                                 htmlContent = htmlContent,
                                 isLoading = false,
+                                isParsing = false,
                                 error = null
                             )
                         }
@@ -68,7 +83,9 @@ class QuestionDetailViewmodel @Inject constructor(
 
 data class QuestionDetailsUiState(
     val questionDetails: QuestionDetails? = null,
+    val parsedSections: List<QuestionSection> = emptyList(),
     val htmlContent: String = "",
     val isLoading: Boolean = false,
+    val isParsing: Boolean = false,
     val error: String? = null
 )

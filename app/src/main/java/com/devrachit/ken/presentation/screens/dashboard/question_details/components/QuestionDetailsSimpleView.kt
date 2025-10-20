@@ -35,6 +35,7 @@ import com.devrachit.ken.utility.composeUtility.sdp
 @Composable
 fun QuestionDetailsSimpleView(
     questionDetails: QuestionDetails,
+    parsedSections: List<QuestionSection>,
     questionSlug: String,
     onBackClick: () -> Unit
 ) {
@@ -72,7 +73,7 @@ fun QuestionDetailsSimpleView(
             Spacer(modifier = Modifier.height(20.sdp))
             
             // Description Section
-            val sections = parseSections(questionDetails.description)
+            val sections = parsedSections
             val descriptionSections = sections.filter { 
                 it.type == SectionType.DESCRIPTION || it.type == SectionType.IMAGE 
             }
@@ -139,12 +140,16 @@ fun QuestionDetailsSimpleView(
             }
             
             // Acceptance Rate and Stats
-            QuestionStatsSection(questionDetails = questionDetails)
+            Box(modifier = Modifier) {
+                QuestionStatsSection(questionDetails = questionDetails, modifier = Modifier.fillMaxWidth())
+            }
             
             Spacer(modifier = Modifier.height(16.sdp))
             
             // Topics Section
-            QuestionTagsSection(questionDetails = questionDetails)
+            Box(modifier = Modifier) {
+                QuestionTagsSection(questionDetails = questionDetails, modifier = Modifier.fillMaxWidth())
+            }
             
             Spacer(modifier = Modifier.height(100.sdp))
         }
@@ -277,7 +282,7 @@ private fun QuestionEngagementStats(questionDetails: QuestionDetails) {
 private fun SectionHeader(title: String) {
     Text(
         text = title,
-        color = colorResource(R.color.blue_normal_500),
+        color = colorResource(R.color.white),
         style = TextStyleInter14Lh20Fw400(),
         fontWeight = FontWeight.Bold
     )

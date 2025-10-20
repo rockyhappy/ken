@@ -27,9 +27,10 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun QuestionPagerContent(
-    questionDetails: QuestionDetails
+    questionDetails: QuestionDetails,
+    parsedSections: List<QuestionSection>
 ) {
-    val sections = parseSections(questionDetails.description)
+    val sections = parsedSections
     val tabs = mutableListOf("Description")
     
     val hasExamples = sections.any { it.type == SectionType.EXAMPLE }

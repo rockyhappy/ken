@@ -16,11 +16,16 @@ fun parseSections(description: String): List<QuestionSection> {
     val imageRegex = """\[?(https?://[^\s\]]+\.(?:jpg|jpeg|png|gif|svg|webp)[^\s\]]*)\]?""".toRegex(RegexOption.IGNORE_CASE)
     val imageUrls = mutableListOf<String>()
     
-    imageRegex.findAll(description).forEach { match ->
-        val url = match.groupValues[1]
-        if (url.isNotEmpty() && !imageUrls.contains(url)) {
-            imageUrls.add(url)
+    try {
+        imageRegex.findAll(description).forEach { match ->
+            val url = match.groupValues[1]
+            if (url.isNotEmpty() && !imageUrls.contains(url)) {
+                imageUrls.add(url)
+            }
         }
+    } catch (e: Exception) {
+        // If regex fails on malformed content, continue without images
+        e.printStackTrace()
     }
     
     // Remove image URLs and their brackets from description for cleaner text parsing

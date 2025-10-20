@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -34,6 +35,7 @@ fun QuestionDetailsContent(
                 // Original Pager View
                 QuestionDetailsPagerView(
                     questionDetails = question,
+                    parsedSections = uiState.parsedSections,
                     questionSlug = questionSlug,
                     onBackClick = onBackClick
                 )
@@ -42,6 +44,7 @@ fun QuestionDetailsContent(
                 // Simple Scrollable View
                 QuestionDetailsSimpleView(
                     questionDetails = question,
+                    parsedSections = uiState.parsedSections,
                     questionSlug = questionSlug,
                     onBackClick = onBackClick
                 )
@@ -58,6 +61,7 @@ fun QuestionDetailsContent(
                 // Default to Pager View
                 QuestionDetailsPagerView(
                     questionDetails = question,
+                    parsedSections = uiState.parsedSections,
                     questionSlug = questionSlug,
                     onBackClick = onBackClick
                 )
@@ -69,6 +73,7 @@ fun QuestionDetailsContent(
 @Composable
 private fun QuestionDetailsPagerView(
     questionDetails: com.devrachit.ken.domain.models.QuestionDetails,
+    parsedSections: List<QuestionSection>,
     questionSlug: String,
     onBackClick: () -> Unit
 ) {
@@ -98,17 +103,20 @@ private fun QuestionDetailsPagerView(
             Spacer(modifier = Modifier.height(12.sdp))
             
             // Stats Section (acceptance rate, likes, dislikes, submissions)
-            QuestionStatsSection(questionDetails = questionDetails)
+            QuestionStatsSection(questionDetails = questionDetails, modifier = Modifier.fillMaxWidth().padding(horizontal = 18.sdp))
             
             Spacer(modifier = Modifier.height(12.sdp))
             
             // Tags Section
-            QuestionTagsSection(questionDetails = questionDetails)
+            QuestionTagsSection(questionDetails = questionDetails, modifier = Modifier.fillMaxWidth().padding(horizontal = 18.sdp))
             
             Spacer(modifier = Modifier.height(12.sdp))
             
             // Pager with sections
-            QuestionPagerContent(questionDetails = questionDetails)
+            QuestionPagerContent(
+                questionDetails = questionDetails,
+                parsedSections = parsedSections
+            )
             
             Spacer(modifier = Modifier.height(100.sdp))
         }

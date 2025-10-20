@@ -110,8 +110,16 @@ object HtmlTextParser {
     fun parseSimpleHtml(html: String): AnnotatedString {
         return buildAnnotatedString {
             var remainingText = html
+            var iterations = 0
+            val maxIterations = 10000 // Safety limit to prevent infinite loops
             
             while (remainingText.isNotEmpty()) {
+                // Safety check to prevent infinite loops
+                if (iterations++ > maxIterations) {
+                    append("\n[Content truncated - too complex to parse]")
+                    break
+                }
+                
                 when {
                     remainingText.startsWith("<b>") || remainingText.startsWith("<strong>") -> {
                         val tag = if (remainingText.startsWith("<b>")) "<b>" else "<strong>"

@@ -38,7 +38,7 @@ import com.devrachit.ken.utility.composeUtility.sdp
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun QuestionTagsSection(questionDetails: QuestionDetails) {
+fun QuestionTagsSection(questionDetails: QuestionDetails, modifier: Modifier = Modifier) {
     if (questionDetails.topicTags.isNotEmpty()) {
         var isExpanded by remember { mutableStateOf(true) }
         val rotationAngle by animateFloatAsState(
@@ -47,9 +47,9 @@ fun QuestionTagsSection(questionDetails: QuestionDetails) {
         )
         
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 18.sdp)
+            modifier = modifier
+//                .fillMaxWidth()
+//                .padding(horizontal = 18.sdp)
                 .clip(RoundedCornerShape(16.sdp))
                 .border(
                     border = BorderStroke(
