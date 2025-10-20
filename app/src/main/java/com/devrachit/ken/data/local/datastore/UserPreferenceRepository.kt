@@ -189,4 +189,25 @@ class DataStoreRepository(private val context: Context) {
             }.firstOrNull() ?: 15
     }
 
+    // Question Details View Mode Preference
+    private val QUESTION_DETAILS_VIEW_MODE_KEY = stringPreferencesKey("question_details_view_mode")
+
+    val questionDetailsViewMode: Flow<String?> = context.dataStore.data
+        .map { preferences ->
+            preferences[QUESTION_DETAILS_VIEW_MODE_KEY] ?: "PAGER" // Default to PAGER view
+        }
+
+    suspend fun saveQuestionDetailsViewMode(viewMode: String) {
+        context.dataStore.edit { preferences ->
+            preferences[QUESTION_DETAILS_VIEW_MODE_KEY] = viewMode
+        }
+    }
+
+    suspend fun readQuestionDetailsViewMode(): String {
+        return context.dataStore.data
+            .map { preferences ->
+                preferences[QUESTION_DETAILS_VIEW_MODE_KEY] ?: "PAGER"
+            }.firstOrNull() ?: "PAGER"
+    }
+
 }
