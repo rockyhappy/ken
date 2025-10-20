@@ -67,6 +67,6 @@ fun SettingsScreen() {
                 viewmodel.updateRecentSubmissionLimit(limit)
             }
         )
-        Spacer(modifier = Modifier.height(40.sdp))
+        Spacer(modifier = Modifier.height(100.sdp))
     }
 }

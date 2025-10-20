@@ -49,6 +49,7 @@ fun HomeScreen(
     uiState: HomeUiStates,
     badgeDisplayMode: String = "DIALOG",
     onFirstLoad: () -> Unit = {},
+    onQuestionDetailsClick: (String) -> Unit = { _ -> }
 ) {
     val (hasInitiallyLoaded, setHasInitiallyLoaded) = rememberSaveable { mutableStateOf(false) }
     val firebaseAnalytics = Firebase.analytics
@@ -190,6 +191,7 @@ fun HomeScreen(
                             bottom = 20.sdp
                         ),
                         currentTime = uiState.currentTimestamp?.toLong(),
+                        onQuestionDetailsClick = onQuestionDetailsClick
                     )
                 }
 

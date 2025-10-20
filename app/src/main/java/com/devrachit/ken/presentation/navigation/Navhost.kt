@@ -49,6 +49,9 @@ fun NavGraph(
                 uiState = viewmodel.uiState.collectAsStateWithLifecycle().value,
                 badgeDisplayMode = viewmodel.badgeDisplayMode.collectAsStateWithLifecycle().value,
                 onFirstLoad = { viewmodel.loadUserDetails() },
+                onQuestionDetailsClick = { questionSlug ->
+                    appNavController?.navigate(Screen.QuestionDetails.createRoute(questionSlug))
+                },
             )
         }
 

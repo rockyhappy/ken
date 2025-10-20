@@ -48,7 +48,8 @@ fun RecentSubmissionCard(
     data: UserRecentAcSubmissionResponse,
     modifier: Modifier = Modifier,
     currentTime: Long? = null,
-    onItemClick: (RecentAcSubmission) -> Unit = {}
+    onItemClick: (RecentAcSubmission) -> Unit = {},
+    onQuestionDetailsClick : (String) -> Unit = {}
 ) {
     Log.d("tagger", data.toString())
     Column(
@@ -90,7 +91,10 @@ fun RecentSubmissionCard(
                                 color = colorResource(R.color.white).copy(alpha = 0.2f)
                             ), shape = RoundedCornerShape(10.sdp)
                         )
-                        .clickable{onItemClick}
+                        .clickable{
+                            onItemClick(data.data.recentAcSubmissionList[index])
+                            onQuestionDetailsClick(data.data.recentAcSubmissionList[index].titleSlug)
+                        }
                         .padding(horizontal = 10.sdp, vertical = 10.sdp)
                         ,
                     horizontalArrangement = Arrangement.SpaceBetween,

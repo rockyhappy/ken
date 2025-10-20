@@ -24,6 +24,7 @@ import com.devrachit.ken.presentation.screens.dashboard.ActivityContent.MainView
 import com.devrachit.ken.presentation.screens.dashboard.ActivityContent.States
 import com.devrachit.ken.presentation.screens.dashboard.compareusers.CompareUsersScreen
 import com.devrachit.ken.presentation.screens.dashboard.compareusers.CompareUsersViewModel
+import com.devrachit.ken.presentation.screens.dashboard.question_details.QuestionsDetailsScreen
 import com.devrachit.ken.presentation.screens.dashboard.userdetails.UserDetailsScreen
 import com.devrachit.ken.presentation.screens.dashboard.userdetails.UserDetailsViewModel
 
@@ -37,15 +38,22 @@ fun MainNavHost(
     uiStates: States
 ) {
     NavHost(navController = navController, startDestination = Screen.Dashboard.route) {
+        mainAnimatedComposable(
+            route = Screen.QuestionDetails.routeWithArgs,
+            arguments = listOf(navArgument("questionSlug") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val questionSlug = backStackEntry.arguments?.getString("questionSlug") ?: ""
+            QuestionsDetailsScreen(questionSlug = questionSlug)
+        }
         mainAnimatedComposable(route = Screen.Dashboard.route) {
             DashboardContent(
-                logout = viewModel::logout, 
-                username = username, 
+                logout = viewModel::logout,
+                username = username,
                 uiState = uiStates,
                 appNavController = navController
             )
         }
-        
+
         mainAnimatedComposable(
             route = Screen.UserDetails.routeWithArgs,
             arguments = listOf(navArgument("username") { type = NavType.StringType })
@@ -78,7 +86,7 @@ fun MainNavHost(
             route = Screen.CompareUsers.routeWithArgs,
             arguments = listOf(
                 navArgument("username1") { type = NavType.StringType },
-                navArgument("username2") { 
+                navArgument("username2") {
                     type = NavType.StringType
                     nullable = true
                     defaultValue = null
@@ -87,7 +95,7 @@ fun MainNavHost(
         ) { backStackEntry ->
             val compareUsersViewModel: CompareUsersViewModel = hiltViewModel()
             val uiState = compareUsersViewModel.uiState.collectAsStateWithLifecycle()
-            
+
             val username1 = backStackEntry.arguments?.getString("username1")
             val username2 = backStackEntry.arguments?.getString("username2")
 
