@@ -52,8 +52,14 @@ fun rememberNavigationItems() = remember {
             R.drawable.ic_sheets_filled,
             Screen.Sheets.route
         ),
-
         5 to NavItemData(
+            label="Settings",
+            R.drawable.ic_settings_outlined,
+            R.drawable.ic_settings_filled,
+            Screen.Settings.route
+        ),
+
+        6 to NavItemData(
             "Logout",
             R.drawable.ic_logout_outlined,
             R.drawable.ic_logout_filled,
@@ -74,7 +80,8 @@ fun getRouteIndex(route: String?): Int? {
         Screen.CompareUsers.route -> 2
         Screen.Questions.route -> 3
         Screen.Sheets.route -> 4
-        Screen.Logout.route -> 5
+        Screen.Sheets.route -> 5
+        Screen.Logout.route -> 6
         else -> null
     }
 }

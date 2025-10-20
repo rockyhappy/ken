@@ -28,4 +28,5 @@ interface LeetcodeRemoteRepository {
     suspend fun fetchContestRankingHistogram(): Resource<ContestRatingHistogramResponse>
     suspend fun fetchUserContestRanking(username : String): Resource<UserContestRankingResponse>
     suspend fun fetchUserBadges(username: String): Resource<UserBadgesResponse>
+    suspend fun fetchQuestionDetails(slug: String): Resource<String>
 }

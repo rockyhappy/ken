@@ -30,11 +30,35 @@
         </activity>
         <activity
             android:name=".presentation.screens.dashboard.ActivityContent.MainActivity"
-            android:exported="false"
+            android:exported="true"
             android:screenOrientation="portrait"
-
+            android:launchMode="singleTask"
             android:theme="@style/Theme.Ken"
             tools:ignore="DiscouragedApi">
+            <!-- Deep link for LeetCode problem URLs -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                
+                <!-- Match https://leetcode.com/problems/[slug] -->
+                <data
+                    android:scheme="https"
+                    android:host="leetcode.com"
+                    android:pathPrefix="/problems/" />
+            </intent-filter>
+            
+            <!-- Also support http -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                
+                <data
+                    android:scheme="http"
+                    android:host="leetcode.com"
+                    android:pathPrefix="/problems/" />
+            </intent-filter>
         </activity>
         <receiver
             android:name=".widget.SimpleTextWidgetProvider"

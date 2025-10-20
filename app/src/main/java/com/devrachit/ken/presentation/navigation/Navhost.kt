@@ -26,6 +26,7 @@ import com.devrachit.ken.presentation.screens.dashboard.compareusers.CompareUser
 import com.devrachit.ken.presentation.screens.dashboard.home.HomeScreen
 import com.devrachit.ken.presentation.screens.dashboard.home.HomeViewmodel
 import com.devrachit.ken.presentation.screens.dashboard.questions.QuestionsScreen
+import com.devrachit.ken.presentation.screens.dashboard.settings.SettingsScreen
 import com.devrachit.ken.presentation.screens.dashboard.sheets.SheetsScreen
 import com.devrachit.ken.presentation.screens.dashboard.userdetails.UserDetailsScreen
 
@@ -46,8 +47,16 @@ fun NavGraph(
             val viewmodel = hiltViewModel<HomeViewmodel>()
             HomeScreen(
                 uiState = viewmodel.uiState.collectAsStateWithLifecycle().value,
+                badgeDisplayMode = viewmodel.badgeDisplayMode.collectAsStateWithLifecycle().value,
                 onFirstLoad = { viewmodel.loadUserDetails() },
+                onQuestionDetailsClick = { questionSlug ->
+                    appNavController?.navigate(Screen.QuestionDetails.createRoute(questionSlug))
+                },
             )
+        }
+
+        animatedComposable(Screen.Settings.route){
+            SettingsScreen()
         }
 
         animatedComposable(Screen.Questions.route) {

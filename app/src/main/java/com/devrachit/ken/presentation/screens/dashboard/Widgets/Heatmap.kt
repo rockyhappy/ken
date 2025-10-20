@@ -34,6 +34,10 @@ import com.devrachit.ken.ui.theme.TextStyleInter12Lh16Fw700
 import com.devrachit.ken.utility.composeUtility.CompletePreviews
 import com.devrachit.ken.utility.composeUtility.sdp
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.format.TextStyle
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -59,28 +63,48 @@ fun HeatmapRevamp2(
     val cellSize = 10.sdp
     val cellSpacing = 2.sdp
     val cornerRadius = 2.sdp
+//    val currentDate = remember(currentTimestamp) {
+//        val instant = Date(currentTimestamp.toLong() * 1000)
+//        val calendar = Calendar.getInstance()
+//        calendar.time = instant
+//        calendar
+//    }
+//
+//
+//    val currentDayOfWeek = SimpleDateFormat("EEEE", Locale.getDefault()).format(currentDate.time)
+//    val currentMonth = SimpleDateFormat("MMMM", Locale.getDefault()).format(currentDate.time)
+//    val currentDayOfMonth = currentDate.get(Calendar.DAY_OF_MONTH)
+//
+//
+//    val dayInfo = "Current day: $currentDayOfWeek, $currentMonth $currentDayOfMonth"
+//    val currentMonthData = activityData.dayModels.filter { dayModel ->
+//        val calendar = Calendar.getInstance()
+//        calendar.set(Calendar.YEAR, dayModel.year)
+//        calendar.set(Calendar.MONTH, dayModel.monthPosition)
+//        calendar.set(Calendar.DAY_OF_MONTH, dayModel.day)
+//        calendar.get(Calendar.MONTH) == currentDate.get(Calendar.MONTH) && calendar.get(Calendar.YEAR) == currentDate.get(
+//            Calendar.YEAR
+//        )
+//    }
     val currentDate = remember(currentTimestamp) {
-        val instant = Date(currentTimestamp.toLong() * 1000)
-        val calendar = Calendar.getInstance()
-        calendar.time = instant
-        calendar
+        val instant = Instant.ofEpochSecond(currentTimestamp.toLong())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            LocalDate.ofInstant(instant, ZoneOffset.UTC)
+        } else {
+            instant.atZone(ZoneOffset.UTC).toLocalDate()
+        }
     }
 
 
-    val currentDayOfWeek = SimpleDateFormat("EEEE", Locale.getDefault()).format(currentDate.time)
-    val currentMonth = SimpleDateFormat("MMMM", Locale.getDefault()).format(currentDate.time)
-    val currentDayOfMonth = currentDate.get(Calendar.DAY_OF_MONTH)
+    val currentDayOfWeek = currentDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+    val currentMonth = currentDate.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
+    val currentDayOfMonth = currentDate.dayOfMonth
 
 
     val dayInfo = "Current day: $currentDayOfWeek, $currentMonth $currentDayOfMonth"
     val currentMonthData = activityData.dayModels.filter { dayModel ->
-        val calendar = Calendar.getInstance()
-        calendar.set(Calendar.YEAR, dayModel.year)
-        calendar.set(Calendar.MONTH, dayModel.monthPosition)
-        calendar.set(Calendar.DAY_OF_MONTH, dayModel.day)
-        calendar.get(Calendar.MONTH) == currentDate.get(Calendar.MONTH) && calendar.get(Calendar.YEAR) == currentDate.get(
-            Calendar.YEAR
-        )
+        val localDate = LocalDate.of(dayModel.year, dayModel.monthPosition + 1, dayModel.day)
+        localDate.month == currentDate.month && localDate.year == currentDate.year
     }
 
 
@@ -107,15 +131,17 @@ fun HeatmapRevamp2(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(cellSpacing),
             ){
-                val previousMonthDate = Calendar.getInstance().apply {
-                    time = currentDate.time
-                    add(Calendar.MONTH, -i.toInt())
-                }
+                val previousMonthDate = currentDate.minusMonths(i.toLong())
+//                val previousMonthDate = Calendar.getInstance().apply {
+//                    time = currentDate.time
+//                    add(Calendar.MONTH, -i.toInt())
+//                }
                 Text(
-                    text = SimpleDateFormat(
-                        "MMM",
-                        Locale.getDefault()
-                    ).format(previousMonthDate.time),
+//                    text = SimpleDateFormat(
+//                        "MMM",
+//                        Locale.getDefault()
+//                    ).format(previousMonthDate.time),
+                    text = previousMonthDate.month.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
                     style = TextStyleInter12Lh16Fw700(),
                     modifier = Modifier
                         .padding(bottom = 10.sdp)
@@ -128,29 +154,23 @@ fun HeatmapRevamp2(
 
                     // Filter the activity data to get entries only for the previous month
                     val previousMonthData = activityData.dayModels.filter { dayModel ->
-                        val calendar = Calendar.getInstance()
-                        calendar.set(Calendar.YEAR, dayModel.year)
-                        calendar.set(Calendar.MONTH, dayModel.monthPosition)
-                        calendar.set(Calendar.DAY_OF_MONTH, dayModel.day)
-                        calendar.get(Calendar.MONTH) == previousMonthDate.get(Calendar.MONTH) && calendar.get(
-                            Calendar.YEAR
-                        ) == previousMonthDate.get(Calendar.YEAR)
+                        val localDate =
+                            LocalDate.of(dayModel.year, dayModel.monthPosition + 1, dayModel.day)
+                        localDate.month == previousMonthDate.month && localDate.year == previousMonthDate.year
                     }
 
                     // Create a map for quick lookup of contributions by day for the previous month
                     val dayToActivityMap = previousMonthData.associateBy { it.day }
 
                     // Determine the first day of the previous month
-                    val firstDayOfMonth = Calendar.getInstance().apply {
-                        time = previousMonthDate.time
-                        set(Calendar.DAY_OF_MONTH, 1)
-                    }
+                    val firstDayOfMonth =
+                        LocalDate.of(previousMonthDate.year, previousMonthDate.month, 1)
 
                     // Calculate the day of the week for the first day of the previous month (0 = Sunday, 1 = Monday, etc.)
-                    val firstDayOfWeek = firstDayOfMonth.get(Calendar.DAY_OF_WEEK) % 7
+                    val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
 
                     // Get the total number of days in the previous month (will be used in the loop outside this selection)
-                    val daysInMonth = previousMonthDate.getActualMaximum(Calendar.DAY_OF_MONTH)
+                    val daysInMonth = previousMonthDate.lengthOfMonth()
 
                     for (i in 1..daysInMonth) {
                         val dayModel = dayToActivityMap[i]
@@ -185,7 +205,7 @@ fun HeatmapRevamp2(
         )
         {
             Text(
-                text = SimpleDateFormat("MMM", Locale.getDefault()).format(currentDate.time),
+                text = currentDate.month.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
                 style = TextStyleInter12Lh16Fw700(),
                 modifier = Modifier
                     .padding(bottom = 10.sdp)
@@ -200,12 +220,10 @@ fun HeatmapRevamp2(
                 val dayToActivityMap = currentMonthData.associateBy { it.day }
 
 
-                val firstDayOfMonth = Calendar.getInstance().apply {
-                    time = currentDate.time
-                    set(Calendar.DAY_OF_MONTH, 1)
-                }
+                val firstDayOfMonth = LocalDate.of(currentDate.year, currentDate.month, 1)
                 val firstDayOfWeek =
-                    firstDayOfMonth.get(Calendar.DAY_OF_WEEK) % 7 // 0 = Sunday, 1 = Monday, etc.
+                    firstDayOfMonth.dayOfWeek.value % 7 // 0 = Sunday, 1 = Monday, etc.
+
 
 
                 for (i in 1..currentDayOfMonth) {

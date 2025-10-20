@@ -19,8 +19,8 @@ android {
         applicationId = "com.devrachit.ken"
         minSdk = 26
         targetSdk = 35
-        versionCode = 10
-        versionName = "1.0.7"
+        versionCode = 12
+        versionName = "1.0.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -197,4 +197,5 @@ dependencies {
     implementation ("com.google.android.play:app-update:2.1.0")
     implementation ("com.google.android.play:app-update-ktx:2.1.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.squareup.okhttp3:okhttp-tls:4.12.0")
 }

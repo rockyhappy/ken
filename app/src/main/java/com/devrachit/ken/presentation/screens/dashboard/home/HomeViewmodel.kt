@@ -12,6 +12,7 @@ import com.devrachit.ken.domain.usecases.getUserContestRanking.GetUserContestRan
 import com.devrachit.ken.domain.usecases.getUserProfileCalender.GetUserProfileCalenderUseCase
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
 import com.devrachit.ken.domain.usecases.getUserRecentSubmission.GetUserRecentSubmissionUseCase
+import com.devrachit.ken.domain.usecases.recentSubmissionLimit.GetRecentSubmissionLimitUseCase
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import com.devrachit.ken.utility.constants.Constants.Companion.USERCONTESTPARTICIPATIONERROR
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,7 +37,8 @@ class HomeViewmodel @Inject constructor(
     private val getUserRecentSubmissionUseCase: GetUserRecentSubmissionUseCase,
     private val getUserBadgesUseCase: GetUserBadgesUseCase,
     private val getUserContestRankingUseCase: GetUserContestRankingUseCase,
-    private val getContestRankingHistogramUseCase: GetContestRankingHistogramUseCase
+    private val getContestRankingHistogramUseCase: GetContestRankingHistogramUseCase,
+    private val getRecentSubmissionLimitUseCase: GetRecentSubmissionLimitUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiStates())
@@ -44,6 +46,32 @@ class HomeViewmodel @Inject constructor(
 
     private val _loadingState = MutableStateFlow(LoadingStates())
     val loadingState: StateFlow<LoadingStates> = _loadingState.asStateFlow()
+
+    // Badge Display Mode State
+    private val _badgeDisplayMode = MutableStateFlow("DIALOG")
+    val badgeDisplayMode: StateFlow<String> = _badgeDisplayMode.asStateFlow()
+
+    // Recent Submission Limit State
+    private val _recentSubmissionLimit = MutableStateFlow(15)
+    val recentSubmissionLimit: StateFlow<Int> = _recentSubmissionLimit.asStateFlow()
+
+    init {
+        // Continuously observe badge display mode changes from DataStore
+        viewModelScope.launch(Dispatchers.IO) {
+            dataStoreRepository.badgeDisplayMode.collect { badgeMode ->
+                badgeMode?.let {
+                    _badgeDisplayMode.value = it
+                }
+            }
+        }
+
+        // Continuously observe recent submission limit changes from DataStore
+        viewModelScope.launch(Dispatchers.IO) {
+            getRecentSubmissionLimitUseCase().collect { limit ->
+                _recentSubmissionLimit.value = limit
+            }
+        }
+    }
 
     private suspend fun updateLoadingState() {
         _uiState.value =
@@ -72,7 +100,7 @@ class HomeViewmodel @Inject constructor(
                     launch(Dispatchers.IO) { fetchUserProfileCalender(username) }
                     launch(Dispatchers.IO) { fetchCurrentTime() }
                     launch(Dispatchers.IO) { fetchUserQuestionStatus(username) }
-                    launch(Dispatchers.IO) { fetchUserRecentSubmission(username, 15) }
+                    launch(Dispatchers.IO) { fetchUserRecentSubmission(username, _recentSubmissionLimit.value) }
                     launch(Dispatchers.IO) { fetchUserBadges(username) }
                     launch(Dispatchers.IO) { fetchUserContestRanking(username) }
                     launch(Dispatchers.IO) { fetchContestRankingHistogram() }

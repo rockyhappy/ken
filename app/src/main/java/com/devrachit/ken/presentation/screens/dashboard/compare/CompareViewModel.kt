@@ -66,14 +66,17 @@ class CompareViewModel @Inject constructor(
     private var searchJob: Job? = null
 
     // View Mode State
-    private val _friendsViewMode = MutableStateFlow("HORIZONTAL_PAGER")
+    private val _friendsViewMode = MutableStateFlow("LIST")
     val friendsViewMode: StateFlow<String> = _friendsViewMode.asStateFlow()
 
     init {
-        // Load saved view mode on initialization
+        // Continuously observe view mode changes from DataStore
         viewModelScope.launch(Dispatchers.IO) {
-            val savedViewMode = dataStoreRepository.readFriendsViewMode()
-            _friendsViewMode.value = savedViewMode
+            dataStoreRepository.friendsViewMode.collect { viewMode ->
+                viewMode?.let {
+                    _friendsViewMode.value = it
+                }
+            }
         }
     }
 

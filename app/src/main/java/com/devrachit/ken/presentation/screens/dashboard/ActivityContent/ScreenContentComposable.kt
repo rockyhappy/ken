@@ -46,6 +46,7 @@ import com.devrachit.ken.presentation.screens.dashboard.Widgets.DashboardHeader
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.NavItem
 import com.devrachit.ken.utility.composeUtility.sdp
 import com.devrachit.ken.utility.composeUtility.shadowEffect
+import com.devrachit.ken.utility.composeUtility.shadowEffect2
 import com.google.accompanist.pager.ExperimentalPagerApi
 import kotlinx.coroutines.Job
 
@@ -133,7 +134,7 @@ fun ScreenContents(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     navItems.forEach { (_, itemData) ->
-                        if (itemData.route != Screen.Logout.route && itemData.route!= Screen.CompareUsers.route)
+                        if (itemData.route != Screen.Logout.route && itemData.route!= Screen.CompareUsers.route && itemData.route!= Screen.Settings.route)
                         NavItem(
                             label = itemData.label,
                             outlinedIconRes = itemData.outlinedIcon,

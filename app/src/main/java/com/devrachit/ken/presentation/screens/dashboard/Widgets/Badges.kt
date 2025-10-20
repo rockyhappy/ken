@@ -56,7 +56,8 @@ import com.devrachit.ken.utility.composeUtility.sdp
 @Composable
 fun BadgesWidget(
     modifier: Modifier = Modifier,
-    userBadgesResponse: UserBadgesResponse
+    userBadgesResponse: UserBadgesResponse,
+    badgeDisplayMode: String = "DIALOG"
 ) {
     Column(
         modifier = modifier
@@ -82,24 +83,35 @@ fun BadgesWidget(
         )
 
         // Display earned badges in a LazyRow
+        val badges = userBadgesResponse.data?.matchedUser?.badges ?: emptyList()
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 10.sdp, end = 10.sdp, bottom = 16.sdp),
             horizontalArrangement = Arrangement.spacedBy(12.sdp)
         ) {
-            val badges = userBadgesResponse.data?.matchedUser?.badges ?: emptyList()
-            items(badges) { badge ->
-                BadgeItem(badge = badge)
+            items(badges.size) { index ->
+                BadgeItem(
+                    badge = badges[index],
+                    allBadges = badges,
+                    badgeIndex = index,
+                    displayMode = badgeDisplayMode
+                )
             }
         }
     }
 }
 
 @Composable
-fun BadgeItem(badge: UserCentricBadge) {
+fun BadgeItem(
+    badge: UserCentricBadge,
+    allBadges: List<UserCentricBadge> = listOf(badge),
+    badgeIndex: Int = 0,
+    displayMode: String = "DIALOG"
+) {
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
+    var showCarousel by remember { mutableStateOf(false) }
 
     // Create a custom ImageLoader with GIF decoding enabled
     val imageLoader = ImageLoader.Builder(context)
@@ -133,23 +145,28 @@ fun BadgeItem(badge: UserCentricBadge) {
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }) {
-                        showDialog = true
+                        if (displayMode == "CAROUSEL") {
+                            showCarousel = true
+                        } else {
+                            showDialog = true
+                        }
                     }
             )
 
         }
-
-        // Badge name
-//        Text(
-//            text = badge.displayName ?: "",
-//            color = colorResource(id = R.color.white),
-//            modifier = Modifier.padding(top = 4.sdp)
-//        )
     }
 
-    // Show dialog when badge is clicked
+    // Show dialog or carousel based on displayMode
     if (showDialog) {
         BadgeDetailsDialog(badge = badge, onDismiss = { showDialog = false })
+    }
+    
+    if (showCarousel) {
+        com.devrachit.ken.presentation.screens.dashboard.Widgets.components.BadgeCarouselDialog(
+            badges = allBadges,
+            initialIndex = badgeIndex,
+            onDismiss = { showCarousel = false }
+        )
     }
 }
 

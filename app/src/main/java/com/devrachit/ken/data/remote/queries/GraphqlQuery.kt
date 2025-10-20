@@ -258,5 +258,6 @@ class GraphqlQuery {
                 put("variables", JSONObject().put("username", username))
             }
         }
+
     }
 }

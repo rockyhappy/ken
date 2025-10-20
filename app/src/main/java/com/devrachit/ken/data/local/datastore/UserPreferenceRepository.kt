@@ -3,6 +3,7 @@ package com.devrachit.ken.data.local.datastore
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.devrachit.ken.domain.models.ContestRatingHistogramResponse
@@ -144,6 +145,69 @@ class DataStoreRepository(private val context: Context) {
             .map { preferences ->
                 preferences[FRIENDS_VIEW_MODE_KEY] ?: "LIST"
             }.firstOrNull() ?: "LIST"
+    }
+
+    // Badge Display Mode Preference
+    private val BADGE_DISPLAY_MODE_KEY = stringPreferencesKey("badge_display_mode")
+
+    val badgeDisplayMode: Flow<String?> = context.dataStore.data
+        .map { preferences ->
+            preferences[BADGE_DISPLAY_MODE_KEY] ?: "DIALOG" // Default to DIALOG view
+        }
+
+    suspend fun saveBadgeDisplayMode(displayMode: String) {
+        context.dataStore.edit { preferences ->
+            preferences[BADGE_DISPLAY_MODE_KEY] = displayMode
+        }
+    }
+
+    suspend fun readBadgeDisplayMode(): String {
+        return context.dataStore.data
+            .map { preferences ->
+                preferences[BADGE_DISPLAY_MODE_KEY] ?: "DIALOG"
+            }.firstOrNull() ?: "DIALOG"
+    }
+
+    // Recent Submission Limit Preference
+    private val RECENT_SUBMISSION_LIMIT_KEY = intPreferencesKey("recent_submission_limit")
+
+    val recentSubmissionLimit: Flow<Int> = context.dataStore.data
+        .map { preferences ->
+            preferences[RECENT_SUBMISSION_LIMIT_KEY] ?: 15 // Default to 15
+        }
+
+    suspend fun saveRecentSubmissionLimit(limit: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[RECENT_SUBMISSION_LIMIT_KEY] = limit
+        }
+    }
+
+    suspend fun readRecentSubmissionLimit(): Int {
+        return context.dataStore.data
+            .map { preferences ->
+                preferences[RECENT_SUBMISSION_LIMIT_KEY] ?: 15
+            }.firstOrNull() ?: 15
+    }
+
+    // Question Details View Mode Preference
+    private val QUESTION_DETAILS_VIEW_MODE_KEY = stringPreferencesKey("question_details_view_mode")
+
+    val questionDetailsViewMode: Flow<String?> = context.dataStore.data
+        .map { preferences ->
+            preferences[QUESTION_DETAILS_VIEW_MODE_KEY] ?: "PAGER" // Default to PAGER view
+        }
+
+    suspend fun saveQuestionDetailsViewMode(viewMode: String) {
+        context.dataStore.edit { preferences ->
+            preferences[QUESTION_DETAILS_VIEW_MODE_KEY] = viewMode
+        }
+    }
+
+    suspend fun readQuestionDetailsViewMode(): String {
+        return context.dataStore.data
+            .map { preferences ->
+                preferences[QUESTION_DETAILS_VIEW_MODE_KEY] ?: "PAGER"
+            }.firstOrNull() ?: "PAGER"
     }
 
 }
