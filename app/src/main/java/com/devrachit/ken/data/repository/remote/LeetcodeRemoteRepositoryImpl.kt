@@ -153,4 +153,13 @@ class LeetcodeRemoteRepositoryImpl @Inject constructor(
             Resource.Error("Error fetching user contest ranking: ${e.message}")
         }
     }
+
+    override suspend fun fetchQuestionDetails(slug: String): Resource<String> {
+        return try {
+            val htmlResponse = apiService.fetchQuestionPage(slug)
+            Resource.Success(htmlResponse)
+        } catch (e: Exception) {
+            Resource.Error("Error fetching question details: ${e.message}")
+        }
+    }
 }

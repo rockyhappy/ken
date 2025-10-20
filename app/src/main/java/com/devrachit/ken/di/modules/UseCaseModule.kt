@@ -17,6 +17,7 @@ import com.devrachit.ken.domain.usecases.getUserInfoUsecase.DeleteUserUsecase
 import com.devrachit.ken.domain.usecases.getUserProfileCalender.GetUserProfileCalenderUseCase
 import com.devrachit.ken.domain.usecases.getUserQuestionStatus.GetUserQuestionStatusUseCase
 import com.devrachit.ken.domain.usecases.getUserRecentSubmission.GetUserRecentSubmissionUseCase
+import com.devrachit.ken.domain.usecases.getQuestionDetails.GetQuestionDetailsUseCase
 import com.devrachit.ken.domain.usecases.logout.LogoutUseCase
 import com.devrachit.ken.utility.NetworkUtility.NetworkManager
 import dagger.Module
@@ -199,5 +200,13 @@ object UseCaseModule {
         localRepository: LeetcodeLocalRepository
     ): DeleteUserUsecase {
         return DeleteUserUsecase(localRepository)
+    }
+
+    @Provides
+    fun provideGetQuestionDetailsUseCase(
+        remoteRepository: LeetcodeRemoteRepository,
+        networkManager: NetworkManager
+    ): GetQuestionDetailsUseCase {
+        return GetQuestionDetailsUseCase(remoteRepository, networkManager)
     }
 }
