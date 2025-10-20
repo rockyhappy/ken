@@ -18,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.devrachit.ken.R
 import com.devrachit.ken.presentation.screens.dashboard.settings.components.BadgeDisplayModeSelector
 import com.devrachit.ken.presentation.screens.dashboard.settings.components.DisplayTypeSelector
+import com.devrachit.ken.presentation.screens.dashboard.settings.components.RecentSubmissionLimitSelector
 import com.devrachit.ken.ui.theme.TextStyleInter16Lh24Fw700
 import com.devrachit.ken.utility.composeUtility.sdp
 
@@ -26,6 +27,7 @@ fun SettingsScreen() {
     val viewmodel = hiltViewModel<SettingsViewmodel>()
     val currentDisplayType by viewmodel.displayType.collectAsState()
     val currentBadgeDisplayMode by viewmodel.badgeDisplayMode.collectAsState()
+    val currentSubmissionLimit by viewmodel.recentSubmissionLimit.collectAsState()
     
     Column(
         modifier = Modifier
@@ -54,6 +56,15 @@ fun SettingsScreen() {
             currentBadgeDisplayMode = currentBadgeDisplayMode,
             onBadgeDisplayModeChanged = { displayMode ->
                 viewmodel.updateBadgeDisplayMode(displayMode)
+            }
+        )
+        
+        Spacer(modifier = Modifier.height(12.sdp))
+        
+        RecentSubmissionLimitSelector(
+            currentLimit = currentSubmissionLimit,
+            onLimitChanged = { limit ->
+                viewmodel.updateRecentSubmissionLimit(limit)
             }
         )
         Spacer(modifier = Modifier.height(40.sdp))

@@ -2,6 +2,7 @@ package com.devrachit.ken.presentation.screens.dashboard.Widgets.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -95,14 +96,17 @@ fun BadgeCarouselDialog(
                     }
             )
             
-            // Bottom half - carousel with semi-transparent background
             Box(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(topStart = 100.sdp,topEnd=100.sdp))
+                    .clip(RoundedCornerShape(topStart = 70.sdp,topEnd=70.sdp))
                     .background(colorResource(R.color.bg_neutral).copy(alpha = 0.95f))
-//                    .clip(RoundedCornerShape(topStart = 100.sdp,topEnd=100.sdp))
+                    .border(
+                        width = 2.sdp,
+                        color = colorResource(R.color.card_elevated_twice),
+                        shape = RoundedCornerShape(topStart = 70.sdp,topEnd=70.sdp)
+                    )
             ) {
                 CircularCarouselList(
                     badges = badges,

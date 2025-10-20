@@ -7,6 +7,8 @@ import com.devrachit.ken.domain.usecases.badgeDisplayMode.SaveBadgeDisplayModeUs
 import com.devrachit.ken.domain.usecases.displayType.GetDisplayTypeUseCase
 import com.devrachit.ken.domain.usecases.displayType.SaveDisplayTypeUseCase
 import com.devrachit.ken.domain.usecases.getCurrentTime.GetCurrentTime
+import com.devrachit.ken.domain.usecases.recentSubmissionLimit.GetRecentSubmissionLimitUseCase
+import com.devrachit.ken.domain.usecases.recentSubmissionLimit.SaveRecentSubmissionLimitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +23,9 @@ class SettingsViewmodel@Inject constructor(
     private val getDisplayTypeUseCase: GetDisplayTypeUseCase,
     private val saveDisplayTypeUseCase: SaveDisplayTypeUseCase,
     private val getBadgeDisplayModeUseCase: GetBadgeDisplayModeUseCase,
-    private val saveBadgeDisplayModeUseCase: SaveBadgeDisplayModeUseCase
+    private val saveBadgeDisplayModeUseCase: SaveBadgeDisplayModeUseCase,
+    private val getRecentSubmissionLimitUseCase: GetRecentSubmissionLimitUseCase,
+    private val saveRecentSubmissionLimitUseCase: SaveRecentSubmissionLimitUseCase
 ): ViewModel() {
     
     // Display Type State
@@ -31,6 +35,10 @@ class SettingsViewmodel@Inject constructor(
     // Badge Display Mode State
     private val _badgeDisplayMode = MutableStateFlow("DIALOG")
     val badgeDisplayMode: StateFlow<String> = _badgeDisplayMode.asStateFlow()
+
+    // Recent Submission Limit State
+    private val _recentSubmissionLimit = MutableStateFlow(15)
+    val recentSubmissionLimit: StateFlow<Int> = _recentSubmissionLimit.asStateFlow()
 
     init {
         // Continuously observe display type changes from DataStore
@@ -50,6 +58,13 @@ class SettingsViewmodel@Inject constructor(
                 }
             }
         }
+
+        // Continuously observe recent submission limit changes from DataStore
+        viewModelScope.launch(Dispatchers.IO) {
+            getRecentSubmissionLimitUseCase().collect { limit ->
+                _recentSubmissionLimit.value = limit
+            }
+        }
     }
 
     fun updateDisplayType(displayType: String) {
@@ -63,6 +78,13 @@ class SettingsViewmodel@Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             _badgeDisplayMode.value = displayMode
             saveBadgeDisplayModeUseCase(displayMode)
+        }
+    }
+
+    fun updateRecentSubmissionLimit(limit: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _recentSubmissionLimit.value = limit
+            saveRecentSubmissionLimitUseCase(limit)
         }
     }
 }
