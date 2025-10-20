@@ -155,10 +155,34 @@ object QuestionHtmlParser {
         hintPattern.findAll(hintsContent).forEach { match ->
             val hint = match.groupValues[1]
             if (hint.isNotEmpty()) {
-                hints.add(hint)
+                // Decode unicode escape sequences and HTML entities
+                val decodedHint = decodeUnicodeAndHtml(hint)
+                hints.add(decodedHint)
             }
         }
         
         return hints
+    }
+    
+    private fun decodeUnicodeAndHtml(text: String): String {
+        var decoded = text
+        
+        // Decode unicode escape sequences like \u003c to <
+        val unicodeRegex = "\\\\u([0-9a-fA-F]{4})".toRegex()
+        decoded = unicodeRegex.replace(decoded) { matchResult ->
+            val hexCode = matchResult.groupValues[1]
+            hexCode.toInt(16).toChar().toString()
+        }
+        
+        // Decode HTML entities
+        decoded = decoded
+            .replace("&quot;", "\"")
+            .replace("&lt;", "<")
+            .replace("&gt;", ">")
+            .replace("&amp;", "&")
+            .replace("&#x27;", "'")
+            .replace("&apos;", "'")
+        
+        return decoded
     }
 }

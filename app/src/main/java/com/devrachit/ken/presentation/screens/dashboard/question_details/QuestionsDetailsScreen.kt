@@ -20,7 +20,8 @@ import com.devrachit.ken.utility.composeUtility.sdp
 
 @Composable
 fun QuestionsDetailsScreen(
-    questionSlug: String
+    questionSlug: String,
+    onBackClick: () -> Unit = {}
 ) {
     val viewModel: QuestionDetailViewmodel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
@@ -39,7 +40,11 @@ fun QuestionsDetailsScreen(
                 ErrorState(errorMessage = uiState.error ?: "Unknown error")
             }
             uiState.questionDetails != null -> {
-                QuestionDetailsContent(uiState = uiState)
+                QuestionDetailsContent(
+                    uiState = uiState,
+                    questionSlug = questionSlug,
+                    onBackClick = onBackClick
+                )
             }
         }
     }

@@ -20,6 +20,7 @@ import androidx.compose.ui.res.colorResource
 import com.devrachit.ken.R
 import com.devrachit.ken.domain.models.QuestionDetails
 import com.devrachit.ken.ui.theme.TextStyleInter14Lh20Fw400
+import com.devrachit.ken.utility.HtmlTextParser
 import com.devrachit.ken.utility.composeUtility.sdp
 import kotlinx.coroutines.launch
 
@@ -106,14 +107,24 @@ fun QuestionPagerContent(
             ) {
                 when (tabs[page]) {
                     "Description" -> {
-                        val descriptionSections = sections.filter { it.type == SectionType.DESCRIPTION }
+                        val descriptionSections = sections.filter { 
+                            it.type == SectionType.DESCRIPTION || it.type == SectionType.IMAGE 
+                        }
                         descriptionSections.forEach { section ->
-                            Text(
-                                text = section.content,
-                                color = colorResource(R.color.white).copy(alpha = 0.9f),
-                                style = TextStyleInter14Lh20Fw400(),
-                                modifier = Modifier.padding(bottom = 16.sdp)
-                            )
+                            when (section.type) {
+                                SectionType.DESCRIPTION -> {
+                                    Text(
+                                        text = HtmlTextParser.parseSimpleHtml(section.content),
+                                        color = colorResource(R.color.white).copy(alpha = 0.9f),
+                                        style = TextStyleInter14Lh20Fw400(),
+                                        modifier = Modifier.padding(bottom = 16.sdp)
+                                    )
+                                }
+                                SectionType.IMAGE -> {
+                                    QuestionImageSection(imageUrl = section.content)
+                                }
+                                else -> {}
+                            }
                         }
                     }
                     "Examples" -> {

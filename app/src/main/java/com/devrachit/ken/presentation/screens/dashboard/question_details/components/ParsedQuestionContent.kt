@@ -45,6 +45,9 @@ fun ParsedQuestionContent(
                 SectionType.FOLLOW_UP -> {
                     FollowUpSection(content = section.content)
                 }
+                SectionType.IMAGE -> {
+                    QuestionImageSection(imageUrl = section.content)
+                }
             }
         }
         

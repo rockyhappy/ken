@@ -43,7 +43,10 @@ fun MainNavHost(
             arguments = listOf(navArgument("questionSlug") { type = NavType.StringType })
         ) { backStackEntry ->
             val questionSlug = backStackEntry.arguments?.getString("questionSlug") ?: ""
-            QuestionsDetailsScreen(questionSlug = questionSlug)
+            QuestionsDetailsScreen(
+                questionSlug = questionSlug,
+                onBackClick = { navController.popBackStack() }
+            )
         }
         mainAnimatedComposable(route = Screen.Dashboard.route) {
             DashboardContent(
@@ -78,6 +81,9 @@ fun MainNavHost(
                 onDeleteUser = { username -> 
                     userDetailsViewModel.deleteUser(username)
                     navController.popBackStack()
+                },
+                onQuestionDetailsClick = { questionSlug ->
+                    navController.navigate(Screen.QuestionDetails.createRoute(questionSlug))
                 }
             )
         }

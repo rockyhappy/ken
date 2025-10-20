@@ -16,36 +16,52 @@ import com.devrachit.ken.presentation.screens.dashboard.question_details.Questio
 import com.devrachit.ken.utility.composeUtility.sdp
 
 @Composable
-fun QuestionDetailsContent(uiState: QuestionDetailsUiState) {
+fun QuestionDetailsContent(
+    uiState: QuestionDetailsUiState,
+    questionSlug: String,
+    onBackClick: () -> Unit = {}
+) {
     val scrollState = rememberScrollState()
     
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(top= 12.sdp)
             .background(colorResource(R.color.bg_neutral))
     ) {
         uiState.questionDetails?.let { question ->
-            // Title Section with difficulty badge and colored border
-            QuestionTitleSection(questionDetails = question)
+            // Header with back button and settings
+            QuestionDetailsHeader(
+                questionTitle = question.title,
+                questionSlug = questionSlug,
+                onBackClick = onBackClick
+            )
             
-            Spacer(modifier = Modifier.height(12.sdp))
-            
-            // Stats Section (acceptance rate, likes, dislikes, submissions)
-            QuestionStatsSection(questionDetails = question)
-            
-            Spacer(modifier = Modifier.height(12.sdp))
-            
-            // Tags Section
-            QuestionTagsSection(questionDetails = question)
-            
-            Spacer(modifier = Modifier.height(12.sdp))
-            
-            // Pager with sections
-            QuestionPagerContent(questionDetails = question)
-            
-            Spacer(modifier = Modifier.height(100.sdp))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(top = 12.sdp)
+            ) {
+                // Title Section with difficulty badge and colored border
+                QuestionTitleSection(questionDetails = question)
+                
+                Spacer(modifier = Modifier.height(12.sdp))
+                
+                // Stats Section (acceptance rate, likes, dislikes, submissions)
+                QuestionStatsSection(questionDetails = question)
+                
+                Spacer(modifier = Modifier.height(12.sdp))
+                
+                // Tags Section
+                QuestionTagsSection(questionDetails = question)
+                
+                Spacer(modifier = Modifier.height(12.sdp))
+                
+                // Pager with sections
+                QuestionPagerContent(questionDetails = question)
+                
+                Spacer(modifier = Modifier.height(100.sdp))
+            }
         }
     }
 }

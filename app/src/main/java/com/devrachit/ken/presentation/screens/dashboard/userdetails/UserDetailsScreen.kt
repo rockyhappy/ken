@@ -66,7 +66,8 @@ fun UserDetailsScreen(
     badgeDisplayMode: String = "DIALOG",
     onRefresh: () -> Unit,
     onBackPress: () -> Unit,
-    onDeleteUser: (String) -> Unit = {}
+    onDeleteUser: (String) -> Unit = {},
+    onQuestionDetailsClick: (String) -> Unit = {}
 ) {
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState.isLoading,
@@ -250,6 +251,7 @@ fun UserDetailsScreen(
                             bottom = 0.sdp
                         ),
                         currentTime = uiState.currentTimestamp?.toLong(),
+                        onQuestionDetailsClick = onQuestionDetailsClick
                     )
                 }
                 else -> HomeScreenShimmer()
