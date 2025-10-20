@@ -8,6 +8,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -18,17 +22,22 @@ import com.devrachit.ken.presentation.navigation.MainNavHost
 import com.devrachit.ken.presentation.screens.auth.AuthActivity
 import com.devrachit.ken.utility.composeUtility.LoadingDialog
 import com.devrachit.ken.utility.constants.Constants.Companion.NAVKEYUSERNAME
+import com.devrachit.ken.presentation.navigation.Screen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
+    private var deepLinkQuestionSlug by mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupWindow()
         val username = intent.getStringExtra(NAVKEYUSERNAME) ?: "Guest_User"
+        
+        // Handle deep link for LeetCode problem URLs
+        deepLinkQuestionSlug = handleDeepLink(intent)
         
         viewModel.loadUserDetails()
         
@@ -45,6 +54,16 @@ class MainActivity : ComponentActivity() {
                 username = username,
                 uiStates = uiStates
             )
+            
+            // Navigate to question details if deep link was clicked
+            val currentDeepLinkSlug = deepLinkQuestionSlug
+            if (currentDeepLinkSlug != null) {
+                LaunchedEffect(currentDeepLinkSlug) {
+                    navController.navigate(Screen.QuestionDetails.createRoute(currentDeepLinkSlug))
+                    // Clear the deep link after navigation
+                    deepLinkQuestionSlug = null
+                }
+            }
         }
     }
 
@@ -52,6 +71,33 @@ class MainActivity : ComponentActivity() {
         println("OnResume called")
         super.onResume()
         viewModel.reloadUserDetails()
+    }
+    
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        // Handle deep link when app is already running
+        handleDeepLink(intent)?.let { questionSlug ->
+            // Update state to trigger navigation in Compose
+            deepLinkQuestionSlug = questionSlug
+        }
+    }
+    
+    /**
+     * Extracts question slug from LeetCode problem deep link
+     * Example: https://leetcode.com/problems/two-sum -> "two-sum"
+     */
+    private fun handleDeepLink(intent: Intent): String? {
+        val data = intent.data ?: return null
+        
+        // Check if it's a LeetCode problem URL
+        if (data.host == "leetcode.com" && data.path?.startsWith("/problems/") == true) {
+            // Extract slug from path: /problems/two-sum/ -> two-sum
+            val slug = data.path?.removePrefix("/problems/")?.removeSuffix("/")
+            return if (!slug.isNullOrEmpty()) slug else null
+        }
+        
+        return null
     }
 
 
