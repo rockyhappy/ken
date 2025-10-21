@@ -24,10 +24,10 @@ import com.devrachit.ken.utility.composeUtility.sdp
 fun QuestionDetailsContent(
     uiState: QuestionDetailsUiState,
     questionSlug: String,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    viewMode : String = "PAGER"
 ) {
-    val settingsViewModel: SettingsViewmodel = hiltViewModel()
-    val viewMode by settingsViewModel.questionDetailsViewMode.collectAsState()
+
     
     uiState.questionDetails?.let { question ->
         when (viewMode) {

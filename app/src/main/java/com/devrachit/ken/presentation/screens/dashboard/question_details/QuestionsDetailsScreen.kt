@@ -14,6 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.devrachit.ken.R
 import com.devrachit.ken.presentation.screens.dashboard.question_details.components.QuestionDetailsContent
+import com.devrachit.ken.presentation.screens.dashboard.settings.SettingsViewmodel
 import com.devrachit.ken.ui.theme.TextStyleInter16Lh24Fw700
 import com.devrachit.ken.ui.theme.TextStyleInter14Lh20Fw400
 import com.devrachit.ken.utility.composeUtility.sdp
@@ -26,6 +27,8 @@ fun QuestionsDetailsScreen(
     val viewModel: QuestionDetailViewmodel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
+    val settingsViewModel: SettingsViewmodel = hiltViewModel()
+    val viewMode by settingsViewModel.questionDetailsViewMode.collectAsState()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -43,7 +46,8 @@ fun QuestionsDetailsScreen(
                 QuestionDetailsContent(
                     uiState = uiState,
                     questionSlug = questionSlug,
-                    onBackClick = onBackClick
+                    onBackClick = onBackClick,
+                    viewMode = viewMode
                 )
             }
         }
