@@ -38,7 +38,8 @@ data class WeeklyChallenge(
 data class ChallengeQuestion(
     val questionFrontendId: String,
     val title: String,
-    val titleSlug: String
+    val titleSlug: String,
+    val difficulty: String = ""
 )
 
 @Serializable
@@ -46,5 +47,6 @@ data class WeeklyChallengeQuestion(
     val questionFrontendId: String,
     val title: String,
     val titleSlug: String,
-    val isPaidOnly: Boolean
+    val isPaidOnly: Boolean,
+    val difficulty: String = ""
 )

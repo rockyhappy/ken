@@ -29,8 +29,23 @@ fun ProblemOfTheDayCard(
     onQuestionClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val borderColor = colorResource(R.color.blue_normal_500)
     val isToday = date == LocalDate.now()
+    
+    // Border color based on difficulty
+    val borderColor = when (challenge.question.difficulty.lowercase()) {
+        "easy" -> colorResource(R.color.easy_filled_blue)
+        "medium" -> colorResource(R.color.medium_filled_yellow)
+        "hard" -> colorResource(R.color.hard_filled_red)
+        else -> colorResource(R.color.blue_normal_500)
+    }
+    
+    // Difficulty color
+    val difficultyColor = when (challenge.question.difficulty.lowercase()) {
+        "easy" -> colorResource(R.color.easy_filled_blue)
+        "medium" -> colorResource(R.color.medium_filled_yellow)
+        "hard" -> colorResource(R.color.hard_filled_red)
+        else -> colorResource(R.color.white).copy(alpha = 0.7f)
+    }
     
     Column(
         modifier = modifier
@@ -55,7 +70,7 @@ fun ProblemOfTheDayCard(
         ) {
             Text(
                 text = if (isToday) "Problem of the Day" else "Daily Challenge",
-                color = colorResource(R.color.blue_normal_500),
+                color = colorResource(R.color.content_neutral_primary_white),
                 style = TextStyleInter12Lh16Fw400(),
                 fontWeight = FontWeight.SemiBold
             )
@@ -69,7 +84,7 @@ fun ProblemOfTheDayCard(
         
         Spacer(modifier = Modifier.height(12.sdp))
         
-        // Question ID Badge
+        // Question ID Badge and Difficulty
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.sdp),
             verticalAlignment = Alignment.CenterVertically
@@ -88,34 +103,51 @@ fun ProblemOfTheDayCard(
                 )
             }
             
-            // Status Badge
-            val statusColor = when (challenge.userStatus) {
-                "Finish" -> colorResource(R.color.green_normal_500)
-                "NotStart" -> colorResource(R.color.white).copy(alpha = 0.5f)
-                else -> colorResource(R.color.yellow_normal_500)
+            // Difficulty Badge
+            if (challenge.question.difficulty.isNotEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.sdp))
+                        .background(difficultyColor.copy(alpha = 0.2f))
+                        .padding(horizontal = 10.sdp, vertical = 4.sdp)
+                ) {
+                    Text(
+                        text = challenge.question.difficulty.capitalize(),
+                        color = difficultyColor,
+                        style = TextStyleInter12Lh16Fw400(),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
             
-            val statusText = when (challenge.userStatus) {
-                "Finish" -> "Completed"
-                "NotStart" -> "Not Started"
-                else -> challenge.userStatus
-            }
-            
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(6.sdp))
-                    .background(statusColor.copy(alpha = 0.2f))
-                    .padding(horizontal = 10.sdp, vertical = 4.sdp)
-            ) {
-                Text(
-                    text = statusText,
-                    color = statusColor,
-                    style = TextStyleInter12Lh16Fw400(),
-                    fontWeight = FontWeight.Medium
-                )
-            }
+//            // Status Badge
+//            val statusColor = when (challenge.userStatus) {
+//                "Finish" -> colorResource(R.color.green_normal_500)
+//                "NotStart" -> colorResource(R.color.white).copy(alpha = 0.5f)
+//                else -> colorResource(R.color.yellow_normal_500)
+//            }
+//
+//            val statusText = when (challenge.userStatus) {
+//                "Finish" -> "Completed"
+//                "NotStart" -> "Not Started"
+//                else -> challenge.userStatus
+//            }
+//
+//            Box(
+//                modifier = Modifier
+//                    .clip(RoundedCornerShape(6.sdp))
+//                    .background(statusColor.copy(alpha = 0.2f))
+//                    .padding(horizontal = 10.sdp, vertical = 4.sdp)
+//            ) {
+//                Text(
+//                    text = statusText,
+//                    color = statusColor,
+//                    style = TextStyleInter12Lh16Fw400(),
+//                    fontWeight = FontWeight.Medium
+//                )
+//            }
         }
-        
+
         Spacer(modifier = Modifier.height(12.sdp))
         
         // Question Title

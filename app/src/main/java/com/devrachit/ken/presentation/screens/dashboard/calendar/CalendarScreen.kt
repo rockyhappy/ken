@@ -47,11 +47,12 @@ fun CalendarScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .pullRefresh(pullRefreshState)
                 .background(colorResource(R.color.bg_neutral))
                 .statusBarsPadding()
+                .verticalScroll(rememberScrollState()),
         ) {
-            // Header
-    //        CalendarScreenHeader(onBackClick = onBackClick)
+
 
             when {
                 uiState.isLoading && uiState.dailyChallenges.isEmpty() -> {
@@ -79,9 +80,7 @@ fun CalendarScreen(
                 else -> {
                     Column(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .pullRefresh(pullRefreshState)
-                            .verticalScroll(rememberScrollState())
+                            .fillMaxWidth()
                             .padding(horizontal = 16.sdp, vertical = 12.sdp)
                     ) {
                         // Problem of the Day Card
@@ -119,6 +118,7 @@ fun CalendarScreen(
 
                         // Instructions or additional info
                         CalendarInfo()
+                        Spacer(modifier = Modifier.height(100.sdp))
                     }
                 }
             }

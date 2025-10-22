@@ -270,6 +270,7 @@ class GraphqlQuery {
             questionFrontendId
             title
             titleSlug
+            difficulty
           }
         }
         weeklyChallenges {
@@ -281,6 +282,7 @@ class GraphqlQuery {
             title
             titleSlug
             isPaidOnly
+            difficulty
           }
         }
       }

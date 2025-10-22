@@ -29,6 +29,14 @@ fun QuestionBottomSheet(
     onDismiss: () -> Unit,
     onOpenQuestion: (String) -> Unit
 ) {
+    // Difficulty color
+    val difficultyColor = when (challenge.question.difficulty.lowercase()) {
+        "easy" -> colorResource(R.color.easy_filled_blue)
+        "medium" -> colorResource(R.color.medium_filled_yellow)
+        "hard" -> colorResource(R.color.hard_filled_red)
+        else -> colorResource(R.color.white).copy(alpha = 0.7f)
+    }
+    
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         containerColor = colorResource(R.color.card_elevated),
@@ -85,19 +93,41 @@ fun QuestionBottomSheet(
 
             Spacer(modifier = Modifier.height(8.sdp))
 
-            // Question ID Badge
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(6.sdp))
-                    .background(colorResource(R.color.blue_normal_500).copy(alpha = 0.2f))
-                    .padding(horizontal = 10.sdp, vertical = 4.sdp)
+            // Question ID Badge and Difficulty
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.sdp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "#${challenge.question.questionFrontendId}",
-                    color = colorResource(R.color.blue_normal_500),
-                    style = TextStyleInter12Lh16Fw400(),
-                    fontWeight = FontWeight.Bold
-                )
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.sdp))
+                        .background(colorResource(R.color.blue_normal_500).copy(alpha = 0.2f))
+                        .padding(horizontal = 10.sdp, vertical = 4.sdp)
+                ) {
+                    Text(
+                        text = "#${challenge.question.questionFrontendId}",
+                        color = colorResource(R.color.blue_normal_500),
+                        style = TextStyleInter12Lh16Fw400(),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                
+                // Difficulty Badge
+                if (challenge.question.difficulty.isNotEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.sdp))
+                            .background(difficultyColor.copy(alpha = 0.2f))
+                            .padding(horizontal = 10.sdp, vertical = 4.sdp)
+                    ) {
+                        Text(
+                            text = challenge.question.difficulty.capitalize(),
+                            color = difficultyColor,
+                            style = TextStyleInter12Lh16Fw400(),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(12.sdp))

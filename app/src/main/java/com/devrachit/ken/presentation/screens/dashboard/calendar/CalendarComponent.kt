@@ -197,7 +197,7 @@ private fun CalendarGrid(
                         CalendarDayCell(
                             day = dayOfMonth,
                             isToday = isToday,
-                            hasQuestion = challenge != null,
+                            challenge = challenge,
                             onClick = {
                                 challenge?.let { onDateClick(it) }
                             },
@@ -217,25 +217,55 @@ private fun CalendarGrid(
 private fun CalendarDayCell(
     day: Int,
     isToday: Boolean,
-    hasQuestion: Boolean,
+    challenge: com.devrachit.ken.domain.models.DailyChallenge?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val hasQuestion = challenge != null
+    
+    // Get border color based on difficulty (base colors)
+    val borderColor = when {
+        isToday -> colorResource(R.color.blue_normal_500)
+        challenge != null -> {
+            when (challenge.question.difficulty.lowercase()) {
+                "easy" -> colorResource(R.color.easy_base_blue)
+                "medium" -> colorResource(R.color.medium_base_yellow)
+                "hard" -> colorResource(R.color.hard_base_red)
+                else -> colorResource(R.color.white).copy(alpha = 0.3f)
+            }
+        }
+        else -> colorResource(R.color.bg_neutral)
+    }
+    
+    // Background color
+    val backgroundColor = when {
+        isToday -> colorResource(R.color.blue_normal_500).copy(alpha = 0.2f)
+        hasQuestion -> colorResource(R.color.white).copy(alpha = 0.05f)
+        else -> colorResource(R.color.bg_neutral).copy(alpha = 0.3f)
+    }
+    
+    // Dot indicator color based on difficulty
+    val dotColor = when {
+        challenge != null -> {
+            when (challenge.question.difficulty.lowercase()) {
+                "easy" -> colorResource(R.color.easy_filled_blue)
+                "medium" -> colorResource(R.color.medium_filled_yellow)
+                "hard" -> colorResource(R.color.hard_filled_red)
+                else -> colorResource(R.color.green_normal_500)
+            }
+        }
+        else -> colorResource(R.color.green_normal_500)
+    }
     Box(
         modifier = modifier
+            .padding(2.sdp)
             .aspectRatio(1f)
-            .clip(CircleShape)
-            .background(
-                when {
-                    isToday -> colorResource(R.color.blue_normal_500).copy(alpha = 0.2f)
-                    hasQuestion -> colorResource(R.color.green_normal_500).copy(alpha = 0.15f)
-                    else -> colorResource(R.color.bg_neutral).copy(alpha = 0.3f)
-                }
-            )
+            .clip(RoundedCornerShape(8.sdp))
+            .background(backgroundColor)
             .border(
-                width = if (isToday) 2.dp else 0.dp,
-                color = if (isToday) colorResource(R.color.blue_normal_500) else colorResource(R.color.bg_neutral),
-                shape = CircleShape
+                width = if (isToday || hasQuestion) 2.dp else 0.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(8.sdp)
             )
             .clickable(enabled = hasQuestion || isToday) { onClick() }
             .padding(4.sdp),
@@ -249,7 +279,7 @@ private fun CalendarDayCell(
                 text = day.toString(),
                 color = when {
                     isToday -> colorResource(R.color.blue_normal_500)
-                    hasQuestion -> colorResource(R.color.green_normal_500)
+                    hasQuestion -> colorResource(R.color.white)
                     else -> colorResource(R.color.white).copy(alpha = 0.7f)
                 },
                 style = TextStyleInter14Lh20Fw400(),
@@ -262,7 +292,7 @@ private fun CalendarDayCell(
                     modifier = Modifier
                         .size(4.sdp)
                         .clip(CircleShape)
-                        .background(colorResource(R.color.green_normal_500))
+                        .background(dotColor)
                 )
             }
         }
