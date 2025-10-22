@@ -8,6 +8,8 @@ sealed class Screen(val route: String) {
     object Sheets : Screen("sheets")
     object Logout : Screen("logout")
 
+    object Calender : Screen("calendar")
+
     object QuestionDetails : Screen("question_details/{questionSlug}") {
         fun createRoute(questionSlug: String) = "question_details/$questionSlug"
         const val routeWithArgs = "question_details/{questionSlug}"

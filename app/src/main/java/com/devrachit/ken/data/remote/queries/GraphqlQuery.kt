@@ -259,5 +259,41 @@ class GraphqlQuery {
             }
         }
 
+        val getDailyCodingChallengeQuery = """
+    query dailyCodingQuestionRecords(${"$"}year: Int!, ${"$"}month: Int!) {
+      dailyCodingChallengeV2(year: ${"$"}year, month: ${"$"}month) {
+        challenges {
+          date
+          userStatus
+          link
+          question {
+            questionFrontendId
+            title
+            titleSlug
+          }
+        }
+        weeklyChallenges {
+          date
+          userStatus
+          link
+          question {
+            questionFrontendId
+            title
+            titleSlug
+            isPaidOnly
+          }
+        }
+      }
+    }
+    """.trimIndent()
+
+        fun getDailyCodingChallengeJsonRequest(year: Int, month: Int): JSONObject {
+            return JSONObject().apply {
+                put("query", getDailyCodingChallengeQuery)
+                put("operationName", "dailyCodingQuestionRecords")
+                put("variables", JSONObject().put("year", year).put("month", month))
+            }
+        }
+
     }
 }

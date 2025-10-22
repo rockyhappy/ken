@@ -5,9 +5,11 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
@@ -20,7 +22,7 @@ import com.devrachit.ken.ui.theme.TextStyleInter24Lh36Fw700
 import com.devrachit.ken.utility.composeUtility.sdp
 
 @Composable
-fun UsernameDisplay(username: String, drawerProgress: Float = 0f) {
+fun UsernameDisplay(username: String, drawerProgress: Float = 0f, modifier: Modifier = Modifier) {
     val scale = animateFloatAsState(
         targetValue = if (drawerProgress < 0.5f) 1f else 0.8f,
         animationSpec = spring(
@@ -36,9 +38,9 @@ fun UsernameDisplay(username: String, drawerProgress: Float = 0f) {
         text = username,
         style = TextStyleInter24Lh36Fw700(),
         color = Color.White,
-        modifier = Modifier
-            .padding(start = 10.sdp, top = 36.dp, end = 60.dp)
-            .fillMaxWidth()
+        modifier = modifier
+            .padding(start = 10.sdp, top = 36.dp, end = 10.dp)
+            .wrapContentWidth(align = Alignment.CenterHorizontally)
             .alpha(alpha)
             .scale(scale.value),
         textAlign = TextAlign.Center,

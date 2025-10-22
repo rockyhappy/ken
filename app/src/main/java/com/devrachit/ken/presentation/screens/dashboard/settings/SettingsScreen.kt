@@ -21,6 +21,7 @@ import com.devrachit.ken.presentation.screens.dashboard.settings.components.Disp
 import com.devrachit.ken.presentation.screens.dashboard.settings.components.QuestionDetailsViewModeSelector
 import com.devrachit.ken.presentation.screens.dashboard.settings.components.RecentSubmissionLimitSelector
 import com.devrachit.ken.ui.theme.TextStyleInter16Lh24Fw700
+import com.devrachit.ken.ui.theme.TextStyleInter20Lh24Fw600
 import com.devrachit.ken.utility.composeUtility.sdp
 
 @Composable
@@ -41,8 +42,8 @@ fun SettingsScreen() {
         Text(
             text = "Settings",
             color = colorResource(R.color.white),
-            style = TextStyleInter16Lh24Fw700(),
-            modifier = Modifier.padding(bottom = 16.sdp)
+            style = TextStyleInter20Lh24Fw600(),
+            modifier = Modifier.padding(bottom = 16.sdp, top= 30.sdp)
         )
         
         DisplayTypeSelector(

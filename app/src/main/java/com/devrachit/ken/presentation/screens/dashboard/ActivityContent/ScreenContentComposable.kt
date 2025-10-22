@@ -105,7 +105,10 @@ fun ScreenContents(
             DashboardHeader(
                 username = username,
                 onClick = onClick,
-                drawerProgress = drawerProgress
+                drawerProgress = drawerProgress,
+                onSettingsClick = {
+                   appNavController?.navigate(Screen.Settings.route)
+                }
             )
             Box {
                 NavGraph(navController = navController, appNavController = appNavController)
@@ -134,7 +137,7 @@ fun ScreenContents(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     navItems.forEach { (_, itemData) ->
-                        if (itemData.route != Screen.Logout.route && itemData.route!= Screen.CompareUsers.route && itemData.route!= Screen.Settings.route)
+                        if (itemData.route != Screen.Logout.route && itemData.route!= Screen.Sheets.route && itemData.route!= Screen.Settings.route)
                         NavItem(
                             label = itemData.label,
                             outlinedIconRes = itemData.outlinedIcon,

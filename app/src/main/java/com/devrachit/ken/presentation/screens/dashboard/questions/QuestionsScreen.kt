@@ -1,59 +1,45 @@
 package com.devrachit.ken.presentation.screens.dashboard.questions
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.devrachit.ken.R
-import com.devrachit.ken.ui.theme.TextStyleInter14Lh18Fw400
-import com.devrachit.ken.ui.theme.TextStyleInter24Lh36Fw700
+import com.devrachit.ken.presentation.screens.dashboard.calendar.CalendarComponent
+import com.devrachit.ken.presentation.screens.dashboard.calendar.CalendarViewModel
+import com.devrachit.ken.ui.theme.TextStyleInter16Lh24Fw700
+import com.devrachit.ken.ui.theme.TextStyleInter14Lh20Fw400
 import com.devrachit.ken.utility.composeUtility.sdp
 
 @Composable
-fun QuestionsScreen() {
+fun QuestionsScreen(
+    onQuestionClick: (String) -> Unit = {},
+    calendarViewModel: CalendarViewModel = hiltViewModel()
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = colorResource(R.color.bg_neutral))
-            .padding(24.sdp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .statusBarsPadding()
+            .verticalScroll(rememberScrollState())
+            .padding(16.sdp)
     ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_questions_outlined),
-            contentDescription = "Coming Soon",
-            tint = Color.White.copy(alpha = 0.7f),
-            modifier = Modifier
-                .size(80.sdp)
-                .padding(bottom = 24.sdp)
-        )
-        
+        // Header
         Text(
-            text = "Coming Soon",
-            style = TextStyleInter24Lh36Fw700(),
-            color = Color.White,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 12.sdp)
+            text = "Questions will appear here",
+            style = TextStyleInter16Lh24Fw700(),
+            fontWeight = FontWeight.Bold,
+            color = colorResource(R.color.white),
+            modifier = Modifier.padding(bottom = 8.sdp)
         )
+
         
-        Text(
-            text = "Questions feature is under development.\nStay tuned for updates!",
-            style = TextStyleInter14Lh18Fw400(),
-            color = Color.White.copy(alpha = 0.7f),
-            textAlign = TextAlign.Center
-        )
+        // Additional info or features can be added here
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import com.devrachit.ken.R
+import com.devrachit.ken.ui.theme.TextStyleInter10Lh12Fw500
 import com.devrachit.ken.ui.theme.TextStyleInter12Lh16Fw600
 import com.devrachit.ken.ui.theme.TextStyleInter12Lh16Fw700
 import com.devrachit.ken.ui.theme.TextStyleInter14Lh16Fw400
@@ -37,7 +38,7 @@ import com.devrachit.ken.utility.composeUtility.sdp
  */
 @Composable
 fun NavItem(
-    label: String,
+    label: String?,
     @DrawableRes outlinedIconRes: Int,
     @DrawableRes filledIconRes: Int,
     isSelected: Boolean,
@@ -79,13 +80,14 @@ fun NavItem(
             tint = textColor,
             modifier = Modifier
                 .padding(bottom = 2.sdp)
-                .size(24.sdp)
+                .size(22.sdp)
         )
-        
-        Text(
-            text = label,
-            style = TextStyleInter12Lh16Fw700(),
-            color = textColor
-        )
+       label?.let{
+           Text(
+               text = label,
+               style = TextStyleInter10Lh12Fw500(),
+               color = textColor
+           )
+       }
     }
 }

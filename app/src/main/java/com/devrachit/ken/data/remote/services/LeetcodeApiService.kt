@@ -49,4 +49,8 @@ interface LeetcodeApiService {
     @GET("problems/{slug}/")
     suspend fun fetchQuestionPage(@Path("slug") slug: String): String
 
+    @Headers("Content-Type: application/json", "Referer: https://leetcode.com/problemset/")
+    @POST("graphql")
+    suspend fun fetchDailyCodingChallenge(@Body requestBody: RequestBody): ResponseBody
+
 }
