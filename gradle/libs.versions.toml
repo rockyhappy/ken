@@ -28,6 +28,8 @@ protobuf = "0.9.4"
 navigationSafeargs = "2.7.7"
 room ="2.6.1"
 ksp = "1.9.10-1.0.13"
+paging = "3.2.1"
+paging-compose = "3.2.1"
 
 #libraries
 core = "1.13.1"
@@ -168,6 +170,10 @@ room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
+paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
+paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging-compose" }
+paging-common = { group = "androidx.paging", name = "paging-common", version.ref = "paging" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

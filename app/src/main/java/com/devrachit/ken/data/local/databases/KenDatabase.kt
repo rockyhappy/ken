@@ -18,6 +18,11 @@ import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
 import com.devrachit.ken.data.local.entity.UserRecentSubmissionEntity
 import com.devrachit.ken.data.local.entity.UserBadgesEntity
 import com.devrachit.ken.data.local.entity.UserBadgesConverters
+import com.devrachit.ken.data.local.entity.QuestionEntity
+import com.devrachit.ken.data.local.entity.RemoteKeyEntity
+import com.devrachit.ken.data.local.entity.QuestionConverters
+import com.devrachit.ken.data.local.dao.QuestionDao
+import com.devrachit.ken.data.local.dao.RemoteKeyDao
 
 @Database(
     entities = [
@@ -26,12 +31,14 @@ import com.devrachit.ken.data.local.entity.UserBadgesConverters
         UserProfileCalenderEntity::class,
         UserRecentSubmissionEntity::class,
         UserContestRankingEntity::class,
-        UserBadgesEntity::class
+        UserBadgesEntity::class,
+        QuestionEntity::class,
+        RemoteKeyEntity::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
-@TypeConverters(LeetCodeConverters::class, UserBadgesConverters::class)
+@TypeConverters(LeetCodeConverters::class, UserBadgesConverters::class, QuestionConverters::class)
 abstract class KenDatabase : RoomDatabase() {
 
     abstract fun leetCodeUserDao(): LeetCodeUserDao
@@ -39,6 +46,8 @@ abstract class KenDatabase : RoomDatabase() {
     abstract fun leetcodeUserRecentSubmissionDao(): LeetCodeUserRecentSubmissionDao
     abstract fun leetcodeUserContestRankingDao(): LeetCodeUserContestRatingDao
     abstract fun leetcodeUserBadgesDao(): LeetCodeUserBadgesDao
+    abstract fun questionDao(): QuestionDao
+    abstract fun remoteKeyDao(): RemoteKeyDao
 
     companion object {
         @Volatile

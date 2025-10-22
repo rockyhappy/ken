@@ -183,9 +183,13 @@ dependencies {
     implementation(libs.shimmer)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.room.paging)
     ksp(libs.room.compiler)
     implementation(libs.datastore)
     implementation(libs.datastore.preferences)
+    implementation(libs.paging.runtime)
+    implementation(libs.paging.compose)
+    implementation(libs.paging.common)
 
     debugImplementation("com.github.chuckerteam.chucker:library:4.0.0") // For Debug  
     releaseImplementation("com.github.chuckerteam.chucker:library-no-op:4.0.0") // No-op in release
