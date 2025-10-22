@@ -4,8 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +29,7 @@ import com.devrachit.ken.ui.theme.TextStyleInter16Lh24Fw700
 import com.devrachit.ken.utility.composeUtility.sdp
 import java.time.LocalDate
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel(),
@@ -32,61 +37,101 @@ fun CalendarScreen(
     onQuestionClick: (String) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = uiState.isLoading,
+        onRefresh = { viewModel.refresh() }
+    )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(colorResource(R.color.bg_neutral))
-            .statusBarsPadding()
-    ) {
-        // Header
-//        CalendarScreenHeader(onBackClick = onBackClick)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colorResource(R.color.bg_neutral))
+                .statusBarsPadding()
+        ) {
+            // Header
+    //        CalendarScreenHeader(onBackClick = onBackClick)
 
-        when {
-            uiState.isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        color = colorResource(R.color.blue_normal_500)
-                    )
+            when {
+                uiState.isLoading && uiState.dailyChallenges.isEmpty() -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = colorResource(R.color.blue_normal_500)
+                        )
+                    }
                 }
-            }
-            uiState.error != null -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = uiState.error ?: "Unknown error",
-                        color = colorResource(R.color.white).copy(alpha = 0.7f),
-                        style = TextStyleInter14Lh20Fw400()
-                    )
+                uiState.error != null -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = uiState.error ?: "Unknown error",
+                            color = colorResource(R.color.white).copy(alpha = 0.7f),
+                            style = TextStyleInter14Lh20Fw400()
+                        )
+                    }
                 }
-            }
-            else -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 16.sdp, vertical = 12.sdp)
-                ) {
-                    // Calendar Component
-                    CalendarComponent(
-                        viewModel = viewModel,
-                        onQuestionClick = { slug ->
-                            onQuestionClick(slug)
+                else -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .pullRefresh(pullRefreshState)
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 16.sdp, vertical = 12.sdp)
+                    ) {
+                        // Problem of the Day Card
+                        val todayChallengePair = uiState.dailyChallenges.entries
+                            .filter { it.key <= uiState.currentDate }
+                            .maxByOrNull { it.key }
+                        
+                        todayChallengePair?.let { (date, challenge) ->
+                            ProblemOfTheDayCard(
+                                challenge = challenge,
+                                date = date,
+                                onQuestionClick = onQuestionClick,
+                                modifier = Modifier.padding(bottom = 16.sdp)
+                            )
                         }
-                    )
+                        
+//                        // Stats Card
+//                        if (uiState.dailyChallenges.isNotEmpty()) {
+//                            ChallengeStatsCard(
+//                                dailyChallenges = uiState.dailyChallenges,
+//                                displayedMonth = uiState.displayedMonth,
+//                                modifier = Modifier.padding(bottom = 16.sdp)
+//                            )
+//                        }
+                        
+                        // Calendar Component
+                        CalendarComponent(
+                            viewModel = viewModel,
+                            onQuestionClick = { slug ->
+                                onQuestionClick(slug)
+                            }
+                        )
 
-                    Spacer(modifier = Modifier.height(16.sdp))
+                        Spacer(modifier = Modifier.height(16.sdp))
 
-                    // Instructions or additional info
-                    CalendarInfo()
+                        // Instructions or additional info
+                        CalendarInfo()
+                    }
                 }
             }
         }
+        
+        // Pull to refresh indicator
+        PullRefreshIndicator(
+            refreshing = uiState.isLoading,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            backgroundColor = colorResource(R.color.card_elevated),
+            contentColor = colorResource(R.color.white)
+        )
     }
 }
 

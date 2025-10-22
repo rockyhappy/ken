@@ -113,6 +113,10 @@ class CalendarViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(displayedMonth = newMonth)
         fetchDailyChallenges(newMonth)
     }
+
+    fun refresh() {
+        fetchCurrentTime()
+    }
 }
 
 data class CalendarUiState(
