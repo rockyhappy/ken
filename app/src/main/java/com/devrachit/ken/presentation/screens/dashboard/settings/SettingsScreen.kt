@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -34,10 +36,12 @@ fun SettingsScreen() {
     
     Column(
         modifier = Modifier
+            .systemBarsPadding()
             .fillMaxSize()
             .background(color = colorResource(R.color.bg_neutral))
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.sdp, vertical = 24.sdp)
+            .padding(horizontal = 20.sdp)
+
     ) {
         Text(
             text = "Settings",
@@ -79,6 +83,6 @@ fun SettingsScreen() {
                 viewmodel.updateQuestionDetailsViewMode(viewMode)
             }
         )
-        Spacer(modifier = Modifier.height(100.sdp))
+        Spacer(modifier = Modifier.height(20.sdp))
     }
 }
