@@ -23,27 +23,49 @@ import androidx.compose.ui.unit.dp
 import com.devrachit.ken.R
 import com.devrachit.ken.ui.theme.TextStyleInter14Lh20Fw400
 import com.devrachit.ken.utility.composeUtility.sdp
+import com.devrachit.ken.presentation.screens.dashboard.sheets.components.SaveQuestionDialog
 
 @Composable
 fun QuestionDetailsSettings(
     questionSlug: String,
-    questionTitle: String
+    questionTitle: String,
+    questionId: String = "",
+    difficulty: String = ""
 ) {
     var showMenu by remember { mutableStateOf(false) }
+    var showSaveDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     
-    Box {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.sdp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Quick Save Button
         IconButton(
-            onClick = { showMenu = true },
+            onClick = { showSaveDialog = true },
             modifier = Modifier.size(40.sdp)
         ) {
             Icon(
                 imageVector = Icons.Default.MoreVert,
-                contentDescription = "More options",
+                contentDescription = "Save to sheet",
                 tint = colorResource(R.color.white),
                 modifier = Modifier.size(24.sdp)
             )
         }
+        
+        // More Options Menu
+        Box {
+            IconButton(
+                onClick = { showMenu = true },
+                modifier = Modifier.size(40.sdp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "More options",
+                    tint = colorResource(R.color.white),
+                    modifier = Modifier.size(24.sdp)
+                )
+            }
         
         DropdownMenu(
             expanded = showMenu,
@@ -52,6 +74,18 @@ fun QuestionDetailsSettings(
                 .background(colorResource(R.color.card_elevated))
                 .widthIn(min = 200.dp)
         ) {
+            // Save Question
+            SettingsMenuItem(
+                icon = R.drawable.ic_copy,
+                text = "Save to Sheet",
+                onClick = {
+                    showSaveDialog = true
+                    showMenu = false
+                }
+            )
+
+            Divider(color = colorResource(R.color.white).copy(alpha = 0.1f))
+            
             // Copy Link
             SettingsMenuItem(
                 icon = R.drawable.ic_link,
@@ -106,6 +140,21 @@ fun QuestionDetailsSettings(
                 }
             )
         }
+        }
+    }
+
+    // Save Question Dialog
+    if (showSaveDialog) {
+        SaveQuestionDialog(
+            questionId = questionId,
+            questionTitle = questionTitle,
+            questionSlug = questionSlug,
+            difficulty = difficulty,
+            onDismiss = { showSaveDialog = false },
+            onSaveSuccess = {
+                Toast.makeText(context, "Question saved successfully!", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 }
 

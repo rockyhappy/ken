@@ -2,7 +2,7 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-      <SelectionState runConfigName="app">
+      <SelectionState runConfigName="Ken.app">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2025-10-22T19:06:58.245946Z">
           <Target type="DEFAULT_BOOT">

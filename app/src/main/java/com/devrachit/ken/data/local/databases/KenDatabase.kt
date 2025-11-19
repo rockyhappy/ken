@@ -10,6 +10,10 @@ import com.devrachit.ken.data.local.dao.LeetCodeUserDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserProfileCalenderDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserRecentSubmissionDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserBadgesDao
+import com.devrachit.ken.data.local.dao.QuestionFolderDao
+import com.devrachit.ken.data.local.dao.SavedQuestionDao
+import com.devrachit.ken.data.local.dao.QuestionDao
+import com.devrachit.ken.data.local.dao.RemoteKeyDao
 import com.devrachit.ken.data.local.entity.LeetCodeConverters
 import com.devrachit.ken.data.local.entity.LeetCodeUserEntity
 import com.devrachit.ken.data.local.entity.UserContestRankingEntity
@@ -18,11 +22,10 @@ import com.devrachit.ken.data.local.entity.UserQuestionStatusEntity
 import com.devrachit.ken.data.local.entity.UserRecentSubmissionEntity
 import com.devrachit.ken.data.local.entity.UserBadgesEntity
 import com.devrachit.ken.data.local.entity.UserBadgesConverters
+import com.devrachit.ken.data.local.entity.QuestionFolderEntity
+import com.devrachit.ken.data.local.entity.SavedQuestionEntity
 import com.devrachit.ken.data.local.entity.QuestionEntity
 import com.devrachit.ken.data.local.entity.RemoteKeyEntity
-import com.devrachit.ken.data.local.entity.QuestionConverters
-import com.devrachit.ken.data.local.dao.QuestionDao
-import com.devrachit.ken.data.local.dao.RemoteKeyDao
 
 @Database(
     entities = [
@@ -32,13 +35,15 @@ import com.devrachit.ken.data.local.dao.RemoteKeyDao
         UserRecentSubmissionEntity::class,
         UserContestRankingEntity::class,
         UserBadgesEntity::class,
+        QuestionFolderEntity::class,
+        SavedQuestionEntity::class,
         QuestionEntity::class,
         RemoteKeyEntity::class
     ],
-    version = 7,
+    version = 10,
     exportSchema = false
 )
-@TypeConverters(LeetCodeConverters::class, UserBadgesConverters::class, QuestionConverters::class)
+@TypeConverters(LeetCodeConverters::class, UserBadgesConverters::class)
 abstract class KenDatabase : RoomDatabase() {
 
     abstract fun leetCodeUserDao(): LeetCodeUserDao
@@ -46,6 +51,8 @@ abstract class KenDatabase : RoomDatabase() {
     abstract fun leetcodeUserRecentSubmissionDao(): LeetCodeUserRecentSubmissionDao
     abstract fun leetcodeUserContestRankingDao(): LeetCodeUserContestRatingDao
     abstract fun leetcodeUserBadgesDao(): LeetCodeUserBadgesDao
+    abstract fun questionFolderDao(): QuestionFolderDao
+    abstract fun savedQuestionDao(): SavedQuestionDao
     abstract fun questionDao(): QuestionDao
     abstract fun remoteKeyDao(): RemoteKeyDao
 

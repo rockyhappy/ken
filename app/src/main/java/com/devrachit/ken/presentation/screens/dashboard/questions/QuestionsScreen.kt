@@ -125,12 +125,10 @@ private fun QuestionsListContent(
                     onStatusUpdate = onStatusUpdate
                 )
             } else {
-                // Show placeholder for unloaded items
                 QuestionItemShimmer()
             }
         }
 
-        // Handle loading states
         lazyPagingItems.apply {
             when {
                 loadState.refresh is LoadState.Loading -> {

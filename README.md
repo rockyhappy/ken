@@ -259,41 +259,39 @@ The project supports multiple build variants:
 
 ## 📦 Key Dependencies
 
-```kotlin
-// Core Android
-androidx.core:core-ktx
-androidx.lifecycle:lifecycle-runtime-ktx
-androidx.activity:activity-compose
+### Core Android
+- `androidx.core:core-ktx`
+- `androidx.lifecycle:lifecycle-runtime-ktx`
+- `androidx.activity:activity-compose`
 
-// Compose
-androidx.compose.bom
-androidx.compose.ui
-androidx.compose.material3
-androidx.navigation:navigation-compose
+### Compose
+- `androidx.compose.bom`
+- `androidx.compose.ui`
+- `androidx.compose.material3`
+- `androidx.navigation:navigation-compose`
 
-// Architecture
-androidx.hilt:hilt-compose-navigation
-com.google.dagger:hilt-android
+### Architecture
+- `androidx.hilt:hilt-compose-navigation`
+- `com.google.dagger:hilt-android`
 
-// Database
-androidx.room:room-runtime
-androidx.room:room-ktx
+### Database
+- `androidx.room:room-runtime`
+- `androidx.room:room-ktx`
 
-// Networking
-com.squareup.retrofit2:retrofit
-com.squareup.okhttp3:okhttp
-io.ktor:ktor-client-core
+### Networking
+- `com.squareup.retrofit2:retrofit`
+- `com.squareup.okhttp3:okhttp`
+- `io.ktor:ktor-client-core`
 
-// UI
-io.coil-kt:coil-compose
-com.github.PhilJay:MPAndroidChart
-com.facebook.shimmer:shimmer
+### UI
+- `io.coil-kt:coil-compose`
+- `com.github.PhilJay:MPAndroidChart`
+- `com.facebook.shimmer:shimmer`
 
-// Firebase
-com.google.firebase:firebase-bom
-com.google.firebase:firebase-crashlytics
-com.google.firebase:firebase-analytics
-```
+### Firebase
+- `com.google.firebase:firebase-bom`
+- `com.google.firebase:firebase-crashlytics`
+- `com.google.firebase:firebase-analytics`
 
 ## 🎯 Features in Detail
 
