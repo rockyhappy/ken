@@ -6,11 +6,15 @@ import com.devrachit.ken.data.local.dao.LeetCodeUserContestRatingDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserProfileCalenderDao
 import com.devrachit.ken.data.local.dao.LeetCodeUserRecentSubmissionDao
+import com.devrachit.ken.data.local.dao.QuestionFolderDao
+import com.devrachit.ken.data.local.dao.SavedQuestionDao
 import com.devrachit.ken.data.local.databases.KenDatabase
 import com.devrachit.ken.data.remote.services.LeetcodeApiService
 import com.devrachit.ken.data.repository.local.LeetcodeLocalRepositoryImpl
+import com.devrachit.ken.data.repository.local.SavedQuestionRepositoryImpl
 import com.devrachit.ken.data.repository.remote.LeetcodeRemoteRepositoryImpl
 import com.devrachit.ken.domain.repository.local.LeetcodeLocalRepository
+import com.devrachit.ken.domain.repository.local.SavedQuestionRepository
 import com.devrachit.ken.domain.repository.remote.LeetcodeRemoteRepository
 import dagger.Module
 import dagger.Provides
@@ -55,6 +59,16 @@ object RepositoryModule {
 
     @Provides
     @Singleton
+    fun provideQuestionFolderDao(database: KenDatabase) =
+        database.questionFolderDao()
+
+    @Provides
+    @Singleton
+    fun provideSavedQuestionDao(database: KenDatabase) =
+        database.savedQuestionDao()
+
+    @Provides
+    @Singleton
     fun provideLeetcodeLocalRepository(
         userDao: LeetCodeUserDao,
         userProfileCalenderDao: LeetCodeUserProfileCalenderDao,
@@ -77,5 +91,14 @@ object RepositoryModule {
         apiService: LeetcodeApiService
     ): LeetcodeRemoteRepository {
         return LeetcodeRemoteRepositoryImpl(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSavedQuestionRepository(
+        folderDao: QuestionFolderDao,
+        questionDao: SavedQuestionDao
+    ): SavedQuestionRepository {
+        return SavedQuestionRepositoryImpl(folderDao, questionDao)
     }
 }

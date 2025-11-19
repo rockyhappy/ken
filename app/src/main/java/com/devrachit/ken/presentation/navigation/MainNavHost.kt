@@ -46,7 +46,9 @@ fun MainNavHost(
             val questionSlug = backStackEntry.arguments?.getString("questionSlug") ?: ""
             QuestionsDetailsScreen(
                 questionSlug = questionSlug,
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { 
+                    navController.popBackStack(Screen.Dashboard.route, inclusive = false)
+                }
             )
         }
         mainAnimatedComposable(route = Screen.Dashboard.route) {

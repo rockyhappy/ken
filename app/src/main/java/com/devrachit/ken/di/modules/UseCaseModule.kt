@@ -3,6 +3,7 @@ package com.devrachit.ken.di.modules
 import com.devrachit.ken.data.local.datastore.DataStoreRepository
 import com.devrachit.ken.domain.policy.CachePolicy
 import com.devrachit.ken.domain.repository.local.LeetcodeLocalRepository
+import com.devrachit.ken.domain.repository.local.SavedQuestionRepository
 import com.devrachit.ken.domain.repository.remote.LeetcodeRemoteRepository
 import com.devrachit.ken.domain.usecases.getContestRankingHistogram.GetContestRankingHistogramUseCase
 import com.devrachit.ken.domain.usecases.getCurrentTime.GetCurrentTime
@@ -28,6 +29,15 @@ import com.devrachit.ken.domain.usecases.recentSubmissionLimit.SaveRecentSubmiss
 import com.devrachit.ken.domain.usecases.questionDetailsViewMode.GetQuestionDetailsViewModeUseCase
 import com.devrachit.ken.domain.usecases.questionDetailsViewMode.SaveQuestionDetailsViewModeUseCase
 import com.devrachit.ken.domain.usecases.getDailyCodingChallenge.GetDailyCodingChallengeUseCase
+import com.devrachit.ken.domain.usecases.savedQuestions.CreateFolderUseCase
+import com.devrachit.ken.domain.usecases.savedQuestions.DeleteFolderUseCase
+import com.devrachit.ken.domain.usecases.savedQuestions.DeleteQuestionUseCase
+import com.devrachit.ken.domain.usecases.savedQuestions.GetAllFoldersUseCase
+import com.devrachit.ken.domain.usecases.savedQuestions.GetQuestionsByFolderUseCase
+import com.devrachit.ken.domain.usecases.savedQuestions.SaveQuestionUseCase
+import com.devrachit.ken.domain.usecases.savedQuestions.MarkQuestionSolvedUseCase
+import com.devrachit.ken.domain.usecases.savedQuestions.GetAllSavedQuestionsUseCase
+import com.devrachit.ken.domain.usecases.savedQuestions.UpdateQuestionUseCase
 import com.devrachit.ken.utility.NetworkUtility.NetworkManager
 import dagger.Module
 import dagger.Provides
@@ -281,5 +291,68 @@ object UseCaseModule {
         networkManager: NetworkManager
     ): GetDailyCodingChallengeUseCase {
         return GetDailyCodingChallengeUseCase(remoteRepository, networkManager)
+    }
+
+    @Provides
+    fun provideCreateFolderUseCase(
+        repository: SavedQuestionRepository
+    ): CreateFolderUseCase {
+        return CreateFolderUseCase(repository)
+    }
+
+    @Provides
+    fun provideDeleteFolderUseCase(
+        repository: SavedQuestionRepository
+    ): DeleteFolderUseCase {
+        return DeleteFolderUseCase(repository)
+    }
+
+    @Provides
+    fun provideGetAllFoldersUseCase(
+        repository: SavedQuestionRepository
+    ): GetAllFoldersUseCase {
+        return GetAllFoldersUseCase(repository)
+    }
+
+    @Provides
+    fun provideGetQuestionsByFolderUseCase(
+        repository: SavedQuestionRepository
+    ): GetQuestionsByFolderUseCase {
+        return GetQuestionsByFolderUseCase(repository)
+    }
+
+    @Provides
+    fun provideSaveQuestionUseCase(
+        repository: SavedQuestionRepository
+    ): SaveQuestionUseCase {
+        return SaveQuestionUseCase(repository)
+    }
+
+    @Provides
+    fun provideDeleteQuestionUseCase(
+        repository: SavedQuestionRepository
+    ): DeleteQuestionUseCase {
+        return DeleteQuestionUseCase(repository)
+    }
+
+    @Provides
+    fun provideMarkQuestionSolvedUseCase(
+        repository: SavedQuestionRepository
+    ): MarkQuestionSolvedUseCase {
+        return MarkQuestionSolvedUseCase(repository)
+    }
+
+    @Provides
+    fun provideGetAllSavedQuestionsUseCase(
+        repository: SavedQuestionRepository
+    ): GetAllSavedQuestionsUseCase {
+        return GetAllSavedQuestionsUseCase(repository)
+    }
+
+    @Provides
+    fun provideUpdateQuestionUseCase(
+        repository: SavedQuestionRepository
+    ): UpdateQuestionUseCase {
+        return UpdateQuestionUseCase(repository)
     }
 }
