@@ -13,6 +13,7 @@ import com.devrachit.ken.domain.models.UserProfileCalendarResponse
 import com.devrachit.ken.domain.models.UserQuestionStatusData
 import com.devrachit.ken.domain.models.UserQuestionStatusResponse
 import com.devrachit.ken.domain.models.UserRecentAcSubmissionResponse
+import com.devrachit.ken.domain.models.DailyCodingChallengeResponse
 import com.devrachit.ken.domain.repository.remote.LeetcodeRemoteRepository
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import com.devrachit.ken.utility.constants.Constants.Companion.USERCONTESTPARTICIPATIONERROR
@@ -160,6 +161,72 @@ class LeetcodeRemoteRepositoryImpl @Inject constructor(
             Resource.Success(htmlResponse)
         } catch (e: Exception) {
             Resource.Error("Error fetching question details: ${e.message}")
+        }
+    }
+
+    override suspend fun fetchDailyCodingChallenge(year: Int, month: Int): Resource<DailyCodingChallengeResponse> {
+        val jsonRequest = GraphqlQuery.getDailyCodingChallengeJsonRequest(year, month)
+        val request = jsonRequest.toString().toRequestBody("application/json".toMediaType())
+        
+        return try {
+            val response = apiService.fetchDailyCodingChallenge(request)
+            val responseBody = response.string()
+            val challengeResponse = json.decodeFromString<DailyCodingChallengeResponse>(responseBody)
+            Resource.Success(challengeResponse)
+        } catch (e: Exception) {
+            Log.e("LeetcodeRepo", "Error fetching daily challenge: ${e.message}")
+            Resource.Error("Error fetching daily challenge: ${e.message}")
+        }
+    }
+
+    override suspend fun fetchQuestions(request: com.devrachit.ken.domain.models.QuestionSearchRequest): Resource<com.devrachit.ken.domain.models.QuestionsResponse> {
+        val jsonRequest = GraphqlQuery.getQuestionsJsonRequest(
+            query = request.query,
+            difficulty = request.difficulty,
+            status = request.status,
+            tags = request.tags,
+            limit = request.limit,
+            offset = request.offset
+        )
+        val requestBody = jsonRequest.toString().toRequestBody("application/json".toMediaType())
+
+        return try {
+            val response = apiService.fetchQuestions(requestBody)
+            val responseBody = response.string()
+            val apiResponse = json.decodeFromString<com.devrachit.ken.domain.models.QuestionsApiResponse>(responseBody)
+
+            val questionsList = apiResponse.data.problemsetQuestionList
+            val hasNext = (request.offset + request.limit) < questionsList.total
+
+            val questionsResponse = com.devrachit.ken.domain.models.QuestionsResponse(
+                questions = questionsList.questions,
+                totalCount = questionsList.total,
+                hasNext = hasNext
+            )
+
+            Resource.Success(questionsResponse)
+        } catch (e: Exception) {
+            Log.e("LeetcodeRepo", "Error fetching questions: ${e.message}")
+            Resource.Error("Error fetching questions: ${e.message}")
+        }
+    }
+
+    override suspend fun searchQuestions(
+        searchKeyword: String,
+        limit: Int
+    ): Resource<com.devrachit.ken.domain.models.SearchQuestionsResponse> {
+        val jsonRequest = GraphqlQuery.getSearchQuestionsJsonRequest(searchKeyword, limit)
+        val requestBody = jsonRequest.toString().toRequestBody("application/json".toMediaType())
+
+        return try {
+            val response = apiService.fetchQuestions(requestBody)
+            val responseBody = response.string()
+            val searchResponse = json.decodeFromString<com.devrachit.ken.domain.models.SearchQuestionsResponse>(responseBody)
+
+            Resource.Success(searchResponse)
+        } catch (e: Exception) {
+            Log.e("LeetcodeRepo", "Error searching questions: ${e.message}")
+            Resource.Error("Error searching questions: ${e.message}")
         }
     }
 }

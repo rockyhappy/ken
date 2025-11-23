@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.devrachit.ken.presentation.screens.dashboard.calendar.CalendarScreen
 import com.devrachit.ken.presentation.screens.dashboard.compare.CompareScreen
 import com.devrachit.ken.presentation.screens.dashboard.compare.CompareViewModel
 import com.devrachit.ken.presentation.screens.dashboard.compareusers.CompareUsersScreen
@@ -60,7 +61,18 @@ fun NavGraph(
         }
 
         animatedComposable(Screen.Questions.route) {
-            QuestionsScreen()
+            QuestionsScreen(
+                onQuestionClick = { questionSlug ->
+                    appNavController?.navigate(Screen.QuestionDetails.createRoute(questionSlug))
+                }
+            )
+        }
+        animatedComposable(route=Screen.Calender.route){
+            CalendarScreen(
+                onQuestionClick = { questionSlug ->
+                    appNavController?.navigate(Screen.QuestionDetails.createRoute(questionSlug))
+                }
+            )
         }
 
         animatedComposable(Screen.Compare.route) {

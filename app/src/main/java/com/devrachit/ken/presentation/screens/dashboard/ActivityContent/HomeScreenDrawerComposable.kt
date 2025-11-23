@@ -141,6 +141,7 @@ fun HomeScreenDrawer(
                 onDismissRequest = { showLogoutDialog.value = false })
 
         navItems.forEach { (index, itemData) ->
+            if(index==6) return@forEach // Skip Settings item
             DrawerNavItem(
                 label = itemData.label,
                 outlinedIconRes = itemData.outlinedIcon,

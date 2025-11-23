@@ -35,31 +35,37 @@ fun rememberNavigationItems() = remember {
             Screen.Compare.route
         ),
         2 to NavItemData(
-            "Compare Friends",
-            R.drawable.ic_compare_outlined,
-            R.drawable.ic_compare_filled,
-            Screen.CompareUsers.route,
-        ),
-        3 to NavItemData(
             "Questions",
             R.drawable.ic_questions_outlined,
             R.drawable.ic_questions_filled,
             Screen.Questions.route
         ),
+        3 to NavItemData(
+            "Track",
+            R.drawable.ic_calender_outlined,
+            R.drawable.ic_calender_filled,
+            Screen.Calender.route
+        ),
         4 to NavItemData(
+            "Compare",
+            R.drawable.ic_compare_outlined,
+            R.drawable.ic_compare_filled,
+            Screen.CompareUsers.route,
+        ),
+        5 to NavItemData(
             "Sheets",
             R.drawable.ic_sheets_outlined,
             R.drawable.ic_sheets_filled,
             Screen.Sheets.route
         ),
-        5 to NavItemData(
+        6 to NavItemData(
             label="Settings",
             R.drawable.ic_settings_outlined,
             R.drawable.ic_settings_filled,
             Screen.Settings.route
         ),
 
-        6 to NavItemData(
+        7 to NavItemData(
             "Logout",
             R.drawable.ic_logout_outlined,
             R.drawable.ic_logout_filled,
@@ -77,11 +83,12 @@ fun getRouteIndex(route: String?): Int? {
     return when (route) {
         Screen.Home.route -> 0
         Screen.Compare.route -> 1
-        Screen.CompareUsers.route -> 2
-        Screen.Questions.route -> 3
-        Screen.Sheets.route -> 4
+        Screen.Questions.route -> 2
+        Screen.Calender.route -> 3
+        Screen.CompareUsers.route -> 4
         Screen.Sheets.route -> 5
-        Screen.Logout.route -> 6
+        Screen.Settings.route -> 6
+        Screen.Logout.route -> 7
         else -> null
     }
 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.devrachit.ken.R
 import com.devrachit.ken.utility.composeUtility.sdp
@@ -28,7 +29,7 @@ fun MenuButton(onClick: () -> Job, drawerProgress: Float = 0f) {
 
     val yOffset = lerp(0f, -100f, drawerProgress)
     val alpha = lerp(1f, 0f, drawerProgress)
-    
+
     Icon(
         imageVector = Icons.Default.Menu,
         contentDescription = "Menu",
@@ -66,6 +67,29 @@ fun BackButton(onClick: () -> Unit, drawerProgress: Float = 0f) {
                 border = BorderStroke(2.sdp, Color.DarkGray),
                 shape = RoundedCornerShape(5.sdp)
             )
+            .size(32.sdp)
+            .clickable(onClick = { onClick.invoke() })
+            .padding(4.sdp)
+            .background(colorResource(R.color.bg_neutral))
+    )
+}
+
+@Composable
+fun SettingsButton(
+    onClick: () -> Unit,
+    drawerProgress: Float = 0f
+) {
+    val yOffset = lerp(0f, -100f, drawerProgress)
+    val alpha = lerp(1f, 0f, drawerProgress)
+
+    Icon(
+        painter = painterResource(id = R.drawable.ic_settings_outlined),
+        contentDescription = "Menu",
+        tint = Color.White,
+        modifier = Modifier
+            .padding(top = 40.sdp, end = 20.dp)
+            .offset(y = yOffset.dp)
+            .alpha(alpha)
             .size(32.sdp)
             .clickable(onClick = { onClick.invoke() })
             .padding(4.sdp)

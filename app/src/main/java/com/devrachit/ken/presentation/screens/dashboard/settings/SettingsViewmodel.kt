@@ -45,7 +45,7 @@ class SettingsViewmodel@Inject constructor(
     val recentSubmissionLimit: StateFlow<Int> = _recentSubmissionLimit.asStateFlow()
 
     // Question Details View Mode State
-    private val _questionDetailsViewMode = MutableStateFlow("PAGER")
+    private val _questionDetailsViewMode = MutableStateFlow("SIMPLE")
     val questionDetailsViewMode: StateFlow<String> = _questionDetailsViewMode.asStateFlow()
 
     init {

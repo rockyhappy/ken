@@ -1,8 +1,12 @@
 package com.devrachit.ken.utility.composeUtility
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -57,6 +61,80 @@ fun ProfilePictureShimmer(
         )
     }
 }
+
+    @Composable
+    fun QuestionItemShimmer(
+        modifier: Modifier = Modifier
+    ) {
+        Card(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.sdp, vertical = 8.sdp),
+            elevation = 4.sdp,
+            shape = RoundedCornerShape(12.sdp),
+            backgroundColor = Color.Gray.copy(alpha = 0.1f)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.sdp)
+            ) {
+                // Title shimmer
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .height(20.sdp)
+                        .shimmer()
+                        .clip(RoundedCornerShape(4.sdp))
+                        .background(Color.Gray.copy(alpha = 0.3f))
+                )
+
+                Spacer(modifier = Modifier.height(8.sdp))
+
+                // Status and difficulty row shimmer
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(80.sdp)
+                            .height(16.sdp)
+                            .shimmer()
+                            .clip(RoundedCornerShape(8.sdp))
+                            .background(Color.Gray.copy(alpha = 0.3f))
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .width(60.sdp)
+                            .height(16.sdp)
+                            .shimmer()
+                            .clip(RoundedCornerShape(8.sdp))
+                            .background(Color.Gray.copy(alpha = 0.3f))
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.sdp))
+
+                // Tags shimmer
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.sdp)
+                ) {
+                    repeat(3) {
+                        Box(
+                            modifier = Modifier
+                                .width((40..80).random().sdp)
+                                .height(14.sdp)
+                                .shimmer()
+                                .clip(RoundedCornerShape(4.sdp))
+                                .background(Color.Gray.copy(alpha = 0.3f))
+                        )
+                    }
+                }
+            }
+        }
+    }
 
 @Preview
 @Composable

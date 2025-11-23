@@ -25,6 +25,7 @@ import com.devrachit.ken.presentation.screens.dashboard.ActivityContent.States
 import com.devrachit.ken.presentation.screens.dashboard.compareusers.CompareUsersScreen
 import com.devrachit.ken.presentation.screens.dashboard.compareusers.CompareUsersViewModel
 import com.devrachit.ken.presentation.screens.dashboard.question_details.QuestionsDetailsScreen
+import com.devrachit.ken.presentation.screens.dashboard.settings.SettingsScreen
 import com.devrachit.ken.presentation.screens.dashboard.userdetails.UserDetailsScreen
 import com.devrachit.ken.presentation.screens.dashboard.userdetails.UserDetailsViewModel
 
@@ -87,7 +88,9 @@ fun MainNavHost(
                 }
             )
         }
-
+        mainAnimatedComposable(Screen.Settings.route){
+            SettingsScreen()
+        }
         mainAnimatedComposable(
             route = Screen.CompareUsers.routeWithArgs,
             arguments = listOf(

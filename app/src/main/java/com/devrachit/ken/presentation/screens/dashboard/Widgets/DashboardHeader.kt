@@ -1,5 +1,6 @@
 package com.devrachit.ken.presentation.screens.dashboard.Widgets
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -11,14 +12,20 @@ import kotlinx.coroutines.Job
 fun DashboardHeader(
     username: String,
     onClick: () -> Job,
-    drawerProgress: Float = 0f
+    drawerProgress: Float = 0f,
+    onSettingsClick: () -> Unit = { }
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
         MenuButton(onClick = onClick, drawerProgress = drawerProgress)
-        UsernameDisplay(username = username, drawerProgress = drawerProgress)
+        UsernameDisplay(
+            username = username,
+            drawerProgress = drawerProgress,
+            modifier = Modifier.weight(1f)
+        )
+        SettingsButton(onClick = onSettingsClick, drawerProgress = drawerProgress)
     }
 }
 @Composable
