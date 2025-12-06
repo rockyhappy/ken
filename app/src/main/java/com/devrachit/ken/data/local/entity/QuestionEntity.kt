@@ -20,13 +20,13 @@ data class QuestionEntity(
     val frequency: Double? = null,
     val likes: Int,
     val dislikes: Int,
-    val topicTags: String, // JSON string of List<String>
-    val companies: String, // JSON string of List<String>
+    val topicTags: String,
+    val companies: String,
     val isPaidOnly: Boolean = false,
     val frontendQuestionId: String,
     val categoryTitle: String? = null,
     val createdAt: Long = System.currentTimeMillis(),
-    val searchQuery: String? = null // To support search-based caching
+    val searchQuery: String? = null
 )
 
 @Entity(tableName = "remote_keys")
@@ -38,7 +38,7 @@ data class RemoteKeyEntity(
     val searchQuery: String? = null
 )
 
-// Extension functions to convert between domain and entity
+
 fun QuestionEntity.toDomain(): Question {
     return Question(
         acRate = acceptanceRate,
@@ -76,8 +76,8 @@ fun Question.toEntity(searchQuery: String? = null): QuestionEntity {
         status = status,
         acceptanceRate = acceptanceRate,
         frequency = freqBar,
-        likes = 0, // Not available in new API
-        dislikes = 0, // Not available in new API
+        likes = 0,
+        dislikes = 0,
         topicTags = Json.encodeToString(topicTags.map { it.name }),
         companies = Json.encodeToString(emptyList<String>()), // Not available in new API
         isPaidOnly = isPaidOnly,

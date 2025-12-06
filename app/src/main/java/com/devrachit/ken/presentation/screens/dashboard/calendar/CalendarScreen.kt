@@ -28,6 +28,9 @@ import com.devrachit.ken.ui.theme.TextStyleInter14Lh20Fw400
 import com.devrachit.ken.ui.theme.TextStyleInter16Lh24Fw700
 import com.devrachit.ken.utility.composeUtility.sdp
 import java.time.LocalDate
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import com.devrachit.ken.presentation.screens.dashboard.calendar.widgets.MonthlyDifficultyStatsCard
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -96,16 +99,7 @@ fun CalendarScreen(
                                 modifier = Modifier.padding(bottom = 16.sdp)
                             )
                         }
-                        
-//                        // Stats Card
-//                        if (uiState.dailyChallenges.isNotEmpty()) {
-//                            ChallengeStatsCard(
-//                                dailyChallenges = uiState.dailyChallenges,
-//                                displayedMonth = uiState.displayedMonth,
-//                                modifier = Modifier.padding(bottom = 16.sdp)
-//                            )
-//                        }
-                        
+
                         // Calendar Component
                         CalendarComponent(
                             viewModel = viewModel,
@@ -115,6 +109,15 @@ fun CalendarScreen(
                         )
 
                         Spacer(modifier = Modifier.height(16.sdp))
+
+                        // Monthly Difficulty Stats Card (moved to bottom)
+                        MonthlyDifficultyStatsCard(
+                            easyCount = uiState.easyCount,
+                            mediumCount = uiState.mediumCount,
+                            hardCount = uiState.hardCount,
+                            totalCount = uiState.totalCount,
+                            modifier = Modifier.padding(bottom = 16.sdp)
+                        )
 
                         // Instructions or additional info
                         CalendarInfo()
