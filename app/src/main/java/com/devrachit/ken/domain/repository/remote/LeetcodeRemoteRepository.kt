@@ -31,6 +31,7 @@ interface LeetcodeRemoteRepository {
     suspend fun fetchUserBadges(username: String): Resource<UserBadgesResponse>
     suspend fun fetchQuestionDetails(slug: String): Resource<String>
     suspend fun fetchDailyCodingChallenge(year: Int, month: Int): Resource<DailyCodingChallengeResponse>
+    suspend fun fetchTodayQuestion(): Resource<com.devrachit.ken.domain.models.TodayQuestionResponse>
     suspend fun fetchQuestions(request: com.devrachit.ken.domain.models.QuestionSearchRequest): Resource<com.devrachit.ken.domain.models.QuestionsResponse>
     suspend fun searchQuestions(searchKeyword: String, limit: Int = 50): Resource<com.devrachit.ken.domain.models.SearchQuestionsResponse>
 }

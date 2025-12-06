@@ -46,8 +46,6 @@ object NetworkModule {
     val ca = certInputStream.use {
         cf.generateCertificate(it)
     } as java.security.cert.X509Certificate
-
-    // Build a HandshakeCertificates instance that includes the Netskope certificate
     val handshakeCertificates = HandshakeCertificates.Builder()
         .addPlatformTrustedCertificates()
         .addTrustedCertificate(ca)

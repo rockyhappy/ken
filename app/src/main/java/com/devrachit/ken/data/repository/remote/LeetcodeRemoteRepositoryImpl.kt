@@ -179,6 +179,21 @@ class LeetcodeRemoteRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun fetchTodayQuestion(): Resource<com.devrachit.ken.domain.models.TodayQuestionResponse> {
+        val jsonRequest = GraphqlQuery.getQuestionOfTodayJsonRequest()
+        val request = jsonRequest.toString().toRequestBody("application/json".toMediaType())
+        
+        return try {
+            val response = apiService.fetchTodayQuestion(request)
+            val responseBody = response.string()
+            val todayQuestionResponse = json.decodeFromString<com.devrachit.ken.domain.models.TodayQuestionResponse>(responseBody)
+            Resource.Success(todayQuestionResponse)
+        } catch (e: Exception) {
+            Log.e("LeetcodeRepo", "Error fetching today's question: ${e.message}")
+            Resource.Error("Error fetching today's question: ${e.message}")
+        }
+    }
+
     override suspend fun fetchQuestions(request: com.devrachit.ken.domain.models.QuestionSearchRequest): Resource<com.devrachit.ken.domain.models.QuestionsResponse> {
         val jsonRequest = GraphqlQuery.getQuestionsJsonRequest(
             query = request.query,

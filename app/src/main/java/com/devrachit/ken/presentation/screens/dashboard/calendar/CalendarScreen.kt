@@ -86,15 +86,29 @@ fun CalendarScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 16.sdp, vertical = 12.sdp)
                     ) {
-                        // Problem of the Day Card
-                        val todayChallengePair = uiState.dailyChallenges.entries
-                            .filter { it.key <= uiState.currentDate }
-                            .maxByOrNull { it.key }
-                        
-                        todayChallengePair?.let { (date, challenge) ->
+                        // Problem of the Day Card - Use dedicated today's question API
+                        uiState.todayQuestion?.let { todayQuestion ->
+                            // Convert TodayQuestion to DailyChallenge format
+                            val todayChallenge = com.devrachit.ken.domain.models.DailyChallenge(
+                                date = todayQuestion.date,
+                                userStatus = todayQuestion.userStatus,
+                                link = todayQuestion.link,
+                                question = com.devrachit.ken.domain.models.ChallengeQuestion(
+                                    questionFrontendId = todayQuestion.question.questionFrontendId,
+                                    title = todayQuestion.question.title,
+                                    titleSlug = todayQuestion.question.titleSlug,
+                                    difficulty = todayQuestion.question.difficulty
+                                )
+                            )
+                            val todayDate = try {
+                                LocalDate.parse(todayQuestion.date)
+                            } catch (e: Exception) {
+                                LocalDate.now()
+                            }
+                            
                             ProblemOfTheDayCard(
-                                challenge = challenge,
-                                date = date,
+                                challenge = todayChallenge,
+                                date = todayDate,
                                 onQuestionClick = onQuestionClick,
                                 modifier = Modifier.padding(bottom = 16.sdp)
                             )

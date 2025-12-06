@@ -297,6 +297,42 @@ class GraphqlQuery {
             }
         }
 
+        val getQuestionOfTodayQuery = """
+    query questionOfTodayV2 {
+      activeDailyCodingChallengeQuestion {
+        date
+        userStatus
+        link
+        question {
+          id: questionId
+          titleSlug
+          title
+          translatedTitle
+          questionFrontendId
+          paidOnly: isPaidOnly
+          difficulty
+          topicTags {
+            name
+            slug
+            nameTranslated: translatedName
+          }
+          status
+          isInMyFavorites: isFavor
+          acRate
+          frequency: freqBar
+        }
+      }
+    }
+    """.trimIndent()
+
+        fun getQuestionOfTodayJsonRequest(): JSONObject {
+            return JSONObject().apply {
+                put("query", getQuestionOfTodayQuery)
+                put("operationName", "questionOfTodayV2")
+                put("variables", JSONObject())
+            }
+        }
+
         val questionsQuery = """
             query problemsetQuestionList(${"$"}categorySlug: String, ${"$"}limit: Int, ${"$"}skip: Int, ${"$"}filters: QuestionListFilterInput) {
                 problemsetQuestionList: questionList(

@@ -3,8 +3,10 @@ package com.devrachit.ken.presentation.screens.dashboard.calendar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devrachit.ken.domain.models.DailyChallenge
+import com.devrachit.ken.domain.models.TodayQuestion
 import com.devrachit.ken.domain.usecases.getCurrentTime.GetCurrentTime
 import com.devrachit.ken.domain.usecases.getDailyCodingChallenge.GetDailyCodingChallengeUseCase
+import com.devrachit.ken.domain.usecases.getTodayQuestion.GetTodayQuestionUseCase
 import com.devrachit.ken.utility.NetworkUtility.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
     private val getCurrentTime: GetCurrentTime,
-    private val getDailyCodingChallengeUseCase: GetDailyCodingChallengeUseCase
+    private val getDailyCodingChallengeUseCase: GetDailyCodingChallengeUseCase,
+    private val getTodayQuestionUseCase: GetTodayQuestionUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CalendarUiState())
@@ -30,6 +33,7 @@ class CalendarViewModel @Inject constructor(
 
     init {
         fetchCurrentTime()
+        fetchTodayQuestion()
     }
 
     private fun fetchCurrentTime() {
@@ -127,8 +131,31 @@ class CalendarViewModel @Inject constructor(
         fetchDailyChallenges(newMonth)
     }
 
+    private fun fetchTodayQuestion() {
+        viewModelScope.launch {
+            getTodayQuestionUseCase().collectLatest { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let { response ->
+                            _uiState.update { it.copy(
+                                todayQuestion = response.data.activeDailyCodingChallengeQuestion
+                            ) }
+                        }
+                    }
+                    is Resource.Error -> {
+                        // Silently fail, will fall back to deriving from month challenges
+                    }
+                    is Resource.Loading -> {
+                        // Already loaded
+                    }
+                }
+            }
+        }
+    }
+
     fun refresh() {
         fetchCurrentTime()
+        fetchTodayQuestion()
     }
 }
 
@@ -136,6 +163,7 @@ data class CalendarUiState(
     val currentDate: LocalDate = LocalDate.now(),
     val displayedMonth: YearMonth = YearMonth.now(),
     val dailyChallenges: Map<LocalDate, DailyChallenge> = emptyMap(), // Map of date to daily challenge
+    val todayQuestion: TodayQuestion? = null, // Today's problem from the dedicated API
     val isLoading: Boolean = false,
     val error: String? = null,
     val easyCount: Int = 0,

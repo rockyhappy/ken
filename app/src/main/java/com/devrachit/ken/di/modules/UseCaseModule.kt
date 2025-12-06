@@ -28,6 +28,7 @@ import com.devrachit.ken.domain.usecases.recentSubmissionLimit.SaveRecentSubmiss
 import com.devrachit.ken.domain.usecases.questionDetailsViewMode.GetQuestionDetailsViewModeUseCase
 import com.devrachit.ken.domain.usecases.questionDetailsViewMode.SaveQuestionDetailsViewModeUseCase
 import com.devrachit.ken.domain.usecases.getDailyCodingChallenge.GetDailyCodingChallengeUseCase
+import com.devrachit.ken.domain.usecases.getTodayQuestion.GetTodayQuestionUseCase
 import com.devrachit.ken.utility.NetworkUtility.NetworkManager
 import dagger.Module
 import dagger.Provides
@@ -281,5 +282,13 @@ object UseCaseModule {
         networkManager: NetworkManager
     ): GetDailyCodingChallengeUseCase {
         return GetDailyCodingChallengeUseCase(remoteRepository, networkManager)
+    }
+
+    @Provides
+    fun provideGetTodayQuestionUseCase(
+        remoteRepository: LeetcodeRemoteRepository,
+        networkManager: NetworkManager
+    ): GetTodayQuestionUseCase {
+        return GetTodayQuestionUseCase(remoteRepository, networkManager)
     }
 }
