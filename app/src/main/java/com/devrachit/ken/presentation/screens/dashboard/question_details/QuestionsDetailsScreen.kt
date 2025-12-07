@@ -2,6 +2,9 @@ package com.devrachit.ken.presentation.screens.dashboard.question_details
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,6 +16,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.devrachit.ken.R
+import com.devrachit.ken.presentation.screens.dashboard.sheets.FAVORITES_SHEET_NAME
+import com.devrachit.ken.presentation.screens.dashboard.question_details.components.AddToSheetBottomSheet
+import com.devrachit.ken.presentation.screens.dashboard.question_details.components.ExpandableFab
+import com.devrachit.ken.presentation.screens.dashboard.question_details.components.FabItem
 import com.devrachit.ken.presentation.screens.dashboard.question_details.components.QuestionDetailsContent
 import com.devrachit.ken.presentation.screens.dashboard.settings.SettingsViewmodel
 import com.devrachit.ken.ui.theme.TextStyleInter16Lh24Fw700
@@ -29,6 +36,7 @@ fun QuestionsDetailsScreen(
 
     val settingsViewModel: SettingsViewmodel = hiltViewModel()
     val viewMode by settingsViewModel.questionDetailsViewMode.collectAsState()
+    
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -48,6 +56,44 @@ fun QuestionsDetailsScreen(
                     questionSlug = questionSlug,
                     onBackClick = onBackClick,
                     viewMode = viewMode
+                )
+                
+                // Check if question is in favorites
+                val isInFavorites = uiState.allSheets
+                    .find { it.sheet.name == FAVORITES_SHEET_NAME }
+                    ?.let { uiState.questionSheetIds.contains(it.sheet.id) } ?: false
+                
+                // Expandable FAB
+                ExpandableFab(
+                    modifier = Modifier.fillMaxSize(),
+                    isExpanded = uiState.isFabExpanded,
+                    onToggle = viewModel::toggleFabExpanded,
+                    items = listOf(
+                        FabItem(
+                            iconResId = R.drawable.ic_sheets_outlined,
+                            label = "Add to Sheet",
+                            onClick = viewModel::showAddToSheetBottomSheet
+                        ),
+                        FabItem(
+                            icon = if (isInFavorites) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            label = if (isInFavorites) "Remove from Favorites" else "Add to Favorites",
+                            onClick = viewModel::toggleFavorite
+                        )
+                    )
+                )
+                
+                // Add to Sheet Bottom Sheet
+                AddToSheetBottomSheet(
+                    isVisible = uiState.isAddToSheetBottomSheetVisible,
+                    onDismiss = viewModel::hideAddToSheetBottomSheet,
+                    sheets = uiState.allSheets,
+                    questionSheetsIds = uiState.questionSheetIds,
+                    newSheetName = uiState.newSheetName,
+                    isCreatingSheet = uiState.isCreatingSheet,
+                    onNewSheetNameChange = viewModel::updateNewSheetName,
+                    onCreateSheet = viewModel::createSheet,
+                    onAddToSheet = viewModel::addToSheet,
+                    onRemoveFromSheet = viewModel::removeFromSheet
                 )
             }
         }

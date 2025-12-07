@@ -22,6 +22,7 @@ object QuestionHtmlParser {
                 ?.replace("\\n", "\n")
                 ?.trim() ?: ""
 
+            var questionId = ""
             var difficulty = ""
             var acceptanceRate = ""
             var likes = 0
@@ -37,6 +38,7 @@ object QuestionHtmlParser {
                 val jsonString = jsonMatch?.groupValues?.get(1)
 
                 if (!jsonString.isNullOrEmpty()) {
+                    questionId = extractQuestionId(jsonString)
                     difficulty = extractDifficulty(jsonString)
                     
                     val stats = extractStats(jsonString)
@@ -54,6 +56,7 @@ object QuestionHtmlParser {
             }
 
             return QuestionDetails(
+                questionId = questionId,
                 title = title,
                 description = description,
                 difficulty = difficulty,
@@ -73,6 +76,11 @@ object QuestionHtmlParser {
                 htmlContent = html
             )
         }
+    }
+
+    private fun extractQuestionId(jsonString: String): String {
+        val questionIdRegex = "\"questionFrontendId\":\"(\\d+)\"".toRegex()
+        return questionIdRegex.find(jsonString)?.groupValues?.get(1) ?: ""
     }
 
     private fun extractDifficulty(jsonString: String): String {

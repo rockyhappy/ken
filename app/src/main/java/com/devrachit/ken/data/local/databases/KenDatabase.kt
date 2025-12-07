@@ -21,8 +21,11 @@ import com.devrachit.ken.data.local.entity.UserBadgesConverters
 import com.devrachit.ken.data.local.entity.QuestionEntity
 import com.devrachit.ken.data.local.entity.RemoteKeyEntity
 import com.devrachit.ken.data.local.entity.QuestionConverters
+import com.devrachit.ken.data.local.entity.SheetEntity
+import com.devrachit.ken.data.local.entity.SheetQuestionCrossRef
 import com.devrachit.ken.data.local.dao.QuestionDao
 import com.devrachit.ken.data.local.dao.RemoteKeyDao
+import com.devrachit.ken.data.local.dao.SheetDao
 
 @Database(
     entities = [
@@ -33,9 +36,11 @@ import com.devrachit.ken.data.local.dao.RemoteKeyDao
         UserContestRankingEntity::class,
         UserBadgesEntity::class,
         QuestionEntity::class,
-        RemoteKeyEntity::class
+        RemoteKeyEntity::class,
+        SheetEntity::class,
+        SheetQuestionCrossRef::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(LeetCodeConverters::class, UserBadgesConverters::class, QuestionConverters::class)
@@ -48,6 +53,7 @@ abstract class KenDatabase : RoomDatabase() {
     abstract fun leetcodeUserBadgesDao(): LeetCodeUserBadgesDao
     abstract fun questionDao(): QuestionDao
     abstract fun remoteKeyDao(): RemoteKeyDao
+    abstract fun sheetDao(): SheetDao
 
     companion object {
         @Volatile

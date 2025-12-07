@@ -1,6 +1,7 @@
 package com.devrachit.ken.domain.models
 
 data class QuestionDetails(
+    val questionId: String = "",
     val title: String = "",
     val description: String = "",
     val difficulty: String = "",

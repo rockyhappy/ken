@@ -112,7 +112,11 @@ fun NavGraph(
         }
 
         animatedComposable(Screen.Sheets.route) {
-            SheetsScreen()
+            SheetsScreen(
+                onQuestionClick = { questionSlug ->
+                    appNavController?.navigate(Screen.QuestionDetails.createRoute(questionSlug))
+                }
+            )
         }
         animatedComposable(
             route = Screen.CompareUsers.routeWithArgs,
