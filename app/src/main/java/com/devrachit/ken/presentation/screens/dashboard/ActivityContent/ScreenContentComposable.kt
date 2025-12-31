@@ -19,10 +19,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -44,9 +46,9 @@ import com.devrachit.ken.presentation.navigation.navigateToTab
 import com.devrachit.ken.presentation.navigation.rememberNavigationItems
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.DashboardHeader
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.NavItem
+import com.devrachit.ken.presentation.screens.dashboard.settings.SettingsViewmodel
 import com.devrachit.ken.utility.composeUtility.sdp
 import com.devrachit.ken.utility.composeUtility.shadowEffect
-import com.devrachit.ken.utility.composeUtility.shadowEffect2
 import com.google.accompanist.pager.ExperimentalPagerApi
 import kotlinx.coroutines.Job
 
@@ -62,6 +64,8 @@ fun ScreenContents(
     appNavController: NavHostController? = null
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val settingsViewModel: SettingsViewmodel = hiltViewModel()
+    val bottomNavItems by settingsViewModel.bottomNavItems.collectAsState()
 
     val yOffset = lerp(0f, 100f, drawerProgress)
     val alpha = lerp(1f, 0f, drawerProgress)
@@ -137,16 +141,18 @@ fun ScreenContents(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     navItems.forEach { (_, itemData) ->
-                        if (itemData.route != Screen.Logout.route && itemData.route!= Screen.Sheets.route && itemData.route!= Screen.Settings.route)
-                        NavItem(
-                            label = itemData.label,
-                            outlinedIconRes = itemData.outlinedIcon,
-                            filledIconRes = itemData.filledIcon,
-                            isSelected = currentRoute == itemData.route,
-                            onClick = {
-                                navigateToTab(navController, itemData.route)
-                            }
-                        )
+                        // Only show items that are in the user's bottom navigation preferences
+                        if (bottomNavItems.contains(itemData.label)) {
+                            NavItem(
+                                label = itemData.label,
+                                outlinedIconRes = itemData.outlinedIcon,
+                                filledIconRes = itemData.filledIcon,
+                                isSelected = currentRoute == itemData.route,
+                                onClick = {
+                                    navigateToTab(navController, itemData.route)
+                                }
+                            )
+                        }
                     }
                 }
             }

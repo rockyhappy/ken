@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -20,9 +19,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.devrachit.ken.R
 import com.devrachit.ken.presentation.screens.dashboard.settings.components.BadgeDisplayModeSelector
 import com.devrachit.ken.presentation.screens.dashboard.settings.components.DisplayTypeSelector
+import com.devrachit.ken.presentation.screens.dashboard.settings.components.NavigationPreferencesSelector
 import com.devrachit.ken.presentation.screens.dashboard.settings.components.QuestionDetailsViewModeSelector
 import com.devrachit.ken.presentation.screens.dashboard.settings.components.RecentSubmissionLimitSelector
-import com.devrachit.ken.ui.theme.TextStyleInter16Lh24Fw700
 import com.devrachit.ken.ui.theme.TextStyleInter20Lh24Fw600
 import com.devrachit.ken.utility.composeUtility.sdp
 
@@ -33,7 +32,9 @@ fun SettingsScreen() {
     val currentBadgeDisplayMode by viewmodel.badgeDisplayMode.collectAsState()
     val currentSubmissionLimit by viewmodel.recentSubmissionLimit.collectAsState()
     val currentQuestionDetailsViewMode by viewmodel.questionDetailsViewMode.collectAsState()
-    
+    val currentBottomNavItems by viewmodel.bottomNavItems.collectAsState()
+    val currentSideNavItems by viewmodel.sideNavItems.collectAsState()
+
     Column(
         modifier = Modifier
             .systemBarsPadding()
@@ -83,6 +84,20 @@ fun SettingsScreen() {
                 viewmodel.updateQuestionDetailsViewMode(viewMode)
             }
         )
+
+        Spacer(modifier = Modifier.height(12.sdp))
+
+        NavigationPreferencesSelector(
+            currentBottomNavItems = currentBottomNavItems,
+            currentSideNavItems = currentSideNavItems,
+            onBottomNavItemsChanged = { items ->
+                viewmodel.updateBottomNavItems(items)
+            },
+            onSideNavItemsChanged = { items ->
+                viewmodel.updateSideNavItems(items)
+            }
+        )
+
         Spacer(modifier = Modifier.height(20.sdp))
     }
 }

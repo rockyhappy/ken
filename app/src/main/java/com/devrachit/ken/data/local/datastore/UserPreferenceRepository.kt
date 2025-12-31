@@ -1,12 +1,12 @@
 package com.devrachit.ken.data.local.datastore
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.devrachit.ken.domain.models.ContestRatingHistogramResponse
+import com.devrachit.ken.domain.models.NavigationItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -208,6 +208,62 @@ class DataStoreRepository(private val context: Context) {
             .map { preferences ->
                 preferences[QUESTION_DETAILS_VIEW_MODE_KEY] ?: "SIMPLE"
             }.firstOrNull() ?: "SIMPLE"
+    }
+
+    // Navigation Preferences
+    private val BOTTOM_NAV_ITEMS_KEY = stringPreferencesKey("bottom_nav_items")
+    private val SIDE_NAV_ITEMS_KEY = stringPreferencesKey("side_nav_items")
+
+    val bottomNavItems: Flow<List<String>> = context.dataStore.data
+        .map { preferences ->
+            preferences[BOTTOM_NAV_ITEMS_KEY]?.split(",")?.filter { it.isNotBlank() }
+                ?: NavigationItems.DEFAULT_BOTTOM_NAV
+        }
+
+    val sideNavItems: Flow<List<String>> = context.dataStore.data
+        .map { preferences ->
+            val items = preferences[SIDE_NAV_ITEMS_KEY]?.split(",")?.filter { it.isNotBlank() }
+                ?: NavigationItems.DEFAULT_SIDE_NAV
+            // Always ensure Settings is included in side nav
+            if (!items.contains(NavigationItems.SETTINGS)) {
+                items + NavigationItems.SETTINGS
+            } else items
+        }
+
+    suspend fun saveBottomNavItems(items: List<String>) {
+        context.dataStore.edit { preferences ->
+            preferences[BOTTOM_NAV_ITEMS_KEY] = items.joinToString(",")
+        }
+    }
+
+    suspend fun saveSideNavItems(items: List<String>) {
+        context.dataStore.edit { preferences ->
+            // Always ensure Settings is included
+            val itemsWithSettings = if (!items.contains(NavigationItems.SETTINGS)) {
+                items + NavigationItems.SETTINGS
+            } else items
+            preferences[SIDE_NAV_ITEMS_KEY] = itemsWithSettings.joinToString(",")
+        }
+    }
+
+    suspend fun readBottomNavItems(): List<String> {
+        return context.dataStore.data
+            .map { preferences ->
+                preferences[BOTTOM_NAV_ITEMS_KEY]?.split(",")?.filter { it.isNotBlank() }
+                    ?: NavigationItems.DEFAULT_BOTTOM_NAV
+            }.firstOrNull() ?: NavigationItems.DEFAULT_BOTTOM_NAV
+    }
+
+    suspend fun readSideNavItems(): List<String> {
+        return context.dataStore.data
+            .map { preferences ->
+                val items = preferences[SIDE_NAV_ITEMS_KEY]?.split(",")?.filter { it.isNotBlank() }
+                    ?: NavigationItems.DEFAULT_SIDE_NAV
+                // Always ensure Settings is included
+                if (!items.contains(NavigationItems.SETTINGS)) {
+                    items + NavigationItems.SETTINGS
+                } else items
+            }.firstOrNull() ?: NavigationItems.DEFAULT_SIDE_NAV
     }
 
 }

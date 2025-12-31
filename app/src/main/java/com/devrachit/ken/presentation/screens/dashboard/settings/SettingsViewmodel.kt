@@ -11,6 +11,8 @@ import com.devrachit.ken.domain.usecases.questionDetailsViewMode.GetQuestionDeta
 import com.devrachit.ken.domain.usecases.questionDetailsViewMode.SaveQuestionDetailsViewModeUseCase
 import com.devrachit.ken.domain.usecases.recentSubmissionLimit.GetRecentSubmissionLimitUseCase
 import com.devrachit.ken.domain.usecases.recentSubmissionLimit.SaveRecentSubmissionLimitUseCase
+import com.devrachit.ken.data.local.datastore.DataStoreRepository
+import com.devrachit.ken.domain.models.NavigationItems
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +31,8 @@ class SettingsViewmodel@Inject constructor(
     private val getRecentSubmissionLimitUseCase: GetRecentSubmissionLimitUseCase,
     private val saveRecentSubmissionLimitUseCase: SaveRecentSubmissionLimitUseCase,
     private val getQuestionDetailsViewModeUseCase: GetQuestionDetailsViewModeUseCase,
-    private val saveQuestionDetailsViewModeUseCase: SaveQuestionDetailsViewModeUseCase
+    private val saveQuestionDetailsViewModeUseCase: SaveQuestionDetailsViewModeUseCase,
+    private val dataStoreRepository: DataStoreRepository
 ): ViewModel() {
     
     // Display Type State
@@ -47,6 +50,13 @@ class SettingsViewmodel@Inject constructor(
     // Question Details View Mode State
     private val _questionDetailsViewMode = MutableStateFlow("SIMPLE")
     val questionDetailsViewMode: StateFlow<String> = _questionDetailsViewMode.asStateFlow()
+
+    // Navigation Preferences State
+    private val _bottomNavItems = MutableStateFlow(NavigationItems.DEFAULT_BOTTOM_NAV)
+    val bottomNavItems: StateFlow<List<String>> = _bottomNavItems.asStateFlow()
+
+    private val _sideNavItems = MutableStateFlow(NavigationItems.DEFAULT_SIDE_NAV)
+    val sideNavItems: StateFlow<List<String>> = _sideNavItems.asStateFlow()
 
     init {
         // Continuously observe display type changes from DataStore
@@ -82,6 +92,20 @@ class SettingsViewmodel@Inject constructor(
                 }
             }
         }
+
+        // Continuously observe bottom nav items changes from DataStore
+        viewModelScope.launch(Dispatchers.IO) {
+            dataStoreRepository.bottomNavItems.collect { items ->
+                _bottomNavItems.value = items
+            }
+        }
+
+        // Continuously observe side nav items changes from DataStore
+        viewModelScope.launch(Dispatchers.IO) {
+            dataStoreRepository.sideNavItems.collect { items ->
+                _sideNavItems.value = items
+            }
+        }
     }
 
     fun updateDisplayType(displayType: String) {
@@ -109,6 +133,20 @@ class SettingsViewmodel@Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             _questionDetailsViewMode.value = viewMode
             saveQuestionDetailsViewModeUseCase(viewMode)
+        }
+    }
+
+    fun updateBottomNavItems(items: List<String>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _bottomNavItems.value = items
+            dataStoreRepository.saveBottomNavItems(items)
+        }
+    }
+
+    fun updateSideNavItems(items: List<String>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _sideNavItems.value = items
+            dataStoreRepository.saveSideNavItems(items)
         }
     }
 }

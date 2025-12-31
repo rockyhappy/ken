@@ -12,17 +12,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -36,13 +38,12 @@ import com.devrachit.ken.R
 import com.devrachit.ken.presentation.navigation.Screen
 import com.devrachit.ken.presentation.navigation.rememberNavigationItems
 import com.devrachit.ken.presentation.screens.dashboard.Widgets.DrawerNavItem
+import com.devrachit.ken.presentation.screens.dashboard.settings.SettingsViewmodel
 import com.devrachit.ken.ui.theme.TextStyleInter14Lh18Fw400
 import com.devrachit.ken.ui.theme.TextStyleInter24Lh36Fw700
 import com.devrachit.ken.utility.composeUtility.ProfilePictureShimmer
 import com.devrachit.ken.utility.composeUtility.sdp
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.painterResource
-import com.devrachit.ken.utility.composeUtility.ExitAppDialog
 import com.devrachit.ken.utility.composeUtility.LogoutDialog
 
 @Composable
@@ -59,7 +60,8 @@ fun HomeScreenDrawer(
     val alpha = lerp(0f, 1f, drawerProgress)
     val xOffset = lerp(-300f, 0f, drawerProgress)
 
-    val coroutineScope = rememberCoroutineScope()
+    val settingsViewModel: SettingsViewmodel = hiltViewModel()
+    val sideNavItems by settingsViewModel.sideNavItems.collectAsState()
 
     Column(
         modifier = Modifier
@@ -95,7 +97,7 @@ fun HomeScreenDrawer(
         }
         if (!uiState.isLoadingUserInfo ||
             (uiState.leetCodeUserInfo.profile?.realName != null &&
-                    uiState.leetCodeUserInfo.profile?.userAvatar != null)
+                    uiState.leetCodeUserInfo.profile.userAvatar != null)
         ) {
             AsyncImage(
                 model = uiState.leetCodeUserInfo.profile?.userAvatar,
@@ -125,7 +127,7 @@ fun HomeScreenDrawer(
         } else {
             ProfilePictureShimmer()
         }
-        Divider(
+        HorizontalDivider(
             modifier = Modifier.padding(vertical = 10.sdp),
         )
         // Get current back stack entry
@@ -140,24 +142,26 @@ fun HomeScreenDrawer(
 
                 onDismissRequest = { showLogoutDialog.value = false })
 
-        navItems.forEach { (index, itemData) ->
-            if(index==6) return@forEach // Skip Settings item
-            DrawerNavItem(
-                label = itemData.label,
-                outlinedIconRes = itemData.outlinedIcon,
-                filledIconRes = itemData.filledIcon,
-                isSelected = currentRoute == itemData.route,
-                onClick = {
-                    if (itemData.route == Screen.Logout.route) {
-                        showLogoutDialog.value = true
-                    } else if (currentRoute != itemData.route) {
-                        navigateAndCloseDrawer(itemData.route)
-                    } else {
-                        onClick()
-                    }
-                },
-                drawerProgress = drawerProgress
-            )
+        navItems.forEach { (_, itemData) ->
+            // Always show Settings (index 6), or show if it's in user's side nav preferences
+            if (itemData.label == "Settings" || sideNavItems.contains(itemData.label)) {
+                DrawerNavItem(
+                    label = itemData.label,
+                    outlinedIconRes = itemData.outlinedIcon,
+                    filledIconRes = itemData.filledIcon,
+                    isSelected = currentRoute == itemData.route,
+                    onClick = {
+                        if (itemData.route == Screen.Logout.route) {
+                            showLogoutDialog.value = true
+                        } else if (currentRoute != itemData.route) {
+                            navigateAndCloseDrawer(itemData.route)
+                        } else {
+                            onClick()
+                        }
+                    },
+                    drawerProgress = drawerProgress
+                )
+            }
         }
 
     }
