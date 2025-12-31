@@ -1,14 +1,18 @@
 package com.devrachit.ken.presentation.screens.dashboard.question_details.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
@@ -164,30 +168,52 @@ fun AddToSheetBottomSheet(
                         )
                     }
                 } else {
-                    LazyColumn(
+                    // Sheets list with dropdown-like styling
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .heightIn(max = 300.sdp),
-                        verticalArrangement = Arrangement.spacedBy(8.sdp)
-                    ) {
-                        items(
-                            items = sortedSheets,
-                            key = { it.sheet.id }
-                        ) { sheetWithQuestions ->
-                            val isInSheet = questionSheetsIds.contains(sheetWithQuestions.sheet.id)
-                            
-                            SheetSelectionItem(
-                                sheetWithQuestions = sheetWithQuestions,
-                                isSelected = isInSheet,
-                                isFavorites = sheetWithQuestions.sheet.name == FAVORITES_SHEET_NAME,
-                                onClick = {
-                                    if (isInSheet) {
-                                        onRemoveFromSheet(sheetWithQuestions.sheet.id)
-                                    } else {
-                                        onAddToSheet(sheetWithQuestions.sheet.id)
-                                    }
-                                }
+                            .heightIn(max = 300.sdp)
+                            .clip(RoundedCornerShape(12.sdp))
+                            .background(colorResource(R.color.bg_neutral))
+                            .border(
+                                border = BorderStroke(
+                                    width = 2.sdp,
+                                    color = colorResource(R.color.white).copy(alpha = 0.3f)
+                                ),
+                                shape = RoundedCornerShape(12.sdp)
                             )
+                            .padding(horizontal = 12.sdp, vertical = 8.sdp)
+                    ) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            itemsIndexed(
+                                items = sortedSheets,
+                                key = { _, item -> item.sheet.id }
+                            ) { index, sheetWithQuestions ->
+                                val isInSheet = questionSheetsIds.contains(sheetWithQuestions.sheet.id)
+                                
+                                SheetSelectionItem(
+                                    sheetWithQuestions = sheetWithQuestions,
+                                    isSelected = isInSheet,
+                                    isFavorites = sheetWithQuestions.sheet.name == FAVORITES_SHEET_NAME,
+                                    onClick = {
+                                        if (isInSheet) {
+                                            onRemoveFromSheet(sheetWithQuestions.sheet.id)
+                                        } else {
+                                            onAddToSheet(sheetWithQuestions.sheet.id)
+                                        }
+                                    }
+                                )
+                                
+                                // Add divider between items (not after last item)
+                                if (index < sortedSheets.size - 1) {
+                                    Divider(
+                                        color = colorResource(R.color.white).copy(alpha = 0.1f),
+                                        modifier = Modifier.padding(vertical = 4.sdp)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -206,39 +232,55 @@ private fun SheetSelectionItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.sdp))
+            .clip(RoundedCornerShape(8.sdp))
             .background(
-                if (isSelected) colorResource(R.color.blue_normal_500).copy(alpha = 0.2f)
-                else colorResource(R.color.bg_neutral)
+                if (isSelected) colorResource(R.color.blue_normal_500).copy(alpha = 0.15f)
+                else Color.Transparent
             )
             .clickable(onClick = onClick)
-            .padding(16.sdp),
+            .padding(horizontal = 8.sdp, vertical = 12.sdp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Checkbox
-        Checkbox(
-            checked = isSelected,
-            onCheckedChange = { onClick() },
-            colors = CheckboxDefaults.colors(
-                checkedColor = if (isFavorites) colorResource(R.color.hard_filled_red) else colorResource(R.color.blue_normal_500),
-                uncheckedColor = Color.White.copy(alpha = 0.5f),
-                checkmarkColor = Color.White
-            )
-        )
-
-        Spacer(modifier = Modifier.width(8.sdp))
-        
-        // Favorites icon
+        // Leading icon - Favorites heart or checkbox indicator
         if (isFavorites) {
             Icon(
                 imageVector = Icons.Default.Favorite,
                 contentDescription = "Favorites",
                 tint = colorResource(R.color.hard_filled_red),
-                modifier = Modifier.size(20.sdp)
+                modifier = Modifier.size(22.sdp)
             )
-            Spacer(modifier = Modifier.width(8.sdp))
+        } else {
+            // Checkbox indicator
+            Box(
+                modifier = Modifier
+                    .size(22.sdp)
+                    .clip(RoundedCornerShape(4.sdp))
+                    .background(
+                        if (isSelected) colorResource(R.color.blue_normal_500)
+                        else Color.Transparent
+                    )
+                    .border(
+                        width = 2.sdp,
+                        color = if (isSelected) colorResource(R.color.blue_normal_500) 
+                               else Color.White.copy(alpha = 0.5f),
+                        shape = RoundedCornerShape(4.sdp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (isSelected) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Selected",
+                        tint = Color.White,
+                        modifier = Modifier.size(16.sdp)
+                    )
+                }
+            }
         }
 
+        Spacer(modifier = Modifier.width(12.sdp))
+
+        // Sheet name and count
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = sheetWithQuestions.sheet.name,
@@ -251,16 +293,17 @@ private fun SheetSelectionItem(
             Text(
                 text = "${sheetWithQuestions.questions.size} questions",
                 style = TextStyleInter12Lh16Fw400(),
-                color = Color.White.copy(alpha = 0.6f)
+                color = Color.White.copy(alpha = 0.5f)
             )
         }
 
+        // Trailing check icon for selected items
         if (isSelected) {
             Icon(
                 imageVector = Icons.Default.Check,
                 contentDescription = "Added to sheet",
                 tint = if (isFavorites) colorResource(R.color.hard_filled_red) else colorResource(R.color.blue_normal_500),
-                modifier = Modifier.size(20.sdp)
+                modifier = Modifier.size(22.sdp)
             )
         }
     }

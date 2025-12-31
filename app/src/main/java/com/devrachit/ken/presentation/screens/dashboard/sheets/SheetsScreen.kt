@@ -1,5 +1,6 @@
 package com.devrachit.ken.presentation.screens.dashboard.sheets
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -48,6 +49,9 @@ fun SheetsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    BackHandler(enabled = uiState.isSheetDetailVisible) {
+        viewModel.closeSheetDetail()
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
