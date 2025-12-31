@@ -64,6 +64,12 @@ class SettingsViewmodel@Inject constructor(
     private val _showDeveloperMessage = MutableStateFlow(true)
     val showDeveloperMessage: StateFlow<Boolean> = _showDeveloperMessage.asStateFlow()
 
+    private val _isUpdateAvailable = MutableStateFlow(false)
+    val isUpdateAvailable: StateFlow<Boolean> = _isUpdateAvailable.asStateFlow()
+
+    private val _updateUrl = MutableStateFlow("")
+    val updateUrl: StateFlow<String> = _updateUrl.asStateFlow()
+
     init {
         // Continuously observe display type changes from DataStore
         viewModelScope.launch(Dispatchers.IO) {
@@ -121,8 +127,17 @@ class SettingsViewmodel@Inject constructor(
                     true // Default to true
                 )
                 _showDeveloperMessage.value = shouldShowMessage
+
+                val currentVersion = firebaseRemoteConfigManager.getCurrentAppVersion()
+                val latestVersion = firebaseRemoteConfigManager.getLatestVersion()
+                val updateUrl = firebaseRemoteConfigManager.getPlayStoreUrl()
+                val isUpdateAvailable = firebaseRemoteConfigManager.compareVersions(currentVersion, latestVersion) < 0
+                _isUpdateAvailable.value = isUpdateAvailable
+                _updateUrl.value = updateUrl
+
             } catch (_: Exception) {
                 _showDeveloperMessage.value = true
+                _isUpdateAvailable.value = false
             }
         }
     }
@@ -167,5 +182,9 @@ class SettingsViewmodel@Inject constructor(
             _sideNavItems.value = items
             dataStoreRepository.saveSideNavItems(items)
         }
+    }
+
+    fun getUpdateUrl(): String {
+        return _updateUrl.value
     }
 }

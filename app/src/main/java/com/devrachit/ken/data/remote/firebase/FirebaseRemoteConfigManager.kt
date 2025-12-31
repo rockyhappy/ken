@@ -167,7 +167,7 @@ class FirebaseRemoteConfigManager @Inject constructor(
      * @param other other version (e.g., "1.3.0")
      * @return negative if current < other, 0 if equal, positive if current > other
      */
-    private fun compareVersions(current: String, other: String): Int {
+    fun compareVersions(current: String, other: String): Int {
         return try {
             val currentParts = current.split(".").map { it.toIntOrNull() ?: 0 }
             val otherParts = other.split(".").map { it.toIntOrNull() ?: 0 }
