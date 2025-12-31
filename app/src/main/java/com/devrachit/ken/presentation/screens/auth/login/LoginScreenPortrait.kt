@@ -1,7 +1,6 @@
 package com.devrachit.ken.presentation.screens.auth.login
 
 import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -136,6 +135,20 @@ fun LoginScreenPortrait(
                         showDialog = true,
                         onDismissRequest = {},
                         onConfirmExit = {
+                            firebaseAnalytics.logEvent("login_force_update_button_clicked") {
+                                param("store_url", uiStates.updateConfig?.playstoreUpdateUrl ?: "default")
+                            }
+                            val intent = Intent(Intent.ACTION_VIEW,
+                                (uiStates.updateConfig?.playstoreUpdateUrl
+                                    ?: "https://play.google.com/store/apps/details?id=com.devrachit.ken").toUri())
+                            if (intent.resolveActivity(context.packageManager) != null) {
+                                context.startActivity(intent)
+                            } else {
+                                firebaseAnalytics.logEvent("login_force_update_store_not_found") {
+                                    param("store_url", uiStates.updateConfig?.playstoreUpdateUrl ?: "default")
+                                }
+                                Log.e("UpdateDialog", "No app found to open this link: ${uiStates.updateConfig?.playstoreUpdateUrl}")
+                            }
                         },
                         text = uiStates.updateConfig?.playstoreUpdateMessage
                             ?: "An update is available. Please update the app to continue.",

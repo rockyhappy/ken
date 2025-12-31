@@ -12,6 +12,7 @@ import com.devrachit.ken.domain.usecases.questionDetailsViewMode.SaveQuestionDet
 import com.devrachit.ken.domain.usecases.recentSubmissionLimit.GetRecentSubmissionLimitUseCase
 import com.devrachit.ken.domain.usecases.recentSubmissionLimit.SaveRecentSubmissionLimitUseCase
 import com.devrachit.ken.data.local.datastore.DataStoreRepository
+import com.devrachit.ken.data.remote.firebase.FirebaseRemoteConfigManager
 import com.devrachit.ken.domain.models.NavigationItems
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +33,8 @@ class SettingsViewmodel@Inject constructor(
     private val saveRecentSubmissionLimitUseCase: SaveRecentSubmissionLimitUseCase,
     private val getQuestionDetailsViewModeUseCase: GetQuestionDetailsViewModeUseCase,
     private val saveQuestionDetailsViewModeUseCase: SaveQuestionDetailsViewModeUseCase,
-    private val dataStoreRepository: DataStoreRepository
+    private val dataStoreRepository: DataStoreRepository,
+    private val firebaseRemoteConfigManager: FirebaseRemoteConfigManager
 ): ViewModel() {
     
     // Display Type State
@@ -57,6 +59,10 @@ class SettingsViewmodel@Inject constructor(
 
     private val _sideNavItems = MutableStateFlow(NavigationItems.DEFAULT_SIDE_NAV)
     val sideNavItems: StateFlow<List<String>> = _sideNavItems.asStateFlow()
+
+    // Developer Message Visibility State
+    private val _showDeveloperMessage = MutableStateFlow(true)
+    val showDeveloperMessage: StateFlow<Boolean> = _showDeveloperMessage.asStateFlow()
 
     init {
         // Continuously observe display type changes from DataStore
@@ -104,6 +110,19 @@ class SettingsViewmodel@Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             dataStoreRepository.sideNavItems.collect { items ->
                 _sideNavItems.value = items
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                firebaseRemoteConfigManager.fetchConfig()
+                val shouldShowMessage = firebaseRemoteConfigManager.getBoolean(
+                    FirebaseRemoteConfigManager.SHOW_DEVELOPER_MESSAGE,
+                    true // Default to true
+                )
+                _showDeveloperMessage.value = shouldShowMessage
+            } catch (_: Exception) {
+                _showDeveloperMessage.value = true
             }
         }
     }

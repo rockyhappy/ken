@@ -85,13 +85,9 @@ class LoginViewmodel @Inject constructor(
         getPresentVersion: ()-> String = { "1.0.0" }
     ) {
         _uiState.value=_uiState.value.copy(updateConfig = config)
-        if(config.minimumRequiredVersion==getPresentVersion()){
-            _uiState.value=_uiState.value.copy(updateStatus = UpdateStatus.NoNeedToUpdate)
-            navigateForward()
-        }else if(config.forcePlaystoreUpdate){
+        if(config.forcePlaystoreUpdate){
             _uiState.value=_uiState.value.copy(updateStatus = UpdateStatus.ForceUpdate)
-        }
-        else{
+        } else {
             _uiState.value=_uiState.value.copy(updateStatus = UpdateStatus.NoForceUpdate)
         }
     }

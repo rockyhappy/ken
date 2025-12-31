@@ -18,6 +18,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.devrachit.ken.R
 import com.devrachit.ken.presentation.screens.dashboard.settings.components.BadgeDisplayModeSelector
+import com.devrachit.ken.presentation.screens.dashboard.settings.components.DeveloperMessageCard
 import com.devrachit.ken.presentation.screens.dashboard.settings.components.DisplayTypeSelector
 import com.devrachit.ken.presentation.screens.dashboard.settings.components.NavigationPreferencesSelector
 import com.devrachit.ken.presentation.screens.dashboard.settings.components.QuestionDetailsViewModeSelector
@@ -34,6 +35,7 @@ fun SettingsScreen() {
     val currentQuestionDetailsViewMode by viewmodel.questionDetailsViewMode.collectAsState()
     val currentBottomNavItems by viewmodel.bottomNavItems.collectAsState()
     val currentSideNavItems by viewmodel.sideNavItems.collectAsState()
+    val showDeveloperMessage by viewmodel.showDeveloperMessage.collectAsState()
 
     Column(
         modifier = Modifier
@@ -50,7 +52,12 @@ fun SettingsScreen() {
             style = TextStyleInter20Lh24Fw600(),
             modifier = Modifier.padding(bottom = 16.sdp, top= 30.sdp)
         )
-        
+
+        if (showDeveloperMessage) {
+            DeveloperMessageCard()
+            Spacer(modifier = Modifier.height(16.sdp))
+        }
+
         DisplayTypeSelector(
             currentDisplayType = currentDisplayType,
             onDisplayTypeChanged = { displayType ->
