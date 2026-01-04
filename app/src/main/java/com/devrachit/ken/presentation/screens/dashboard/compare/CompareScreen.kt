@@ -71,6 +71,7 @@ fun CompareScreen(
     getMediumGraphData: () -> List<com.devrachit.ken.presentation.screens.dashboard.compare.QuestionGraphData> = { emptyList() },
     getHardGraphData: () -> List<com.devrachit.ken.presentation.screens.dashboard.compare.QuestionGraphData> = { emptyList() }
 ) {
+    // removing the use-case of this
     val (hasInitiallyLoaded, setHasInitiallyLoaded) = remember { mutableStateOf(false) }
     val firebaseAnalytics = Firebase.analytics
 
@@ -87,9 +88,9 @@ fun CompareScreen(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                if (hasInitiallyLoaded) {
+//                if (hasInitiallyLoaded) {
                     onFirstLoad.invoke()
-                }
+//                }
             }
         }
 
@@ -104,20 +105,20 @@ fun CompareScreen(
             param(FirebaseAnalytics.Param.SCREEN_CLASS, "CompareScreen")
         }
         onFirstLoad.invoke()
-        if (!hasInitiallyLoaded) {
-            setHasInitiallyLoaded(true)
-        }
+//        if (!hasInitiallyLoaded) {
+//            setHasInitiallyLoaded(true)
+//        }
     }
     
     Box(modifier = Modifier.fillMaxSize()) {
-        // Main content
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .pullRefresh(pullRefreshState)
                 .background(color = colorResource(R.color.bg_neutral))
                 .verticalScroll(rememberScrollState())
-                .padding(top = 60.sdp, bottom=120.sdp), // Add top padding to account for floating search widget
+                .padding(top = 60.sdp, bottom=120.sdp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -157,7 +158,7 @@ fun CompareScreen(
                         }
                     )
                     
-                    // Show graphs only when data is available and not loading
+
                     if (!uiState.isLoading && !uiState.friendsQuestionProgressInfo.isNullOrEmpty()) {
                         QuestionProgressGraphs(
                             modifier = Modifier.padding(horizontal = 16.sdp, vertical = 16.sdp),
@@ -167,7 +168,7 @@ fun CompareScreen(
                         )
                     }
                     
-                    // Streak Activity Graphs
+
                     if (!uiState.isLoading && !uiState.userProfileCalender.isNullOrEmpty()) {
                         StreakActivityGraphs(
                             modifier = Modifier.padding(horizontal = 16.sdp, vertical = 16.sdp),

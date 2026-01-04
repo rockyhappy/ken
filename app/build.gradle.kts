@@ -19,8 +19,8 @@ android {
         applicationId = "com.devrachit.ken"
         minSdk = 26
         targetSdk = 35
-        versionCode = 13
-        versionName = "1.0.10"
+        versionCode = 1011
+        versionName = "1.0.11"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
